@@ -23,11 +23,12 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
 
         <ul className="flex-1 flex flex-wrap lg:flex-nowrap items-center overflow-x-auto hide-scrollbar text-sm font-medium text-gray-700 ml-0 lg:ml-4">
           <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block custom-orange border-b-2 border-custom-orange">Trang chủ</a></li>
-          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-[#f37021] transition-colors flex items-center gap-1">Dịch vụ <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
-          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-[#f37021] transition-colors flex items-center gap-1">Giới thiệu <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
-          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-[#f37021] transition-colors flex items-center gap-1">Tin tức <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
-          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-[#f37021] transition-colors flex items-center gap-1">Liên hệ <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
-          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-[#f37021] transition-colors">Khách hàng</a></li>
+          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Giới thiệu <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
+          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Sản phẩm <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
+          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Tin tức <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
+          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Thuê sản phẩm <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
+          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Liên hệ <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
+          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors">Khách hàng</a></li>
         </ul>
       </div>
     </nav>

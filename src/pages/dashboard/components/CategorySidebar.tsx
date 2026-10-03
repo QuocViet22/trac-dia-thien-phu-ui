@@ -12,13 +12,13 @@ function CategorySidebar({ open }: CategorySidebarProps) {
           {categories.map((cat, i) => (
             <li
               key={cat.label}
-              className={`flex items-center justify-between px-4 py-2.5 ${i < categories.length - 1 ? 'border-b border-gray-100' : ''} hover:text-[#f37021] hover:bg-orange-50 cursor-pointer group transition-colors`}
+              className={`flex items-center justify-between px-4 py-2.5 ${i < categories.length - 1 ? 'border-b border-gray-100' : ''} hover:text-brand hover:bg-sky-50 cursor-pointer group transition-colors`}
             >
               <div className="flex items-center gap-3">
-                <i className={`${cat.icon} w-4 text-center text-gray-400 group-hover:text-[#f37021]`}></i>
+                <i className={`${cat.icon} w-4 text-center text-gray-400 group-hover:text-brand`}></i>
                 <span className="truncate">{cat.label}</span>
               </div>
-              <i className="fa-solid fa-caret-right text-gray-300 group-hover:text-[#f37021]"></i>
+              <i className="fa-solid fa-caret-right text-gray-300 group-hover:text-brand"></i>
             </li>
           ))}
         </ul>

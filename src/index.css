@@ -1,19 +1,23 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand: #22abff;
+}
+
 body {
   font-family: 'Inter', system-ui, sans-serif;
 }
 
 .custom-orange {
-  color: #f37021;
+  color: #22abff;
 }
 
 .bg-custom-orange {
-  background-color: #f37021;
+  background-color: #22abff;
 }
 
 .border-custom-orange {
-  border-color: #f37021;
+  border-color: #22abff;
 }
 
 /* Custom scrollbar for sidebar on small height screens */

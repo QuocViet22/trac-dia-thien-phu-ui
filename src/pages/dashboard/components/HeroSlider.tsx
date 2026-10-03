@@ -6,8 +6,8 @@ interface HeroSliderProps {
   slides: Slide[]
 }
 
-const ACTIVE_DOT = 'w-2.5 h-2.5 bg-orange-500 rounded-sm cursor-pointer shadow-[0_0_0_1px_white]'
-const INACTIVE_DOT = 'w-2.5 h-2.5 bg-orange-600 rounded-sm cursor-pointer opacity-50 hover:opacity-100 transition-opacity border border-white'
+const ACTIVE_DOT = 'w-2.5 h-2.5 bg-sky-500 rounded-sm cursor-pointer shadow-[0_0_0_1px_white]'
+const INACTIVE_DOT = 'w-2.5 h-2.5 bg-sky-600 rounded-sm cursor-pointer opacity-50 hover:opacity-100 transition-opacity border border-white'
 
 function HeroSlider({ slides }: HeroSliderProps) {
   const [current, setCurrent] = useState(0)
@@ -22,7 +22,7 @@ function HeroSlider({ slides }: HeroSliderProps) {
 
   return (
     <div id="hero-slider" className="relative w-full h-[300px] md:h-[400px] rounded-xl overflow-hidden shadow-md">
-      <div className={`hero-slide absolute inset-0 bg-gradient-to-r from-[#7a6a57] via-[#b67332] to-[#e47e25] flex items-center px-6 md:px-12 ${current === 0 ? '' : 'hidden'}`}>
+      <div className={`hero-slide absolute inset-0 bg-gradient-to-r from-[#1e3a5f] via-[#1d7fc1] to-[#22abff] flex items-center px-6 md:px-12 ${current === 0 ? '' : 'hidden'}`}>
         <div className="relative z-10 w-full md:w-1/2 text-white">
           <p className="text-sm md:text-base font-light tracking-wide mb-2 opacity-90 uppercase">IGEO SYSTEM</p>
           <h2 className="text-2xl md:text-4xl font-bold mb-1 leading-tight">ĐỘC QUYỀN</h2>
@@ -31,9 +31,9 @@ function HeroSlider({ slides }: HeroSliderProps) {
           <p className="text-sm md:text-lg mb-6 font-medium text-yellow-200 uppercase tracking-widest">FIX TỐT CẢ BUỔI CHIỀU</p>
 
           <div className="flex items-center gap-0">
-            <button className="bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold py-2.5 px-6 rounded-l-full shadow-lg hover:from-orange-500 hover:to-orange-600 transition-all">MUA NGAY</button>
+            <button className="bg-gradient-to-r from-sky-400 to-sky-500 text-white font-bold py-2.5 px-6 rounded-l-full shadow-lg hover:from-sky-500 hover:to-sky-600 transition-all">MUA NGAY</button>
             <div className="bg-white text-gray-700 py-2.5 px-6 rounded-r-full font-medium shadow-lg flex items-center">
-              igeostore.vn <i className="fa-solid fa-chevron-right ml-2 text-xs text-orange-500"></i>
+              igeostore.vn <i className="fa-solid fa-chevron-right ml-2 text-xs text-sky-500"></i>
             </div>
           </div>
         </div>
