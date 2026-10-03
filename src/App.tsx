@@ -3,10 +3,10 @@ import SiteLayout from './components/layout/SiteLayout.tsx'
 import DashboardPage from './pages/dashboard/DashboardPage.tsx'
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <SiteLayout onToggleSidebar={() => setSidebarOpen((open) => !open)}>
+    <SiteLayout sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((open) => !open)}>
       <DashboardPage sidebarOpen={sidebarOpen} />
     </SiteLayout>
   )

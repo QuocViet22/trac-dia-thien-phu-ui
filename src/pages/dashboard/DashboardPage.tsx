@@ -15,13 +15,13 @@ interface DashboardPageProps {
 function DashboardPage({ sidebarOpen }: DashboardPageProps) {
   return (
     <>
-      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-4 flex flex-col lg:flex-row gap-6 relative">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 py-4 flex flex-col lg:flex-row gap-6 relative">
         <CategorySidebar open={sidebarOpen} />
         <div className="flex-1 flex flex-col gap-4">
           <HeroSlider slides={slides} />
           <PromoCards />
         </div>
-      </main>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-4 flex flex-col gap-8">
         <FeaturedCategories />

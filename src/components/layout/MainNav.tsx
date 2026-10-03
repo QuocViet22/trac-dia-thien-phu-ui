@@ -1,13 +1,16 @@
 interface MainNavProps {
+  sidebarOpen: boolean
   onToggleSidebar: () => void
 }
 
-function MainNav({ onToggleSidebar }: MainNavProps) {
+function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 flex flex-col lg:flex-row">
-        <div
-          id="category-toggle"
+        <button
+          type="button"
+          aria-expanded={sidebarOpen}
+          aria-label="Tất cả sản phẩm"
           onClick={onToggleSidebar}
           className="bg-custom-orange text-white w-full lg:w-72 flex items-center justify-between px-4 py-3 cursor-pointer font-medium text-sm rounded-t-md lg:rounded-none"
         >
@@ -16,7 +19,7 @@ function MainNav({ onToggleSidebar }: MainNavProps) {
             <span>TẤT CẢ SẢN PHẨM</span>
           </div>
           <i className="fa-solid fa-caret-down"></i>
-        </div>
+        </button>
 
         <ul className="flex-1 flex flex-wrap lg:flex-nowrap items-center overflow-x-auto hide-scrollbar text-sm font-medium text-gray-700 ml-0 lg:ml-4">
           <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block custom-orange border-b-2 border-custom-orange">Trang chủ</a></li>

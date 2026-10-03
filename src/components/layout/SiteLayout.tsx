@@ -6,14 +6,15 @@ import MainNav from './MainNav.tsx'
 
 interface SiteLayoutProps {
   children: ReactNode
+  sidebarOpen: boolean
   onToggleSidebar: () => void
 }
 
-function SiteLayout({ children, onToggleSidebar }: SiteLayoutProps) {
+function SiteLayout({ children, sidebarOpen, onToggleSidebar }: SiteLayoutProps) {
   return (
     <div className="bg-[#f8f9fa] text-gray-800 antialiased">
       <Header />
-      <MainNav onToggleSidebar={onToggleSidebar} />
+      <MainNav sidebarOpen={sidebarOpen} onToggleSidebar={onToggleSidebar} />
       <main>{children}</main>
       <Footer />
       <FloatingButtons />
