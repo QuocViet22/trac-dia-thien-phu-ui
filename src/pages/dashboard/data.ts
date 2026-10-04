@@ -16,7 +16,6 @@ export interface FeaturedCat {
 export interface Product {
   brand: string
   name: string
-  price: string
   image: string
   badge?: 'Mới' | 'Hot'
 }
@@ -66,16 +65,16 @@ export const featuredCats: FeaturedCat[] = [
 ]
 
 export const bestSellers: Product[] = [
-  { brand: 'Sokkia', name: 'Máy toàn đạc điện tử Sokkia IM-65', price: '130,000,000₫', image: 'https://igeostore.vn/storage/sokkia-im-62-7-276x276.jpg', badge: 'Mới' },
-  { brand: 'Sokkia', name: 'Máy toàn đạc điện tử Sokkia IM-62', price: '146,000,000₫', image: 'https://igeostore.vn/storage/sokkia-im-62-7-276x276.jpg', badge: 'Mới' },
-  { brand: 'Topcon', name: 'Máy cân bằng laser xoay Topcon RL-H5A', price: '38,000,000₫', image: 'https://igeostore.vn/storage/topcon-rl-h5a-34714-276x276.jpg', badge: 'Mới' },
-  { brand: 'Garmin', name: 'Máy định vị GPS cầm tay Garmin Montana 710', price: '17,990,000₫', image: 'https://igeostore.vn/storage/may-gps-garmin-montana-710-276x276.jpg', badge: 'Mới' },
-  { brand: 'Hi-Target', name: 'Máy GNSS RTK Hi-Target V600L', price: '81,000,000₫', image: 'https://igeostore.vn/storage/hi-target-v600l-276x276.jpg', badge: 'Mới' },
-  { brand: 'Garmin', name: 'Máy định vị cầm tay Garmin GPSMap H1', price: '18,790,000₫', image: 'https://igeostore.vn/storage/garmin-gpsmap-h1-1-276x276.jpg', badge: 'Mới' },
-  { brand: 'Sokkia', name: 'Máy Thủy Bình Sokkia B20', price: '22,000,000₫', image: 'https://igeostore.vn/storage/may-thuy-binh-sokkia-b20-2-276x276.jpg' },
-  { brand: 'Garmin', name: 'Máy định vị GPS cầm tay Garmin 65S', price: '10,790,000₫', image: 'https://igeostore.vn/storage/garmin-65s-276x276.jpg', badge: 'Hot' },
-  { brand: 'Sokkia', name: 'Máy Thủy Bình Sokkia B30A', price: '14,000,000₫', image: 'https://igeostore.vn/storage/sokkia-b30a-276x276.jpg', badge: 'Hot' },
-  { brand: 'Sokkia', name: 'Máy Thủy Bình Sokkia B40A (4)', price: '7,300,000₫', image: 'https://igeostore.vn/storage/sokkia-b40a-276x276.jpg', badge: 'Hot' },
+  { brand: 'Sokkia', name: 'Máy toàn đạc điện tử Sokkia IM-65', image: 'https://igeostore.vn/storage/sokkia-im-62-7-276x276.jpg', badge: 'Mới' },
+  { brand: 'Sokkia', name: 'Máy toàn đạc điện tử Sokkia IM-62', image: 'https://igeostore.vn/storage/sokkia-im-62-7-276x276.jpg', badge: 'Mới' },
+  { brand: 'Topcon', name: 'Máy cân bằng laser xoay Topcon RL-H5A', image: 'https://igeostore.vn/storage/topcon-rl-h5a-34714-276x276.jpg', badge: 'Mới' },
+  { brand: 'Garmin', name: 'Máy định vị GPS cầm tay Garmin Montana 710', image: 'https://igeostore.vn/storage/may-gps-garmin-montana-710-276x276.jpg', badge: 'Mới' },
+  { brand: 'Hi-Target', name: 'Máy GNSS RTK Hi-Target V600L', image: 'https://igeostore.vn/storage/hi-target-v600l-276x276.jpg', badge: 'Mới' },
+  { brand: 'Garmin', name: 'Máy định vị cầm tay Garmin GPSMap H1', image: 'https://igeostore.vn/storage/garmin-gpsmap-h1-1-276x276.jpg', badge: 'Mới' },
+  { brand: 'Sokkia', name: 'Máy Thủy Bình Sokkia B20', image: 'https://igeostore.vn/storage/may-thuy-binh-sokkia-b20-2-276x276.jpg' },
+  { brand: 'Garmin', name: 'Máy định vị GPS cầm tay Garmin 65S', image: 'https://igeostore.vn/storage/garmin-65s-276x276.jpg', badge: 'Hot' },
+  { brand: 'Sokkia', name: 'Máy Thủy Bình Sokkia B30A', image: 'https://igeostore.vn/storage/sokkia-b30a-276x276.jpg', badge: 'Hot' },
+  { brand: 'Sokkia', name: 'Máy Thủy Bình Sokkia B40A (4)', image: 'https://igeostore.vn/storage/sokkia-b40a-276x276.jpg', badge: 'Hot' },
 ]
 
 export const categorySections: CategorySectionData[] = [
@@ -89,11 +88,11 @@ export const categorySections: CategorySectionData[] = [
       { image: 'https://igeostore.vn/storage/banner-sokkia-im55.jpg', alt: 'Sokkia IM55' },
     ],
     products: [
-      { brand: 'Hi-Target', name: 'Máy GNSS RTK Hi-Target V600L', price: '81,000,000₫', image: 'https://igeostore.vn/storage/hi-target-v600l-276x276.jpg', badge: 'Mới' },
-      { brand: 'Hi-Target', name: 'Máy GNSS RTK Hi-Target V500 (1)', price: '65,000,000₫', image: 'https://igeostore.vn/storage/gnss-rtk-v500-4-276x276.jpg', badge: 'Hot' },
-      { brand: 'Hi-Target', name: 'Máy GNSS RTK Hi-Target vRTK (1)', price: '116,000,000₫', image: 'https://igeostore.vn/storage/gnss-vrtk-2-276x276.jpg' },
-      { brand: 'Hi-Target', name: 'Máy GNSS RTK Hi-Target iRTK5', price: '135,000,000₫', image: 'https://igeostore.vn/storage/gnss-rtk-irtk5-1-276x276.jpg', badge: 'Hot' },
-      { brand: 'Precise', name: 'Máy GNSS RTK Precise X7 Lite', price: '53,000,000₫', image: 'https://igeostore.vn/storage/dt-926a1-276x276.jpg' },
+      { brand: 'Hi-Target', name: 'Máy GNSS RTK Hi-Target V600L', image: 'https://igeostore.vn/storage/hi-target-v600l-276x276.jpg', badge: 'Mới' },
+      { brand: 'Hi-Target', name: 'Máy GNSS RTK Hi-Target V500 (1)', image: 'https://igeostore.vn/storage/gnss-rtk-v500-4-276x276.jpg', badge: 'Hot' },
+      { brand: 'Hi-Target', name: 'Máy GNSS RTK Hi-Target vRTK (1)', image: 'https://igeostore.vn/storage/gnss-vrtk-2-276x276.jpg' },
+      { brand: 'Hi-Target', name: 'Máy GNSS RTK Hi-Target iRTK5', image: 'https://igeostore.vn/storage/gnss-rtk-irtk5-1-276x276.jpg', badge: 'Hot' },
+      { brand: 'Precise', name: 'Máy GNSS RTK Precise X7 Lite', image: 'https://igeostore.vn/storage/dt-926a1-276x276.jpg' },
     ],
   },
   {
@@ -106,11 +105,11 @@ export const categorySections: CategorySectionData[] = [
       { image: 'https://igeostore.vn/storage/banner-garmin-etrex-22x.jpg', alt: 'Garmin eTrex' },
     ],
     products: [
-      { brand: 'Sokkia', name: 'Máy toàn đạc điện tử Sokkia IM105', price: '168,000,000₫', image: 'https://igeostore.vn/storage/im105-276x276.jpg', badge: 'Hot' },
-      { brand: 'Sokkia', name: 'Máy toàn đạc điện tử Sokkia FX201', price: '205,000,000₫', image: 'https://igeostore.vn/storage/fx201-276x276.jpg', badge: 'Mới' },
-      { brand: 'Sokkia', name: 'Máy toàn đạc Sokkia IM 55', price: '120,000,000₫', image: 'https://igeostore.vn/storage/im55-1-276x276.jpg' },
-      { brand: 'Garmin', name: 'Máy định vị GPS cầm tay Garmin GPSMap 67', price: '13,440,000₫', image: 'https://igeostore.vn/storage/garmin-map-67-276x276.jpg', badge: 'Mới' },
-      { brand: 'Garmin', name: 'Máy định vị GPS cầm tay Garmin eTrex Solar', price: '6,860,000₫', image: 'https://igeostore.vn/storage/garmin-etrex-solar-1-1-276x276.jpg', badge: 'Mới' },
+      { brand: 'Sokkia', name: 'Máy toàn đạc điện tử Sokkia IM105', image: 'https://igeostore.vn/storage/im105-276x276.jpg', badge: 'Hot' },
+      { brand: 'Sokkia', name: 'Máy toàn đạc điện tử Sokkia FX201', image: 'https://igeostore.vn/storage/fx201-276x276.jpg', badge: 'Mới' },
+      { brand: 'Sokkia', name: 'Máy toàn đạc Sokkia IM 55', image: 'https://igeostore.vn/storage/im55-1-276x276.jpg' },
+      { brand: 'Garmin', name: 'Máy định vị GPS cầm tay Garmin GPSMap 67', image: 'https://igeostore.vn/storage/garmin-map-67-276x276.jpg', badge: 'Mới' },
+      { brand: 'Garmin', name: 'Máy định vị GPS cầm tay Garmin eTrex Solar', image: 'https://igeostore.vn/storage/garmin-etrex-solar-1-1-276x276.jpg', badge: 'Mới' },
     ],
   },
   {
@@ -119,11 +118,11 @@ export const categorySections: CategorySectionData[] = [
     brands: ['Sokkia', 'Satlab', 'Hi-Target', 'Nikon'],
     banners: [],
     products: [
-      { brand: 'Sokkia', name: 'Máy Thủy Bình Sokkia B20', price: '22,000,000₫', image: 'https://igeostore.vn/storage/may-thuy-binh-sokkia-b20-2-276x276.jpg' },
-      { brand: 'Satlab', name: 'Máy Thủy Bình Satlab SAL32 (1)', price: '6,480,000₫', image: 'https://igeostore.vn/storage/satlab-sal32-276x276.jpg' },
-      { brand: 'Hi-Target', name: 'Máy Thủy Bình Hi-Target HT32', price: '6,800,000₫', image: 'https://igeostore.vn/storage/hi-target-ht32-276x276.jpg' },
-      { brand: 'JBL', name: 'Máy bộ đàm JBL 380', price: '864,000₫', image: 'https://igeostore.vn/storage/may-bo-dam-jbl-380-1-276x276.jpg' },
-      { brand: 'Laisai', name: 'Máy cân bằng laser 12 tia xanh Laisai LSG6650', price: '3,800,000₫', image: 'https://igeostore.vn/storage/laisai-lsg6650-1-276x276.jpg' },
+      { brand: 'Sokkia', name: 'Máy Thủy Bình Sokkia B20', image: 'https://igeostore.vn/storage/may-thuy-binh-sokkia-b20-2-276x276.jpg' },
+      { brand: 'Satlab', name: 'Máy Thủy Bình Satlab SAL32 (1)', image: 'https://igeostore.vn/storage/satlab-sal32-276x276.jpg' },
+      { brand: 'Hi-Target', name: 'Máy Thủy Bình Hi-Target HT32', image: 'https://igeostore.vn/storage/hi-target-ht32-276x276.jpg' },
+      { brand: 'JBL', name: 'Máy bộ đàm JBL 380', image: 'https://igeostore.vn/storage/may-bo-dam-jbl-380-1-276x276.jpg' },
+      { brand: 'Laisai', name: 'Máy cân bằng laser 12 tia xanh Laisai LSG6650', image: 'https://igeostore.vn/storage/laisai-lsg6650-1-276x276.jpg' },
     ],
   },
 ]
