@@ -6,7 +6,7 @@ function PromoCards() {
       <div className="bg-gradient-to-br from-[#f0f9ff] to-[#e0f2fe] p-4 rounded-xl shadow-sm border border-sky-100 flex relative overflow-hidden h-36">
         <div className="w-2/3 flex flex-col justify-center z-10 relative">
           <p className="text-[10px] uppercase font-bold text-gray-500 mb-1">Cơ hội</p>
-          <h3 className="font-bold text-sm text-red-600 mb-2 leading-tight">TRỞ THÀNH ĐẠI LÝ<br />GEO STORE</h3>
+          <h3 className="font-bold text-sm text-red-600 mb-2 leading-tight">TRỞ THÀNH ĐẠI LÝ<br />TRẮC ĐỊA THIÊN PHÚ</h3>
           <ul className="text-[11px] text-gray-700 space-y-1 mb-2">
             <li><i className="fa-solid fa-check text-green-500 mr-1"></i> Chiết khấu cao</li>
             <li><i className="fa-solid fa-check text-green-500 mr-1"></i> Hỗ trợ tài chính</li>
@@ -21,7 +21,7 @@ function PromoCards() {
 
       <div className="bg-gradient-to-br from-[#e0f2fe] to-[#bae6fd] p-4 rounded-xl shadow-sm border border-sky-100 flex relative overflow-hidden h-36">
         <div className="w-[60%] flex flex-col justify-center z-10 relative">
-          <p className="text-[10px] uppercase font-bold text-gray-500 mb-1">IGEO SYSTEM</p>
+          <p className="text-[10px] uppercase font-bold text-gray-500 mb-1">TRẮC ĐỊA THIÊN PHÚ</p>
           <h3 className="font-bold text-sm text-gray-800 mb-2 leading-tight">DỊCH VỤ<br /><span className="text-sky-600">QUÉT 3D LASER SCAN CÔNG TRÌNH</span></h3>
           <ul className="text-[10px] text-gray-600 space-y-0.5 mb-2 leading-tight">
             <li><i className="fa-solid fa-check text-sky-500 mr-1"></i> Độ chính xác cao</li>
@@ -37,7 +37,7 @@ function PromoCards() {
 
       <div className="bg-gradient-to-br from-[#f0f9ff] to-[#bae6fd] p-4 rounded-xl shadow-sm border border-sky-100 flex relative overflow-hidden h-36">
         <div className="w-1/2 flex flex-col justify-center z-10 relative pr-2">
-          <p className="text-[10px] uppercase font-bold text-gray-500 mb-1">IGEO SYSTEM</p>
+          <p className="text-[10px] uppercase font-bold text-gray-500 mb-1">TRẮC ĐỊA THIÊN PHÚ</p>
           <h3 className="font-extrabold text-lg text-gray-800 leading-none mb-1">100% KHÁCH HÀNG</h3>
           <p className="font-bold text-sm text-gray-800 leading-tight mb-2">Đánh giá tích cực<br />Hài lòng về chất lượng</p>
           <button className="bg-sky-100 text-sky-600 border border-sky-200 rounded-full px-3 py-0.5 text-[10px] font-bold shadow-sm hover:bg-sky-200 w-max flex items-center gap-1 mt-auto">XEM NGAY <i className="fa-solid fa-angle-right"></i></button>

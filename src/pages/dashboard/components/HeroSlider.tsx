@@ -24,7 +24,7 @@ function HeroSlider({ slides }: HeroSliderProps) {
     <div id="hero-slider" className="relative w-full h-[300px] md:h-[400px] rounded-xl overflow-hidden shadow-md">
       <div className={`hero-slide absolute inset-0 bg-gradient-to-r from-[#1e3a5f] via-[#1d7fc1] to-[#22abff] flex items-center px-6 md:px-12 ${current === 0 ? '' : 'hidden'}`}>
         <div className="relative z-10 w-full md:w-1/2 text-white">
-          <p className="text-sm md:text-base font-light tracking-wide mb-2 opacity-90 uppercase">IGEO SYSTEM</p>
+          <p className="text-sm md:text-base font-light tracking-wide mb-2 opacity-90 uppercase">TRẮC ĐỊA THIÊN PHÚ</p>
           <h2 className="text-2xl md:text-4xl font-bold mb-1 leading-tight">ĐỘC QUYỀN</h2>
           <h1 className="text-3xl md:text-5xl font-black mb-3 drop-shadow-md">MÁY GNSS RTK</h1>
           <h2 className="text-2xl md:text-4xl font-bold mb-4">HI-TARGET</h2>
@@ -33,7 +33,7 @@ function HeroSlider({ slides }: HeroSliderProps) {
           <div className="flex items-center gap-0">
             <button className="bg-gradient-to-r from-sky-400 to-sky-500 text-white font-bold py-2.5 px-6 rounded-l-full shadow-lg hover:from-sky-500 hover:to-sky-600 transition-all">MUA NGAY</button>
             <div className="bg-white text-gray-700 py-2.5 px-6 rounded-r-full font-medium shadow-lg flex items-center">
-              igeostore.vn <i className="fa-solid fa-chevron-right ml-2 text-xs text-sky-500"></i>
+              tracdiathienphu.vn <i className="fa-solid fa-chevron-right ml-2 text-xs text-sky-500"></i>
             </div>
           </div>
         </div>

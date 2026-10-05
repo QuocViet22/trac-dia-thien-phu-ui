@@ -51,7 +51,7 @@ export const categories: Category[] = [
 
 export const slides: Slide[] = [
   { image: '', alt: 'Máy GNSS RTK' },
-  { image: 'https://igeostore.vn/storage/banner-trang-chu-igeo.jpg', alt: 'Banner iGeo' },
+  { image: 'https://igeostore.vn/storage/banner-trang-chu-igeo.jpg', alt: 'Banner Trắc Địa Thiên Phú' },
   { image: 'https://igeostore.vn/storage/igeo-store-ban-may-rtk-hi-target.jpg', alt: 'Máy RTK Hi-Target' },
 ]
 

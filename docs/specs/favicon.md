@@ -13,7 +13,7 @@ Target: use full logo as-is for the browser tab icon, replacing stock `public/fa
 
 - No PNG/ICO multi-size conversion, no `site.webmanifest`.
 - No crop/resize of logo text for small-size readability (accepted as-is per review).
-- No title change (stays "iGeo System").
+- No title change in this spec (title now "Trắc Địa Thiên Phú", updated during dashboard rebrand).
 
 ## Verification
 

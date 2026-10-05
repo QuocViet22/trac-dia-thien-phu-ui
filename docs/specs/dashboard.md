@@ -1,6 +1,6 @@
 # Dashboard Page — Design Spec
 
-Source: `src/pages/dashboard/dashboard.html` (378 lines, static Vietnamese iGeo store homepage).
+Source: `src/pages/dashboard/dashboard.html` (378 lines, static Vietnamese Trắc Địa Thiên Phú store homepage, originally cloned from iGeo).
 Target: production-ready React homepage + shared site layout. No routing in this step.
 
 ## Goals
@@ -41,8 +41,8 @@ Target: production-ready React homepage + shared site layout. No routing in this
   `categories` (12 rows), `slides` (3), `promoCards` (3), `featuredCats` (6),
   `bestSellers` (10), `categorySections` (GNSS RTK / total-station+GPS / level, 5 each),
   `serviceBanners` (3), `news` (3).
-- Images stay hotlinked to `igeostore.vn` with `placehold.co` fallback via a small shared
-  `Img` wrapper (`onError` swaps to fallback once).
+- Images stay hotlinked to `igeostore.vn` (legacy host, kept so images don't break) with `placehold.co` fallback via a small shared
+  `Img` wrapper (`onError` swaps to fallback once). Visible brand text is "Trắc Địa Thiên Phú" (uppercase "TRẮC ĐỊA THIÊN PHÚ" in hero/promo eyebrows), display domain `tracdiathienphu.vn`.
 
 ## Interactivity
 
