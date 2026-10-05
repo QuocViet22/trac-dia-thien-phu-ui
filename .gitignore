@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .superpowers/
+
+# Git worktrees (isolated implementation workspaces)
+.worktrees/
