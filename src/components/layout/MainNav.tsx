@@ -28,7 +28,7 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
 
         <ul className="flex-1 flex flex-wrap lg:flex-nowrap items-center overflow-x-auto hide-scrollbar text-sm font-medium text-gray-700 ml-0 lg:ml-4">
           <li className="whitespace-nowrap"><Link to="/" className={location.pathname === "/" ? activeLink : idleLink}>Trang chủ</Link></li>
-          <li className="whitespace-nowrap"><Link to="/gioi-thieu" className={location.pathname === "/gioi-thieu" ? activeLink : idleLink}>Giới thiệu <i className="fa-solid fa-angle-down text-[10px]"></i></Link></li>
+          <li className="whitespace-nowrap"><Link to="/gioi-thieu" className={location.pathname === "/gioi-thieu" ? activeLink : idleLink}>Giới thiệu</Link></li>
           <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Sản phẩm <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
           <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Tin tức <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
           <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Thuê sản phẩm <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
