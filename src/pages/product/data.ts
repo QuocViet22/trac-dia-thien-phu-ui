@@ -1,23 +1,33 @@
 import type { Product } from '../dashboard/data.ts'
 
 export const brands: string[] = [
-  'Hi-Target',
-  'Sokkia',
-  'Topcon',
-  'Garmin',
-  'Leica',
-  'Nikon',
-  'Precise',
-  'E-Survey',
-]
-
-export const priceRanges: string[] = [
-  'Giá dưới 100.000đ',
-  '100.000đ - 200.000đ',
-  '200.000đ - 300.000đ',
-  '300.000đ - 500.000đ',
-  '500.000đ - 1.000.000đ',
-  'Giá trên 1.000.000đ',
+  "CEM",
+  "CHC",
+  "CHCNAV",
+  "ESURVEY",
+  "FUKUDA",
+  "Garmin",
+  "GPI- Taiwan",
+  "Hi-Target",
+  "JBL",
+  "LAISAI",
+  "LEICA",
+  "Meridian",
+  "Montana",
+  "NIKON",
+  "Nikon-Trimble",
+  "Pentax",
+  "PRECISE",
+  "Satlab - Thụy Điển",
+  "SINCON",
+  "SNDWAY",
+  "SOKKIA",
+  "TALKPOD",
+  "TCL",
+  "TOPCON",
+  "Topcon-Sokkia",
+  "WILAD",
+  "YAMAYO"
 ]
 
 export const categories: string[] = [
@@ -34,10 +44,14 @@ export const categories: string[] = [
 ]
 
 export const sortOptions: string[] = [
-  'Hàng mới',
-  'Giá thấp đến cao',
-  'Giá cao xuống thấp',
+  'Theo tên A-Z',
+  'Theo tên Z-A',
 ]
+
+export const sortParams: Record<string, string> = {
+  'Theo tên A-Z': 'name,asc',
+  'Theo tên Z-A': 'name,desc',
+}
 
 export const products: Product[] = [
   { brand: 'Sokkia', name: 'Máy toàn đạc điện tử Sokkia IM-65', image: 'https://igeostore.vn/storage/sokkia-im-62-7-276x276.jpg', badge: 'Mới' },

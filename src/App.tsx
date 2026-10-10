@@ -3,8 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import SiteLayout from './components/layout/SiteLayout.tsx'
 import DashboardPage from './pages/dashboard/DashboardPage.tsx'
 import IntroductionPage from './pages/introduction/IntroductionPage.tsx'
-import SanPhamPage from './pages/san-pham/SanPhamPage.tsx'
-import ProductDetailPage from './pages/san-pham/ProductDetailPage.tsx'
+import SanPhamPage from './pages/product/SanPhamPage.tsx'
+import ProductDetailPage from './pages/product/ProductDetailPage.tsx'
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
