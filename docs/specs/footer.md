@@ -13,6 +13,7 @@ Target: replace placeholder dark `src/components/layout/Footer.tsx` with light t
   - `PHƯƠNG THỨC THANH TOÁN` label (text-only) + `Kết nối với chúng tôi` + FB/TikTok 40px circle buttons to the two supplied URLs (`target="_blank" rel="noreferrer"`), FontAwesome brands icons (FA CDN already in `index.html`).
 - Bottom bar: `bg-brand text-white` centered `© Bản quyền thuộc về CÔNG TY TNHH THIẾT BỊ TRẮC ĐỊA THIÊN PHÚ` (white text for contrast; screenshot shows dark-on-blue).
 - Headings `text-base font-bold uppercase text-gray-900`; body/links `text-gray-600 hover:text-brand`.
+- Sticky footer: `SiteLayout` wrapper is `min-h-screen flex flex-col` with `<main className="flex-1">`, so the footer sits at the viewport bottom on short pages and flows normally on long pages. No `fixed` positioning; no `mt-8` on `<footer>`.
 
 ## Non-goals
 

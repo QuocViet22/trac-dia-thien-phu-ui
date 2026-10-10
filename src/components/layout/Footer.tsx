@@ -27,7 +27,7 @@ const addresses = [
 
 function Footer() {
   return (
-    <footer className="bg-white border-t-[3px] border-brand mt-8">
+    <footer className="bg-white border-t-[3px] border-brand">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 py-10 grid gap-8 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr] text-sm">
         <div>
           <img src={logo} alt="Trắc Địa Thiên Phú" className="h-12 w-auto object-contain" />
