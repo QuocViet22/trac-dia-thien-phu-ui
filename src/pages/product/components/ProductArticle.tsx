@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { sanitizeHtml } from '../../../lib/sanitize.ts'
 
 const COLLAPSED_HEIGHT = 300
 
@@ -28,7 +29,7 @@ function ProductArticle({ description }: ProductArticleProps) {
           <section
             ref={bodyRef}
             className={`bg-white rounded-xl border border-gray-200 p-4 md:p-6 mt-4 ${expanded ? '' : 'max-h-[300px] overflow-hidden'}`}
-            dangerouslySetInnerHTML={{ __html: description }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
           />
           {!expanded && overflows && (
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />

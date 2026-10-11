@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import DOMPurify from 'dompurify'
 import { ApiError, formatNewsDate, getNewsByAlias, newsImage, type NewsDetailResponse } from '../../lib/api.ts'
+import { sanitizeHtml } from '../../lib/sanitize.ts'
 import Img from '../../components/Img.tsx'
 
 type LoadStatus = 'loading' | 'missing' | 'error' | 'ready'
@@ -41,7 +41,7 @@ function NewsDetailPage() {
   const current: Snapshot = snapshot.key === key ? snapshot : { key, status: 'loading', news: null }
   const news = current.news
 
-  const safeHtml = useMemo(() => DOMPurify.sanitize(news?.description ?? ''), [news])
+  const safeHtml = useMemo(() => sanitizeHtml(news?.description ?? null), [news])
 
   if (current.status === 'loading') {
     return (

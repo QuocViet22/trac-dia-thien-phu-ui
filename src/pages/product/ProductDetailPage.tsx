@@ -6,6 +6,7 @@ import {
   type CategoryResponse,
   type ProductResponse,
 } from '../../lib/api.ts'
+import { sanitizeHtml } from '../../lib/sanitize.ts'
 import ProductCard from '../dashboard/components/ProductCard.tsx'
 import { getGalleryImages, getRelated, resolveProduct } from './detail.ts'
 import ProductArticle from './components/ProductArticle.tsx'
@@ -128,7 +129,7 @@ function ProductDetailPage() {
           {product.shortDescription && (
             <div
               className="text-sm text-gray-600 mt-3 space-y-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
-              dangerouslySetInnerHTML={{ __html: product.shortDescription }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.shortDescription) }}
             />
           )}
         </div>
