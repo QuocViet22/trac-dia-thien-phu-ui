@@ -106,3 +106,59 @@ export function productImage(product: ProductResponse): string {
 export function productImages(product: ProductResponse): string[] {
   return sortedImages(product).map((image) => image.imageUrl)
 }
+
+export interface NewsResponse {
+  id: string
+  title: string
+  author: string
+  status: string
+  seoAlias: string
+  createdAt: string
+  updatedAt: string
+  seoDescriptionTag: string | null
+  images: ImageDto[]
+}
+
+export interface NewsDetailResponse {
+  id: string
+  title: string
+  description: string | null
+  author: string
+  status: string
+  seoPageTitle: string | null
+  seoDescriptionTag: string | null
+  seoAlias: string
+  createdAt: string
+  updatedAt: string
+  images: ImageDto[]
+}
+
+export interface NewsQuery {
+  page: number
+  size: number
+}
+
+export function listNews(query: NewsQuery): Promise<Page<NewsResponse>> {
+  const params = new URLSearchParams()
+  params.set('status', 'PUBLISHED')
+  params.set('page', String(query.page))
+  params.set('size', String(query.size))
+  params.set('sort', 'updatedAt,desc')
+  return fetchData<Page<NewsResponse>>(`/api/news?${params.toString()}`)
+}
+
+export function getNewsByAlias(alias: string): Promise<NewsDetailResponse> {
+  return fetchData<NewsDetailResponse>(`/api/news/by-alias/${encodeURIComponent(alias)}`)
+}
+
+export function newsImage(item: NewsResponse | NewsDetailResponse): string {
+  return item.images.length > 0 ? item.images[0].imageUrl : ''
+}
+
+export function formatNewsDate(iso: string): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) {
+    return ''
+  }
+  return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date)
+}

@@ -3,6 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import SiteLayout from './components/layout/SiteLayout.tsx'
 import DashboardPage from './pages/dashboard/DashboardPage.tsx'
 import IntroductionPage from './pages/introduction/IntroductionPage.tsx'
+import NewsPage from './pages/news/NewsPage.tsx'
+import NewsDetailPage from './pages/news/NewsDetailPage.tsx'
 import SanPhamPage from './pages/product/SanPhamPage.tsx'
 import ProductDetailPage from './pages/product/ProductDetailPage.tsx'
 
@@ -17,6 +19,8 @@ function App() {
           <Route path="/gioi-thieu" element={<IntroductionPage />} />
           <Route path="/san-pham" element={<SanPhamPage />} />
           <Route path="/san-pham/:slug" element={<ProductDetailPage />} />
+          <Route path="/tin-tuc" element={<NewsPage />} />
+          <Route path="/tin-tuc/:slug" element={<NewsDetailPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </SiteLayout>

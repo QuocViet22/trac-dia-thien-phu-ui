@@ -9,7 +9,7 @@ Target: production-ready React detail page at `/san-pham/:slug` inside the exist
 - `:slug` is the product's `seoAlias`. Legacy/mock names still resolve via the shared `toSlug()` helper (NFD normalize, strip diacritics, `đ→d`, lowercase, non-alphanumerics → `-`) as a fallback match.
 - Detail data from new backend endpoint `GET /api/products/by-alias/{alias}` (exact match on unique `seoAlias`); unknown slug renders a `Sản phẩm không tồn tại` notice with a link back to `/san-pham` (API 404 maps to this branch).
 - Breadcrumb (`Trang chủ / Tất cả sản phẩm / {name}`) + gallery/info grid: gallery (main image + thumbnail row, `useState` selected index; images from `ProductResponse.images` sorted by `sortOrder`), info (H1 name, `shortDescription` HTML block rendered via `dangerouslySetInnerHTML` when present). No quantity stepper, no `MUA NGAY` button (deferred — see Non-goals).
-- Article: renders API `description` HTML via `dangerouslySetInnerHTML` when present; renders an empty section when absent (generic fallback template deferred).
+- Article: renders API `description` HTML via `dangerouslySetInnerHTML` when present; long content collapses to ~300px with a fade + `Xem thêm` button (`Thu gọn` to collapse back); short content shows fully with no button; renders an empty section when absent (generic fallback template deferred).
 - `Sản phẩm gợi ý` grid: same-`categoryId` products (via `GET /api/products?categoryId=`) first, up to 8, reusing `ProductCard`.
 - Loading state: detail skeleton. Error state (non-404): error block with retry.
 - Follow existing patterns: Tailwind, shared `Img` wrapper with `placehold.co` fallback, components under ~100 lines, typed data.

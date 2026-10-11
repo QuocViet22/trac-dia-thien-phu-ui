@@ -133,7 +133,7 @@ function ProductDetailPage() {
           )}
         </div>
       </div>
-      <ProductArticle name={product.name} description={product.description} categoryName={categoryName} />
+      <ProductArticle key={product.id} name={product.name} description={product.description} categoryName={categoryName} />
       <section className="mt-6">
         <h2 className="text-lg font-bold text-gray-900 mb-3">Sản phẩm gợi ý</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">

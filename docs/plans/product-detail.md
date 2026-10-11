@@ -380,3 +380,26 @@ Remove `const [quantity, setQuantity] = useState(1)`. The `useState` import stay
 
 Run: `npm run build; if ($?) { npm run lint }`
 Expected: both exit 0.
+
+---
+
+### Task 5: Collapsible `ProductArticle` (`Xem thêm` / `Thu gọn`)
+
+**Files:**
+- Modify: `src/pages/product/components/ProductArticle.tsx` (only file)
+
+**Behavior:**
+- Collapsed (default): description block `max-h-[300px] overflow-hidden` + bottom fade gradient; button `Xem thêm` below.
+- Expanded: full height, button becomes `Thu gọn`.
+- Button renders only when content overflows (`scrollHeight > 300`, re-checked when `description` changes); short content shows fully with no button. Empty-description branch unchanged.
+
+**Notes:**
+- CSS height clamp only (no text truncation — `description` is raw HTML).
+- `useState` for `expanded` + overflow flag, `useRef` + `useEffect` for measuring. Reset `expanded` when `description` changes.
+
+- [ ] **Step 1: Implement collapsed/expanded toggle in `ProductArticle.tsx`.**
+
+- [ ] **Step 2: Verify.**
+
+Run: `npm run build; if ($?) { npm run lint }`
+Expected: both exit 0. Then `npm run dev` visual check: long description clamps with fade → `Xem thêm` expands → `Thu gọn` collapses; short description shows no button.
