@@ -11,6 +11,13 @@ interface ImgProps {
 function Img({ src, fallback, alt, className, loading }: ImgProps) {
   const [currentSrc, setCurrentSrc] = useState(src)
   const [failed, setFailed] = useState(false)
+  const [prevSrc, setPrevSrc] = useState(src)
+
+  if (prevSrc !== src) {
+    setPrevSrc(src)
+    setCurrentSrc(src)
+    setFailed(false)
+  }
 
   return (
     <img

@@ -30,3 +30,14 @@
 
 Run: `npm run build; if ($?) { npm run lint }`
 Expected: both exit 0. Then `npm run dev` — footer matches screenshot content at desktop + mobile, headings uppercase bold, links hover brand, social opens new tab.
+### Task 2: Sticky footer (viewport bottom on short pages)
+
+**Files:**
+- Modify: `src/components/layout/SiteLayout.tsx` (flex column + growing main)
+- Modify: `src/components/layout/Footer.tsx` (drop `mt-8`)
+
+- [ ] **Step 1: Wrapper `min-h-screen flex flex-col`, `<main className="flex-1">`.**
+- [ ] **Step 2: Verify**
+
+Run: `npm run build; if ($?) { npm run lint }`
+Expected: both exit 0. Then `npm run dev` — short page shows footer at viewport bottom, long page scrolls normally.

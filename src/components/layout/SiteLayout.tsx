@@ -12,10 +12,10 @@ interface SiteLayoutProps {
 
 function SiteLayout({ children, sidebarOpen, onToggleSidebar }: SiteLayoutProps) {
   return (
-    <div className="bg-[#f8f9fa] text-gray-800 antialiased">
+    <div className="bg-[#f8f9fa] text-gray-800 antialiased min-h-screen flex flex-col">
       <Header />
       <MainNav sidebarOpen={sidebarOpen} onToggleSidebar={onToggleSidebar} />
-      <main>{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer />
       <FloatingButtons />
     </div>
