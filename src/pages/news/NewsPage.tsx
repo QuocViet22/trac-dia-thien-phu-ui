@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { formatNewsDate, listNews, newsImage, type NewsResponse } from '../../lib/api.ts'
+import { formatNewsDate, listNews, newsImage, type NewsResponse, type NewsType } from '../../lib/api.ts'
 import Img from '../../components/Img.tsx'
 
 const PAGE_SIZE = 10
 
-function NewsPage() {
+interface NewsPageProps {
+  newsType: NewsType
+  title: string
+  emptyText: string
+  basePath: string
+}
+
+function NewsPage({ newsType, title, emptyText, basePath }: NewsPageProps) {
   const [items, setItems] = useState<NewsResponse[]>([])
   const [totalPages, setTotalPages] = useState(1)
   const [page, setPage] = useState(0)
@@ -27,7 +34,7 @@ function NewsPage() {
 
   useEffect(() => {
     let cancelled = false
-    listNews({ page, size: PAGE_SIZE })
+    listNews({ page, size: PAGE_SIZE, newsType })
       .then((data) => {
         if (cancelled) return
         setItems(data.content)
@@ -42,16 +49,16 @@ function NewsPage() {
     return () => {
       cancelled = true
     }
-  }, [page, reloadKey])
+  }, [page, newsType, reloadKey])
 
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-4">
       <nav aria-label="Breadcrumb" className="text-sm text-gray-500 mb-3">
         <Link to="/" className="hover:text-brand">Trang chủ</Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-800 font-medium">Tất cả tin tức</span>
+        <span className="text-gray-800 font-medium">{title}</span>
       </nav>
-      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Tất cả tin tức</h1>
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{title}</h1>
       {loading ? (
         <div className="flex flex-col gap-4" aria-label="Đang tải tin tức">
           {Array.from({ length: PAGE_SIZE }).map((_, index) => (
@@ -73,12 +80,12 @@ function NewsPage() {
         </div>
       ) : items.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-          <p className="text-gray-600">Chưa có tin tức nào.</p>
+          <p className="text-gray-600">{emptyText}</p>
         </div>
       ) : (
         <div className="flex flex-col gap-6">
           {items.map((item) => (
-            <Link key={item.id} to={`/tin-tuc/${item.seoAlias}`} className="grid gap-4 md:grid-cols-[320px_1fr] items-start group">
+            <Link key={item.id} to={`${basePath}/${item.seoAlias}`} className="grid gap-4 md:grid-cols-[320px_1fr] items-start group">
               <Img src={newsImage(item)} fallback="https://placehold.co/640x360?text=No+Image" alt={item.title} loading="lazy" className="w-full h-48 object-cover rounded" />
               <div>
                 <h2 className="text-lg font-bold text-gray-900 group-hover:text-brand">{item.title}</h2>

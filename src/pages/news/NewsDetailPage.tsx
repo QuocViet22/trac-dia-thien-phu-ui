@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { ApiError, formatNewsDate, getNewsByAlias, newsImage, type NewsDetailResponse } from '../../lib/api.ts'
+import { ApiError, formatNewsDate, getNewsByAlias, newsImage, type NewsDetailResponse, type NewsType } from '../../lib/api.ts'
 import { sanitizeHtml } from '../../lib/sanitize.ts'
 import Img from '../../components/Img.tsx'
 
@@ -12,7 +12,13 @@ interface Snapshot {
   news: NewsDetailResponse | null
 }
 
-function NewsDetailPage() {
+interface NewsDetailPageProps {
+  newsType: NewsType
+  listTitle: string
+  listPath: string
+}
+
+function NewsDetailPage({ newsType, listTitle, listPath }: NewsDetailPageProps) {
   const { slug = '' } = useParams()
   const [snapshot, setSnapshot] = useState<Snapshot>({ key: '', status: 'loading', news: null })
   const [reloadKey, setReloadKey] = useState(0)
@@ -27,6 +33,10 @@ function NewsDetailPage() {
     getNewsByAlias(slug)
       .then((data) => {
         if (cancelled) return
+        if (data.newsType !== newsType) {
+          setSnapshot({ key, status: 'missing', news: null })
+          return
+        }
         setSnapshot({ key, status: 'ready', news: data })
       })
       .catch((error: unknown) => {
@@ -36,7 +46,7 @@ function NewsDetailPage() {
     return () => {
       cancelled = true
     }
-  }, [slug, reloadKey, key, snapshot.key])
+  }, [slug, newsType, reloadKey, key, snapshot.key])
 
   const current: Snapshot = snapshot.key === key ? snapshot : { key, status: 'loading', news: null }
   const news = current.news
@@ -58,7 +68,7 @@ function NewsDetailPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 lg:px-8 py-16 text-center">
         <p className="text-xl font-bold text-gray-900 mb-2">Tin tức không tồn tại</p>
-        <Link to="/tin-tuc" className="text-brand hover:underline">Quay lại Tất cả tin tức</Link>
+        <Link to={listPath} className="text-brand hover:underline">Quay lại {listTitle}</Link>
       </div>
     )
   }
@@ -77,7 +87,7 @@ function NewsDetailPage() {
       <nav aria-label="Breadcrumb" className="text-sm text-gray-500 mb-3">
         <Link to="/" className="hover:text-brand">Trang chủ</Link>
         <span className="mx-2">/</span>
-        <Link to="/tin-tuc" className="hover:text-brand">Tất cả tin tức</Link>
+        <Link to={listPath} className="hover:text-brand">{listTitle}</Link>
         <span className="mx-2">/</span>
         <span className="text-gray-800 font-medium">{news.title}</span>
       </nav>

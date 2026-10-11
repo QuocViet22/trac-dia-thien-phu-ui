@@ -31,7 +31,7 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
           <li className="whitespace-nowrap"><Link to="/gioi-thieu" className={location.pathname === "/gioi-thieu" ? activeLink : idleLink}>Giới thiệu</Link></li>
           <li className="whitespace-nowrap"><Link to="/san-pham" className={location.pathname === "/san-pham" ? activeLink : idleLink}>Sản phẩm</Link></li>
           <li className="whitespace-nowrap"><a href="/tin-tuc" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Tin tức</a></li>
-          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Thuê sản phẩm <i className="fa-solid fa-angle-down text-[10px]"></i></a></li>
+          <li className="whitespace-nowrap"><a href="/thue-san-pham" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Thuê sản phẩm</a></li>
           <li className="whitespace-nowrap"><a href="/lien-he" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Liên hệ</a></li>
           <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors">Khách hàng</a></li>
         </ul>

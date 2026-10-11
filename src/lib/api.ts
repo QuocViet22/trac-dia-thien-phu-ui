@@ -107,11 +107,14 @@ export function productImages(product: ProductResponse): string[] {
   return sortedImages(product).map((image) => image.imageUrl)
 }
 
+export type NewsType = 'NEWS' | 'HIRING_PRODUCT'
+
 export interface NewsResponse {
   id: string
   title: string
   author: string
   status: string
+  newsType: NewsType
   seoAlias: string
   createdAt: string
   updatedAt: string
@@ -125,6 +128,7 @@ export interface NewsDetailResponse {
   description: string | null
   author: string
   status: string
+  newsType: NewsType
   seoPageTitle: string | null
   seoDescriptionTag: string | null
   seoAlias: string
@@ -136,11 +140,13 @@ export interface NewsDetailResponse {
 export interface NewsQuery {
   page: number
   size: number
+  newsType: NewsType
 }
 
 export function listNews(query: NewsQuery): Promise<Page<NewsResponse>> {
   const params = new URLSearchParams()
   params.set('status', 'PUBLISHED')
+  params.set('newsType', query.newsType)
   params.set('page', String(query.page))
   params.set('size', String(query.size))
   params.set('sort', 'updatedAt,desc')
