@@ -11,8 +11,8 @@ function ProductGallery({ images, name }: ProductGalleryProps) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4">
-      <div className="relative">
-        <Img src={images[index]} fallback="https://placehold.co/600x600?text=No+Image" alt={name} className="w-full h-80 object-contain" />
+      <div className="relative overflow-hidden group rounded-lg">
+        <Img src={images[index]} fallback="https://placehold.co/600x600?text=No+Image" alt={name} className="w-full h-80 object-contain transition-transform duration-300 motion-safe:group-hover:scale-110" />
         <button type="button" aria-label="Yêu thích" className="absolute top-2 right-2 w-9 h-9 rounded-full border border-gray-200 text-gray-400 hover:text-red-500 bg-white">
           <i className="fa-regular fa-heart"></i>
         </button>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import {
   listCategories,
   listProducts,
@@ -21,13 +21,22 @@ interface ProductQueryState {
 }
 
 function SanPhamPage() {
+  const [searchParams] = useSearchParams()
+  const paramCategoryId = searchParams.get('categoryId') ?? null
   const [categories, setCategories] = useState<CategoryResponse[]>([])
   const [products, setProducts] = useState<ProductResponse[]>([])
   const [totalPages, setTotalPages] = useState(1)
-  const [query, setQuery] = useState<ProductQueryState>({ page: 0, categoryId: null, brand: null, sort: 'createdAt,desc' })
+  const [query, setQuery] = useState<ProductQueryState>({ page: 0, categoryId: paramCategoryId, brand: null, sort: 'createdAt,desc' })
   const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
+  const [prevParamCategoryId, setPrevParamCategoryId] = useState<string | null>(paramCategoryId)
+  if (paramCategoryId !== prevParamCategoryId) {
+    setPrevParamCategoryId(paramCategoryId)
+    setQuery((current) => ({ ...current, categoryId: paramCategoryId, page: 0 }))
+    setLoading(true)
+    setFailed(false)
+  }
 
   const updateQuery = (patch: Partial<ProductQueryState>) => {
     setQuery((current) => ({ ...current, ...patch }))

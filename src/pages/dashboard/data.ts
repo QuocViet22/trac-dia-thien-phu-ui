@@ -49,6 +49,13 @@ export const categories: Category[] = [
   { icon: 'fa-solid fa-faucet-drip', label: 'Máy Lọc Nước Robot' },
 ]
 
+const FALLBACK_CATEGORY_ICON = 'fa-solid fa-cube'
+
+export function categoryIcon(name: string): string {
+  const key = name.trim().toLowerCase()
+  return categories.find((cat) => cat.label.toLowerCase() === key)?.icon ?? FALLBACK_CATEGORY_ICON
+}
+
 export const slides: Slide[] = [
   { image: '', alt: 'Máy GNSS RTK' },
   { image: 'https://igeostore.vn/storage/banner-trang-chu-igeo.jpg', alt: 'Banner Trắc Địa Thiên Phú' },
