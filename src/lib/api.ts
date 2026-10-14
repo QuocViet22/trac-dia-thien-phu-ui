@@ -22,6 +22,7 @@ export interface CategoryResponse {
   name: string
   seoAlias: string | null
   parentCategoryId: string | null
+  images: ImageDto[]
 }
 
 interface ApiResponse<T> {
@@ -94,6 +95,14 @@ export function getProductByAlias(alias: string): Promise<ProductResponse> {
   return fetchData<ProductResponse>(`/api/products/by-alias/${encodeURIComponent(alias)}`)
 }
 
+export function getProduct(id: string): Promise<ProductResponse> {
+  return fetchData<ProductResponse>(`/api/products/${encodeURIComponent(id)}`)
+}
+
+export function getCategory(id: string): Promise<CategoryResponse> {
+  return fetchData<CategoryResponse>(`/api/categories/${encodeURIComponent(id)}`)
+}
+
 function sortedImages(product: ProductResponse): ImageDto[] {
   return [...product.images].sort((a, b) => a.sortOrder - b.sortOrder)
 }
@@ -157,6 +166,10 @@ export function getNewsByAlias(alias: string): Promise<NewsDetailResponse> {
   return fetchData<NewsDetailResponse>(`/api/news/by-alias/${encodeURIComponent(alias)}`)
 }
 
+export function getNews(id: string): Promise<NewsResponse> {
+  return fetchData<NewsResponse>(`/api/news/${encodeURIComponent(id)}`)
+}
+
 export function newsImage(item: NewsResponse | NewsDetailResponse): string {
   return item.images.length > 0 ? item.images[0].imageUrl : ''
 }
@@ -167,4 +180,26 @@ export function formatNewsDate(iso: string): string {
     return ''
   }
   return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date)
+}
+
+export type CollectionType =
+  | 'HERO_SLIDER_COLLECTION'
+  | 'PROMO_CARD_COLLECTION'
+  | 'FEATURED_CATEGORY_COLLECTION'
+  | 'BEST_SELLER_COLLECTION'
+  | 'CATEGORY_COLLECTION'
+  | 'SERVICE_BANNER_COLLECTION'
+  | 'NEWS_COLLECTION'
+
+export interface CollectionResponse {
+  id: string
+  name: string
+  orderIndex: number
+  collectionType: CollectionType
+  referenceId: string | null
+  images: ImageDto[]
+}
+
+export function listCollections(type: CollectionType): Promise<CollectionResponse[]> {
+  return fetchData<CollectionResponse[]>(`/api/collections?collectionType=${type}`)
 }
