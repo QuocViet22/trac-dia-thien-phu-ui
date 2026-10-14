@@ -11,9 +11,21 @@ interface MainNavProps {
 function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
   const location = useLocation()
   const isHome = location.pathname === '/'
-  const showOverlay = sidebarOpen && !isHome
+  const [scrolledDown, setScrolledDown] = useState(false)
+  const showOverlay = sidebarOpen && (!isHome || scrolledDown)
   const [categories, setCategories] = useState<CategoryResponse[]>([])
   const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolledDown(window.scrollY > 150)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
 
   useEffect(() => {
     if (!showOverlay) {

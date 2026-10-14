@@ -6,6 +6,8 @@ Target: the TẤT CẢ SẢN PHẨM list shows live API categories with icons on
 ## Goals
 
 - On routes other than `/`, when `sidebarOpen` is true, render the category list as an absolute overlay anchored under the TẤT CẢ SẢN PHẨM button (stays on current page, no navigation until a category is picked).
+- On `/` (Trang chủ) at the top of the page, keep the current inline sidebar toggle behavior unchanged.
+- On `/` (Trang chủ) when scrolled down past the inline sidebar, clicking TẤT CẢ SẢN PHẨM renders the same absolute overlay as off-home (stays on page, rows link filtered, closes on second click / outside / Escape / route change).
 - Dropdown rows are real API categories (`GET /api/categories` via existing `listCategories()`), each row links to `/san-pham?categoryId=<uuid>` and closes the menu on click.
 - `SanPhamPage` reads `categoryId` from the URL search params on mount and pre-sets its filter state; unknown/empty param shows all products (current behavior).
 - On `/` (Trang chủ) the inline `CategorySidebar` shows the same live API categories (not the hard-coded `data.ts` rows); each row links to `/san-pham?categoryId=<uuid>`. Toggle behavior and layout unchanged.
@@ -21,7 +23,7 @@ Target: the TẤT CẢ SẢN PHẨM list shows live API categories with icons on
 
 ## Architecture
 
-- `MainNav.tsx` owns the overlay: uses `useLocation()` (already imported) to detect non-`/` routes; when `sidebarOpen && pathname !== '/'`, renders an absolutely-positioned panel reusing `CategorySidebar` row markup, fed by `listCategories()` fetched in a `useEffect`. Rows are `Link to={/san-pham?categoryId=...}` with `onClick={onToggleSidebar}` to close.
+- `MainNav.tsx` owns the overlay: uses `useLocation()` (already imported) to detect non-`/` routes; when `sidebarOpen && pathname !== '/'`, renders an absolutely-positioned panel reusing `CategorySidebar` row markup, fed by `listCategories()` fetched in a `useEffect`. Rows are `Link to={/san-pham?categoryId=...}` with `onClick={onToggleSidebar}` to close. On `/`, the overlay also renders when `sidebarOpen && scrolledDown` (`scrolledDown` = `window.scrollY` past the inline sidebar, passive scroll listener); at the top of `/` only the inline sidebar toggles.
 - `CategorySidebar.tsx` (Trang chủ) fetches `listCategories()` on mount and renders the same `Link` rows with the same icons; loading shows skeleton pulse rows; API-down falls back to the static `data.ts` list (visual-only, so the homepage never looks empty).
 - `src/pages/dashboard/data.ts` exports a `categoryIcon(name: string): string` helper: normalized (trim + lowercase) match against the 12 static labels, generic `fa-solid fa-cube` fallback. Single source of truth used by both `CategorySidebar` and the `MainNav` overlay.
 - `SanPhamPage.tsx` uses `useSearchParams` from `react-router` to seed `query.categoryId` initial state.
@@ -38,3 +40,4 @@ Target: the TẤT CẢ SẢN PHẨM list shows live API categories with icons on
 - `npm run build` passes.
 - `npm run lint` passes.
 - `npm run dev` visual check: from `/gioi-thieu` click button → overlay appears over content with icons; click category → lands on `/san-pham` filtered; on `/` the inline sidebar shows the same API names with icons and its rows navigate filtered; `Escape` / second click / outside click / navigation closes overlay; API-down home still shows the static list.
+- `npm run dev` visual check on `/` scrolled down: click button → overlay appears anchored under the button with icons; click category → lands on `/san-pham` filtered; at top of `/` click button → only the inline sidebar toggles (no overlay).

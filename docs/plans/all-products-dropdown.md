@@ -1,6 +1,6 @@
 # All Products Dropdown Implementation Plan
 
-**Goal:** Clicking TẤT CẢ SẢN PHẨM shows live API categories with icons on every page — floating dropdown off-home, inline sidebar on Trang chủ; picking a category lands on `/san-pham` pre-filtered.
+**Goal:** Clicking TẤT CẢ SẢN PHẨM shows live API categories with icons on every page — floating dropdown off-home and on Trang chủ when scrolled down, inline sidebar on Trang chủ at top; picking a category lands on `/san-pham` pre-filtered.
 
 **Architecture:** Overlay owned by `MainNav.tsx` (route-aware, API-fed, reuses sidebar row markup); `SanPhamPage.tsx` seeds its filter from URL search params; `CategorySidebar.tsx` (Trang chủ) renders the same live API list inline; icons come from one `categoryIcon()` helper in `dashboard/data.ts` (name-matched, generic fallback). No new components, no new deps.
 
@@ -103,3 +103,17 @@ In the overlay row markup, import `categoryIcon` from `../../pages/dashboard/dat
 
 Run: `npm run build; if ($?) { npm run lint }`
 Expected: both exit 0. Then `npm run dev` — from `/gioi-thieu`, overlay rows show icons matching Trang chủ; unmatched names show the generic cube icon.
+
+### Task 6: Scrolled-home overlay on Trang chủ
+
+**Files:**
+- Modify: `src/components/layout/MainNav.tsx`
+
+- [ ] **Step 1: Show the same overlay on `/` when scrolled down.**
+
+In `MainNav.tsx`: add `scrolledDown` state via a passive `scroll` listener (`window.scrollY > 150`, cleanup on unmount). Change `showOverlay` from `sidebarOpen && pathname !== '/'` to `sidebarOpen && (pathname !== '/' || scrolledDown)`. Fetch/close/row markup unchanged (existing `listCategories()` effect and outside/Escape/route-change handlers already key off `showOverlay`).
+
+- [ ] **Step 2: Verify**
+
+Run: `npm run build; if ($?) { npm run lint }`
+Expected: both exit 0. Then `npm run dev` on `/` — at top, button toggles inline sidebar only (no overlay); scrolled down, button shows overlay with icons; category click lands on `/san-pham` filtered; second click / outside / `Escape` closes.
