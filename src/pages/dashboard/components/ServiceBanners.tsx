@@ -10,8 +10,8 @@ function ServiceBanners({ banners }: ServiceBannersProps) {
 
   return (
     <section id="service-banners" className="grid md:grid-cols-3 gap-4">
-      {banners.map((banner, i) => (
-        <Img key={banner.image || `service-${i}`} src={banner.image} fallback="https://placehold.co/400x130?text=Dich+vu" alt={banner.alt} loading="lazy" className="w-full h-32 object-cover rounded-xl" />
+      {banners.map((banner) => (
+        <Img key={banner.id} src={banner.image} fallback="https://placehold.co/400x130?text=Dich+vu" alt={banner.alt} loading="lazy" className="w-full h-32 object-cover rounded-xl" />
       ))}
     </section>
   )

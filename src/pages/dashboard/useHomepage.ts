@@ -13,6 +13,7 @@ import {
 } from '../../lib/api.ts'
 
 export interface SlideData {
+  id: string
   image: string
   alt: string
 }
@@ -38,7 +39,7 @@ export interface SectionState<T> {
 
 export interface HomepageData {
   slides: SectionState<SlideData[]>
-  promoImages: SectionState<string[]>
+  promoImages: SectionState<SlideData[]>
   serviceImages: SectionState<SlideData[]>
   featured: SectionState<FeaturedData[]>
   bestSellers: SectionState<ProductResponse[]>
@@ -171,23 +172,29 @@ export function useHomepage(): HomepageData {
 
   return {
     slides: {
-      data: sliderCols.map((c) => ({ image: firstImageUrl(c.images), alt: c.name })),
+      data: sliderCols
+        .map((c) => ({ id: c.id, image: firstImageUrl(c.images), alt: c.name }))
+        .filter((s) => s.image !== ''),
       loading,
       failed: failedTypes.has('HERO_SLIDER_COLLECTION'),
     },
     promoImages: {
-      data: promoCols.map((c) => firstImageUrl(c.images)),
+      data: promoCols
+        .map((c) => ({ id: c.id, image: firstImageUrl(c.images), alt: c.name }))
+        .filter((s) => s.image !== ''),
       loading,
       failed: failedTypes.has('PROMO_CARD_COLLECTION'),
     },
     serviceImages: {
-      data: serviceCols.map((c) => ({ image: firstImageUrl(c.images), alt: c.name })),
+      data: serviceCols
+        .map((c) => ({ id: c.id, image: firstImageUrl(c.images), alt: c.name }))
+        .filter((s) => s.image !== ''),
       loading,
       failed: failedTypes.has('SERVICE_BANNER_COLLECTION'),
     },
-    featured: resolved?.featured ?? { data: [], loading, failed: resolveFailed.has('FEATURED_CATEGORY_COLLECTION') },
-    bestSellers: resolved?.bestSellers ?? { data: [], loading, failed: false },
-    categorySections: resolved?.categorySections ?? { data: [], loading, failed: resolveFailed.has('CATEGORY_COLLECTION') },
-    news: resolved?.news ?? { data: [], loading, failed: false },
+    featured: resolved?.featured ?? { data: [], loading, failed: failedTypes.has('FEATURED_CATEGORY_COLLECTION') || resolveFailed.has('FEATURED_CATEGORY_COLLECTION') },
+    bestSellers: resolved?.bestSellers ?? { data: [], loading, failed: failedTypes.has('BEST_SELLER_COLLECTION') },
+    categorySections: resolved?.categorySections ?? { data: [], loading, failed: failedTypes.has('CATEGORY_COLLECTION') || resolveFailed.has('CATEGORY_COLLECTION') },
+    news: resolved?.news ?? { data: [], loading, failed: failedTypes.has('NEWS_COLLECTION') },
   }
 }

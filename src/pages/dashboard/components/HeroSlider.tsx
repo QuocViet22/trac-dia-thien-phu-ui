@@ -25,14 +25,14 @@ function HeroSlider({ slides }: HeroSliderProps) {
   return (
     <div id="hero-slider" className="relative w-full h-[300px] md:h-[400px] rounded-xl overflow-hidden shadow-md">
       {slides.map((slide, i) => (
-        <div key={slide.image || `slide-${i}`} className={`hero-slide absolute inset-0 ${current === i ? '' : 'hidden'}`}>
+        <div key={slide.id} className={`hero-slide absolute inset-0 ${current === i ? '' : 'hidden'}`}>
           <Img src={slide.image} fallback={`https://placehold.co/1200x400?text=Banner+${i + 1}`} alt={slide.alt} className="w-full h-full object-cover" />
         </div>
       ))}
 
       <div id="hero-dots" className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
         {slides.map((slide, i) => (
-          <button key={slide.image || `slide-${i}`} aria-label={`Slide ${i + 1}`} data-slide={i} onClick={() => setCurrent(i)} className={i === current ? ACTIVE_DOT : INACTIVE_DOT}></button>
+          <button key={slide.id} aria-label={`Slide ${i + 1}`} data-slide={i} onClick={() => setCurrent(i)} className={i === current ? ACTIVE_DOT : INACTIVE_DOT}></button>
         ))}
       </div>
     </div>

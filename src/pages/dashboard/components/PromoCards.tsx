@@ -1,7 +1,8 @@
 import Img from '../../../components/Img.tsx'
+import type { SlideData } from '../useHomepage.ts'
 
 interface PromoCardsProps {
-  images: string[]
+  images: SlideData[]
 }
 
 function PromoCards({ images }: PromoCardsProps) {
@@ -9,8 +10,8 @@ function PromoCards({ images }: PromoCardsProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {images.map((image, i) => (
-        <Img key={image || `promo-${i}`} src={image} fallback="https://placehold.co/300x150?text=Quang+cao" alt={`Quảng cáo ${i + 1}`} loading="lazy" className="w-full h-36 object-cover rounded-xl shadow-sm" />
+      {images.map((item, i) => (
+        <Img key={item.id} src={item.image} fallback="https://placehold.co/300x150?text=Quang+cao" alt={item.alt || `Quảng cáo ${i + 1}`} loading="lazy" className="w-full h-36 object-cover rounded-xl shadow-sm" />
       ))}
     </div>
   )
