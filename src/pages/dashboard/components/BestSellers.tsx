@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { bestSellers } from '../data.ts'
+import { productImage, type ProductResponse } from '../../../lib/api.ts'
 import ProductCard from './ProductCard.tsx'
 
-function BestSellers() {
+interface BestSellersProps {
+  products: ProductResponse[]
+}
+
+function BestSellers({ products }: BestSellersProps) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [page, setPage] = useState(0)
   const [pages, setPages] = useState(1)
@@ -16,7 +20,7 @@ function BestSellers() {
     update()
     window.addEventListener('resize', update)
     return () => window.removeEventListener('resize', update)
-  }, [])
+  }, [products.length])
 
   const onScroll = () => {
     const el = trackRef.current
@@ -35,6 +39,8 @@ function BestSellers() {
     return () => clearInterval(id)
   }, [paused, page, pages])
 
+  if (products.length === 0) return null
+
   return (
     <section
       id="best-sellers"
@@ -50,9 +56,14 @@ function BestSellers() {
         onScroll={onScroll}
         className="flex gap-4 mt-4 overflow-x-auto snap-x snap-mandatory pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {bestSellers.map((product) => (
-          <div key={product.name} className="shrink-0 basis-1/2 md:basis-1/3 lg:basis-1/5 snap-start">
-            <ProductCard {...product} />
+        {products.map((product) => (
+          <div key={product.id} className="shrink-0 basis-1/2 md:basis-1/3 lg:basis-1/5 snap-start">
+            <ProductCard
+              name={product.name}
+              image={productImage(product)}
+              brand={product.brand ?? undefined}
+              seoAlias={product.seoAlias ?? undefined}
+            />
           </div>
         ))}
       </div>
@@ -68,6 +79,22 @@ function BestSellers() {
         ))}
       </div>
     </section>
+  )
+}
+
+export function BestSellersSkeleton() {
+  return (
+    <div className="bg-brand rounded-xl p-4 md:p-6" aria-label="Đang tải sản phẩm bán chạy">
+      <div className="h-7 w-64 bg-white/30 rounded mx-auto animate-pulse" />
+      <div className="flex gap-4 mt-4 overflow-hidden">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="shrink-0 basis-1/2 md:basis-1/3 lg:basis-1/5 bg-white rounded-lg p-3">
+            <div className="w-full h-40 bg-gray-100 rounded animate-pulse" />
+            <div className="h-4 bg-gray-100 rounded mt-2 animate-pulse" />
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 

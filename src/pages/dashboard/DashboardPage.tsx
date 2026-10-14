@@ -1,12 +1,11 @@
-import BestSellers from './components/BestSellers.tsx'
-import CategorySection from './components/CategorySection.tsx'
+import BestSellers, { BestSellersSkeleton } from './components/BestSellers.tsx'
+import CategorySection, { CategorySectionSkeleton } from './components/CategorySection.tsx'
 import CategorySidebar from './components/CategorySidebar.tsx'
-import FeaturedCategories from './components/FeaturedCategories.tsx'
+import FeaturedCategories, { FeaturedCategoriesSkeleton } from './components/FeaturedCategories.tsx'
 import HeroSlider, { HeroSliderSkeleton } from './components/HeroSlider.tsx'
-import NewsSection from './components/NewsSection.tsx'
+import NewsSection, { NewsSectionSkeleton } from './components/NewsSection.tsx'
 import PromoCards, { PromoCardsSkeleton } from './components/PromoCards.tsx'
 import ServiceBanners, { ServiceBannersSkeleton } from './components/ServiceBanners.tsx'
-import { categorySections } from './data.ts'
 import { useHomepage } from './useHomepage.ts'
 
 interface DashboardPageProps {
@@ -35,17 +34,33 @@ function DashboardPage({ sidebarOpen }: DashboardPageProps) {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-4 flex flex-col gap-8">
-        <FeaturedCategories />
-        <BestSellers />
-        {categorySections.map((section) => (
-          <CategorySection key={section.id} {...section} />
-        ))}
+        {home.featured.loading ? (
+          <FeaturedCategoriesSkeleton />
+        ) : home.featured.failed || home.featured.data.length === 0 ? null : (
+          <FeaturedCategories items={home.featured.data} />
+        )}
+        {home.bestSellers.loading ? (
+          <BestSellersSkeleton />
+        ) : home.bestSellers.failed || home.bestSellers.data.length === 0 ? null : (
+          <BestSellers products={home.bestSellers.data} />
+        )}
+        {home.categorySections.loading ? (
+          <CategorySectionSkeleton />
+        ) : home.categorySections.failed || home.categorySections.data.length === 0 ? null : (
+          home.categorySections.data.map((section) => (
+            <CategorySection key={section.id} {...section} />
+          ))
+        )}
         {home.serviceImages.loading ? (
           <ServiceBannersSkeleton />
         ) : home.serviceImages.failed || home.serviceImages.data.length === 0 ? null : (
           <ServiceBanners banners={home.serviceImages.data} />
         )}
-        <NewsSection />
+        {home.news.loading ? (
+          <NewsSectionSkeleton />
+        ) : home.news.failed || home.news.data.length === 0 ? null : (
+          <NewsSection items={home.news.data} />
+        )}
       </div>
     </>
   )

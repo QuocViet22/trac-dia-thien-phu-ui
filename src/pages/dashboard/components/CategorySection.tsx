@@ -1,8 +1,14 @@
-import Img from '../../../components/Img.tsx'
-import type { CategorySectionData } from '../data.ts'
+import { productImage, type ProductResponse } from '../../../lib/api.ts'
 import ProductCard from './ProductCard.tsx'
 
-function CategorySection({ id, title, brands, banners, products }: CategorySectionData) {
+interface CategorySectionProps {
+  id: string
+  title: string
+  brands: string[]
+  products: ProductResponse[]
+}
+
+function CategorySection({ id, title, brands, products }: CategorySectionProps) {
   return (
     <section id={id}>
       <div className="flex items-center gap-3 border-b-2 border-brand pb-2 mb-4 mt-2">
@@ -14,19 +20,34 @@ function CategorySection({ id, title, brands, banners, products }: CategorySecti
         </div>
         <a href="#" className="ml-auto text-[12px] text-brand font-medium whitespace-nowrap">Xem tất cả →</a>
       </div>
-      {banners.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          {banners.map((banner) => (
-            <Img key={banner.image} src={banner.image} fallback="https://placehold.co/400x120?text=Banner" alt={banner.alt} loading="lazy" className="w-full h-28 object-cover rounded-xl" />
-          ))}
-        </div>
-      )}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {products.map((product) => (
-          <ProductCard key={product.name} {...product} />
+          <ProductCard
+            key={product.id}
+            name={product.name}
+            image={productImage(product)}
+            brand={product.brand ?? undefined}
+            seoAlias={product.seoAlias ?? undefined}
+          />
         ))}
       </div>
     </section>
+  )
+}
+
+export function CategorySectionSkeleton() {
+  return (
+    <div aria-label="Đang tải danh mục">
+      <div className="h-7 w-48 bg-gray-100 rounded animate-pulse" />
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="bg-white rounded-lg border border-gray-200 p-3">
+            <div className="w-full h-40 bg-gray-100 rounded animate-pulse" />
+            <div className="h-4 bg-gray-100 rounded mt-2 animate-pulse" />
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
