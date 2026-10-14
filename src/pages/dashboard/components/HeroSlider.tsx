@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import Img from '../../../components/Img.tsx'
-import type { Slide } from '../data.ts'
+import type { SlideData } from '../useHomepage.ts'
 
 interface HeroSliderProps {
-  slides: Slide[]
+  slides: SlideData[]
 }
 
 const ACTIVE_DOT = 'w-2.5 h-2.5 bg-sky-500 rounded-sm cursor-pointer shadow-[0_0_0_1px_white]'
@@ -20,31 +20,12 @@ function HeroSlider({ slides }: HeroSliderProps) {
     return () => clearInterval(id)
   }, [slides.length])
 
+  if (slides.length === 0) return null
+
   return (
     <div id="hero-slider" className="relative w-full h-[300px] md:h-[400px] rounded-xl overflow-hidden shadow-md">
-      <div className={`hero-slide absolute inset-0 bg-gradient-to-r from-[#1e3a5f] via-[#1d7fc1] to-[#22abff] flex items-center px-6 md:px-12 ${current === 0 ? '' : 'hidden'}`}>
-        <div className="relative z-10 w-full md:w-1/2 text-white">
-          <p className="text-sm md:text-base font-light tracking-wide mb-2 opacity-90 uppercase">TRẮC ĐỊA THIÊN PHÚ</p>
-          <h2 className="text-2xl md:text-4xl font-bold mb-1 leading-tight">ĐỘC QUYỀN</h2>
-          <h1 className="text-3xl md:text-5xl font-black mb-3 drop-shadow-md">MÁY GNSS RTK</h1>
-          <h2 className="text-2xl md:text-4xl font-bold mb-4">HI-TARGET</h2>
-          <p className="text-sm md:text-lg mb-6 font-medium text-yellow-200 uppercase tracking-widest">FIX TỐT CẢ BUỔI CHIỀU</p>
-
-          <div className="flex items-center gap-0">
-            <button className="bg-gradient-to-r from-sky-400 to-sky-500 text-white font-bold py-2.5 px-6 rounded-l-full shadow-lg hover:from-sky-500 hover:to-sky-600 transition-all">MUA NGAY</button>
-            <div className="bg-white text-gray-700 py-2.5 px-6 rounded-r-full font-medium shadow-lg flex items-center">
-              tracdiathienphu.vn <i className="fa-solid fa-chevron-right ml-2 text-xs text-sky-500"></i>
-            </div>
-          </div>
-        </div>
-
-        <div className="hidden md:block absolute right-0 bottom-0 top-0 w-1/2 h-full">
-          <Img src="https://igeostore.vn/storage/may-gnss-rtk-efix-1.png" fallback="https://placehold.co/600x400?text=GNSS+RTK" alt="Máy GNSS RTK" className="absolute w-full h-full object-contain object-right-bottom pb-4 pr-4 z-10" />
-        </div>
-      </div>
-
-      {slides.slice(1).map((slide, i) => (
-        <div key={slide.image} className={`hero-slide absolute inset-0 ${current === i + 1 ? '' : 'hidden'}`}>
+      {slides.map((slide, i) => (
+        <div key={slide.image || `slide-${i}`} className={`hero-slide absolute inset-0 ${current === i ? '' : 'hidden'}`}>
           <Img src={slide.image} fallback={`https://placehold.co/1200x400?text=Banner+${i + 1}`} alt={slide.alt} className="w-full h-full object-cover" />
         </div>
       ))}
@@ -56,6 +37,10 @@ function HeroSlider({ slides }: HeroSliderProps) {
       </div>
     </div>
   )
+}
+
+export function HeroSliderSkeleton() {
+  return <div className="w-full h-[300px] md:h-[400px] rounded-xl bg-gray-100 animate-pulse" aria-label="Đang tải banner" />
 }
 
 export default HeroSlider
