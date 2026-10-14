@@ -18,7 +18,7 @@
 - `jsx: react-jsx`, `moduleResolution: bundler`; lint with `npm run lint`.
 - PowerShell 5.1: chain with `; if ($?) { ... }`, not `&&`.
 - No test runner configured — verification is `npm run build` + `npm run lint` + manual checklist per task.
-- Server `CollectionResponse`: `(id, name, orderIndex, collectionType, referenceId: UUID | null, images: [{id, name, imageUrl, sortOrder}])`, ordered by `orderIndex` ASC; max counts slider 3, promo 3, featured 6, best-seller 10, category-display 4, service 3, news 3.
+- Server `CollectionResponse`: `(id, name, orderIndex, collectionType, referenceId: UUID | null, images: [{id, name, imageUrl, sortOrder}])`, ordered by `orderIndex` ASC; max counts slider 5, promo 3, featured 6, best-seller 10, category-display 4, service 3, news 3.
 
 ## Review Focus
 
