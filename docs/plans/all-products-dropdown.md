@@ -1,8 +1,8 @@
 # All Products Dropdown Implementation Plan
 
-**Goal:** Clicking TẤT CẢ SẢN PHẨM shows live API categories with icons on every page — floating dropdown off-home and on Trang chủ when scrolled down, inline sidebar on Trang chủ at top; picking a category lands on `/san-pham` pre-filtered.
+**Goal:** Clicking TẤT CẢ SẢN PHẨM shows live API categories with cover images on every page — floating dropdown off-home and on Trang chủ when scrolled down, inline sidebar on Trang chủ at top; picking a category lands on `/san-pham` pre-filtered.
 
-**Architecture:** Overlay owned by `MainNav.tsx` (route-aware, API-fed, reuses sidebar row markup); `SanPhamPage.tsx` seeds its filter from URL search params; `CategorySidebar.tsx` (Trang chủ) renders the same live API list inline; icons come from one `categoryIcon()` helper in `dashboard/data.ts` (name-matched, generic fallback). No new components, no new deps.
+**Architecture:** Overlay owned by `MainNav.tsx` (route-aware, API-fed, reuses sidebar row markup); `SanPhamPage.tsx` seeds its filter from URL search params; `CategorySidebar.tsx` (Trang chủ) renders the same live API list inline; thumbnails come from one `categoryImage()` helper in `src/lib/api.ts` (first image by `sortOrder`, `''` when empty). No new components, no new deps.
 
 **Tech Stack:** React 19, react-router (`Link`, `useLocation`, `useSearchParams`), Tailwind, existing `listCategories()` in `src/lib/api.ts`.
 
@@ -25,7 +25,7 @@
 
 - [ ] **Step 1: Fetch API categories + render overlay when open and off-home.**
 
-In `MainNav.tsx`: add `useState<CategoryResponse[]>` + `useEffect` calling `listCategories()` (empty array on failure). Wrap the button + panel in a `relative` container with a `menuRef`. When `sidebarOpen && location.pathname !== '/'`, render absolute panel (`absolute left-0 lg:left-auto top-full w-full lg:w-72 bg-white border border-gray-200 rounded-b-md shadow-sm z-50`) listing categories as `Link to={/san-pham?categoryId=${cat.id}}` rows (icon + name + caret, same classes as `CategorySidebar` rows) each with `onClick={onToggleSidebar}`. Add `useEffect` closing on route change (`[location.pathname]` → call `onToggleSidebar` only if open — needs an `onClose` prop or reuse toggle guarded), `onKeyDown` Escape handler, and `pointerdown` outside-click handler (closes when the event target is outside `menuRef`).
+In `MainNav.tsx`: add `useState<CategoryResponse[]>` + `useEffect` calling `listCategories()` (empty array on failure). Wrap the button + panel in a `relative` container with a `menuRef`. When `sidebarOpen && location.pathname !== '/'`, render absolute panel (`absolute left-0 lg:left-auto top-full w-full lg:w-72 bg-white border border-gray-200 rounded-b-md shadow-sm z-50`) listing categories as `Link to={/san-pham?categoryId=${cat.id}}` rows (thumbnail + name + caret, same classes as `CategorySidebar` rows) each with `onClick={onToggleSidebar}`. Add `useEffect` closing on route change (`[location.pathname]` → call `onToggleSidebar` only if open — needs an `onClose` prop or reuse toggle guarded), `onKeyDown` Escape handler, and `pointerdown` outside-click handler (closes when the event target is outside `menuRef`).
 
 - [ ] **Step 2: Verify**
 
@@ -48,25 +48,24 @@ Expected: both exit 0. Then `npm run dev` — open `/san-pham?categoryId=<uuid>`
 
 ---
 
-### Task 3: Shared categoryIcon helper in data.ts
+### Task 3: categoryImage helper in lib/api.ts (replaces categoryIcon)
 
 **Files:**
-- Modify: `src/pages/dashboard/data.ts`
+- Modify: `src/lib/api.ts`
+- Modify: `src/pages/dashboard/data.ts` (icon set removed; static label list stays as the API-down fallback)
 
-- [ ] **Step 1: Export `categoryIcon(name)` with normalized match + generic fallback.**
+- [ ] **Step 1: Export `categoryImage(category)` + drop the icon set.**
 
-In `src/pages/dashboard/data.ts`, after the `categories` array add:
+In `src/lib/api.ts`, next to `productImage()` add:
 
 ```ts
-const FALLBACK_CATEGORY_ICON = 'fa-solid fa-cube'
-
-export function categoryIcon(name: string): string {
-  const key = name.trim().toLowerCase()
-  return categories.find((cat) => cat.label.toLowerCase() === key)?.icon ?? FALLBACK_CATEGORY_ICON
+export function categoryImage(category: CategoryResponse): string {
+  const images = [...category.images].sort((a, b) => a.sortOrder - b.sortOrder)
+  return images.length > 0 ? images[0].imageUrl : ''
 }
 ```
 
-No other changes to the file (static list stays as the API-down fallback).
+In `src/pages/dashboard/data.ts`: shrink `Category` to `{ label }`, strip all `icon:` strings, delete `FALLBACK_CATEGORY_ICON` + `categoryIcon()`.
 
 - [ ] **Step 2: Verify**
 
@@ -78,31 +77,31 @@ Expected: both exit 0 (no behavior change yet — helper unused).
 **Files:**
 - Modify: `src/pages/dashboard/components/CategorySidebar.tsx`
 
-- [ ] **Step 1: Fetch `listCategories()` and render Link rows with icons.**
+- [ ] **Step 1: Fetch `listCategories()` and render Link rows with cover thumbnails.**
 
-In `CategorySidebar.tsx`: replace the `categories` static import with `import { Link } from 'react-router'`, `import { categories as fallbackCategories, categoryIcon } from '../data.ts'`, `import { listCategories, type CategoryResponse } from '../../../lib/api.ts'`. Add `useState<CategoryResponse[] | null>(null)` (`null` = loading) + `useState(false)` for `failed` + `useEffect` calling `listCategories()` (on success set data, on failure set `failed` true). Render:
+In `CategorySidebar.tsx`: replace the `categories` static import with `import { Link } from 'react-router'`, `import { categories as fallbackCategories } from '../data.ts'`, `import { listCategories, categoryImage, type CategoryResponse } from '../../../lib/api.ts'`. Add `useState<CategoryResponse[] | null>(null)` (`null` = loading) + `useState(false)` for `failed` + `useEffect` calling `listCategories()` (on success set data, on failure set `failed` true). Render:
   - loading (`null`): 6 skeleton pulse rows (`animate-pulse`, same padding as rows).
-  - failed: today's static rows verbatim (visual-only `li`, no links).
-  - success: `Link to={/san-pham?categoryId=${cat.id}}` rows with `<i className={categoryIcon(cat.name)}>` + name + caret, keeping all existing row classes.
+  - failed: today's static rows verbatim minus icons (text-only `li`, no links).
+  - success: `Link to={/san-pham?categoryId=${cat.id}}` rows with `<img src={categoryImage(cat)}>` thumbnail (rendered only when non-empty) + name + caret, keeping all existing row classes.
 
 - [ ] **Step 2: Verify**
 
 Run: `npm run build; if ($?) { npm run lint }`
-Expected: both exit 0. Then `npm run dev` on `/` — sidebar shows API names with icons; click a row → lands on `/san-pham` filtered; toggle still works; API-down → static list as today.
+Expected: both exit 0. Then `npm run dev` on `/` — sidebar shows API names with cover thumbnails; click a row → lands on `/san-pham` filtered; toggle still works; API-down → static text-only list as today.
 
-### Task 5: Show matched icons in the off-home overlay
+### Task 5: Show cover thumbnails in the off-home overlay
 
 **Files:**
 - Modify: `src/components/layout/MainNav.tsx`
 
-- [ ] **Step 1: Add `categoryIcon(cat.name)` to overlay rows.**
+- [ ] **Step 1: Add `categoryImage(cat)` to overlay rows.**
 
-In the overlay row markup, import `categoryIcon` from `../../pages/dashboard/data.ts` and change the row `Link` to include the icon element before the name (same pattern as Task 4: `<i className={`${categoryIcon(cat.name)} w-4 text-center text-gray-400`}></i>` inside a `flex items-center gap-3` wrapper). Nothing else changes (fetch, close behaviors untouched).
+In the overlay row markup, import `categoryImage` from `../../lib/api.ts` and change the row `Link` to include the thumbnail before the name (same pattern as Task 4: `{img && <img src={img} ... className="w-6 h-6 object-cover rounded-sm flex-shrink-0" />}` inside a `flex items-center gap-3` wrapper, single `categoryImage()` call per row). Nothing else changes (fetch, close behaviors untouched).
 
 - [ ] **Step 2: Verify**
 
 Run: `npm run build; if ($?) { npm run lint }`
-Expected: both exit 0. Then `npm run dev` — from `/gioi-thieu`, overlay rows show icons matching Trang chủ; unmatched names show the generic cube icon.
+Expected: both exit 0. Then `npm run dev` — from `/gioi-thieu`, overlay rows show cover thumbnails matching Trang chủ; imageless names show text-only.
 
 ### Task 6: Scrolled-home overlay on Trang chủ
 
@@ -116,4 +115,4 @@ In `MainNav.tsx`: add `scrolledDown` state via a passive `scroll` listener (`win
 - [ ] **Step 2: Verify**
 
 Run: `npm run build; if ($?) { npm run lint }`
-Expected: both exit 0. Then `npm run dev` on `/` — at top, button toggles inline sidebar only (no overlay); scrolled down, button shows overlay with icons; category click lands on `/san-pham` filtered; second click / outside / `Escape` closes.
+Expected: both exit 0. Then `npm run dev` on `/` — at top, button toggles inline sidebar only (no overlay); scrolled down, button shows overlay with cover thumbnails; category click lands on `/san-pham` filtered; second click / outside / `Escape` closes.

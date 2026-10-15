@@ -1,7 +1,6 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router'
-import { listCategories, type CategoryResponse } from '../../lib/api.ts'
-import { categoryIcon } from '../../pages/dashboard/data.ts'
+import { listCategories, categoryImage, type CategoryResponse } from '../../lib/api.ts'
 
 interface MainNavProps {
   sidebarOpen: boolean
@@ -98,7 +97,9 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
           {showOverlay && (
             <div className="absolute top-full left-0 right-0 z-50 bg-white border-l border-r border-b border-gray-200 shadow-sm rounded-b-md overflow-y-auto max-h-96">
               <ul className="text-[13px] text-gray-600 font-medium">
-                {categories.map((cat, i) => (
+                {categories.map((cat, i) => {
+                  const img = categoryImage(cat)
+                  return (
                   <li key={cat.id} className={i < categories.length - 1 ? 'border-b border-gray-100' : ''}>
                     <Link
                       to={`/san-pham?categoryId=${encodeURIComponent(cat.id)}`}
@@ -106,13 +107,21 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
                       className="flex items-center justify-between px-4 py-2.5 hover:text-brand hover:bg-sky-50 group transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <i className={`${categoryIcon(cat.name)} w-4 text-center text-gray-400 group-hover:text-brand`}></i>
+                        {img && (
+                          <img
+                            src={img}
+                            alt=""
+                            loading="lazy"
+                            className="w-6 h-6 object-cover rounded-sm flex-shrink-0"
+                          />
+                        )}
                         <span className="truncate">{cat.name}</span>
                       </div>
                       <i className="fa-solid fa-caret-right text-gray-300 group-hover:text-brand"></i>
                     </Link>
                   </li>
-                ))}
+                  )
+                })}
               </ul>
             </div>
           )}

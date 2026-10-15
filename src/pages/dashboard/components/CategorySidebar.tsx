@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { listCategories, type CategoryResponse } from '../../../lib/api.ts'
-import { categories as fallbackCategories, categoryIcon } from '../data.ts'
+import { listCategories, categoryImage, type CategoryResponse } from '../../../lib/api.ts'
+import { categories as fallbackCategories } from '../data.ts'
 
 interface CategorySidebarProps {
   open: boolean
@@ -49,27 +49,36 @@ function CategorySidebar({ open }: CategorySidebarProps) {
                 className={`flex items-center justify-between px-4 py-2.5 ${i < fallbackCategories.length - 1 ? 'border-b border-gray-100' : ''} hover:text-brand hover:bg-sky-50 cursor-pointer group transition-colors`}
               >
                 <div className="flex items-center gap-3">
-                  <i className={`${cat.icon} w-4 text-center text-gray-400 group-hover:text-brand`}></i>
                   <span className="truncate">{cat.label}</span>
                 </div>
                 <i className="fa-solid fa-caret-right text-gray-300 group-hover:text-brand"></i>
               </li>
             ))
           ) : (
-            apiCategories.map((cat, i) => (
+            apiCategories.map((cat, i) => {
+              const img = categoryImage(cat)
+              return (
               <li key={cat.id} className={i < apiCategories.length - 1 ? 'border-b border-gray-100' : ''}>
                 <Link
                   to={`/san-pham?categoryId=${encodeURIComponent(cat.id)}`}
                   className="flex items-center justify-between px-4 py-2.5 hover:text-brand hover:bg-sky-50 group transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <i className={`${categoryIcon(cat.name)} w-4 text-center text-gray-400 group-hover:text-brand`}></i>
+                    {img && (
+                      <img
+                        src={img}
+                        alt=""
+                        loading="lazy"
+                        className="w-6 h-6 object-cover rounded-sm flex-shrink-0"
+                      />
+                    )}
                     <span className="truncate">{cat.name}</span>
                   </div>
                   <i className="fa-solid fa-caret-right text-gray-300 group-hover:text-brand"></i>
                 </Link>
               </li>
-            ))
+              )
+            })
           )}
         </ul>
       </div>

@@ -116,6 +116,11 @@ export function productImages(product: ProductResponse): string[] {
   return sortedImages(product).map((image) => image.imageUrl)
 }
 
+export function categoryImage(category: CategoryResponse): string {
+  const images = [...category.images].sort((a, b) => a.sortOrder - b.sortOrder)
+  return images.length > 0 ? images[0].imageUrl : ''
+}
+
 export type NewsType = 'NEWS' | 'HIRING_PRODUCT'
 
 export interface NewsResponse {
