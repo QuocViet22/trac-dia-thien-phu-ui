@@ -39,7 +39,9 @@
 
 ## 4. Component changes & dropped content
 
-- Props only: `HeroSlider` takes `slides: { image, alt }[]`; `PromoCards`/`ServiceBanners`
+- Props only: `HeroSlider` takes `slides: { image, alt }[]` (slider image uses
+  `object-contain` on a neutral `bg-gray-100` frame so the full banner is always
+  visible); `PromoCards`/`ServiceBanners`
   take image lists; `FeaturedCategories` takes resolved `{ name, imageUrl }`; `BestSellers`
   takes resolved products with the `ProductCard` badge prop made optional and omitted;
   `CategorySection` takes `{ title, brands, products }` per picked category (banners row
