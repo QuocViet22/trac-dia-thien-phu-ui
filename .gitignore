@@ -27,3 +27,6 @@ dist-ssr
 
 # Git worktrees (isolated implementation workspaces)
 .worktrees/
+
+# prod env
+.env.production
