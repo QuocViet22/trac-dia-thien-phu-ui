@@ -60,7 +60,7 @@ function CategorySidebar({ open }: CategorySidebarProps) {
               return (
               <li key={cat.id} className={i < apiCategories.length - 1 ? 'border-b border-gray-100' : ''}>
                 <Link
-                  to={`/danh-muc/${cat.seoAlias}`}
+                  to={cat.seoAlias ? `/danh-muc/${cat.seoAlias}` : `/san-pham?categoryId=${encodeURIComponent(cat.id)}`}
                   className="flex items-center justify-between px-4 py-2.5 hover:text-brand hover:bg-sky-50 group transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">

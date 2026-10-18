@@ -87,6 +87,27 @@ export function listProducts(query: ProductQuery): Promise<Page<ProductResponse>
   return fetchData<Page<ProductResponse>>(`/api/products?${params.toString()}`)
 }
 
+export interface CategoryAliasProductQuery {
+  alias: string
+  page: number
+  size: number
+  brand?: string
+  sort?: string
+}
+
+export function listProductsByCategoryAlias(query: CategoryAliasProductQuery): Promise<Page<ProductResponse>> {
+  const params = new URLSearchParams()
+  params.set('page', String(query.page))
+  params.set('size', String(query.size))
+  if (query.brand) {
+    params.set('brand', query.brand)
+  }
+  if (query.sort) {
+    params.set('sort', query.sort)
+  }
+  return fetchData<Page<ProductResponse>>(`/api/products/by-category-alias/${encodeURIComponent(query.alias)}?${params.toString()}`)
+}
+
 export function listCategories(): Promise<CategoryResponse[]> {
   return fetchData<CategoryResponse[]>('/api/categories')
 }

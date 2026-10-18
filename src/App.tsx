@@ -19,6 +19,7 @@ function App() {
           <Route path="/" element={<DashboardPage sidebarOpen={sidebarOpen} />} />
           <Route path="/gioi-thieu" element={<IntroductionPage />} />
           <Route path="/san-pham" element={<SanPhamPage />} />
+          <Route path="/danh-muc/:alias" element={<SanPhamPage />} />
           <Route path="/san-pham/:slug" element={<ProductDetailPage />} />
           <Route path="/tin-tuc" element={<NewsPage newsType="NEWS" title="Tất cả tin tức" emptyText="Chưa có tin tức nào." basePath="/tin-tuc" />} />
           <Route path="/tin-tuc/:slug" element={<NewsDetailPage newsType="NEWS" listTitle="Tất cả tin tức" listPath="/tin-tuc" />} />
