@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import {
   listCategories,
   listProducts,
+  listProductsByCategoryAlias,
   productImage,
   type CategoryResponse,
   type ProductResponse,
@@ -22,6 +23,8 @@ interface ProductQueryState {
 
 function SanPhamPage() {
   const [searchParams] = useSearchParams()
+  const { alias } = useParams()
+  const navigate = useNavigate()
   const paramCategoryId = searchParams.get('categoryId') ?? null
   const [categories, setCategories] = useState<CategoryResponse[]>([])
   const [products, setProducts] = useState<ProductResponse[]>([])
@@ -31,12 +34,22 @@ function SanPhamPage() {
   const [failed, setFailed] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
   const [prevParamCategoryId, setPrevParamCategoryId] = useState<string | null>(paramCategoryId)
+  const [prevAlias, setPrevAlias] = useState(alias)
   if (paramCategoryId !== prevParamCategoryId) {
     setPrevParamCategoryId(paramCategoryId)
     setQuery((current) => ({ ...current, categoryId: paramCategoryId, page: 0 }))
     setLoading(true)
     setFailed(false)
   }
+  if (alias !== prevAlias) {
+    setPrevAlias(alias)
+    setQuery((current) => ({ ...current, page: 0 }))
+    setLoading(true)
+    setFailed(false)
+  }
+
+  const activeCategory = alias ? categories.find((category) => category.seoAlias === alias) ?? null : null
+  const heading = activeCategory?.name ?? 'Tất cả sản phẩm'
 
   const updateQuery = (patch: Partial<ProductQueryState>) => {
     setQuery((current) => ({ ...current, ...patch }))
@@ -70,7 +83,10 @@ function SanPhamPage() {
 
   useEffect(() => {
     let cancelled = false
-    listProducts({ page: query.page, size: PAGE_SIZE, categoryId: query.categoryId ?? undefined, brand: query.brand ?? undefined, sort: query.sort })
+    const request = alias
+      ? listProductsByCategoryAlias({ alias, page: query.page, size: PAGE_SIZE, brand: query.brand ?? undefined, sort: query.sort })
+      : listProducts({ page: query.page, size: PAGE_SIZE, categoryId: query.categoryId ?? undefined, brand: query.brand ?? undefined, sort: query.sort })
+    request
       .then((data) => {
         if (!cancelled) {
           setProducts(data.content)
@@ -87,21 +103,32 @@ function SanPhamPage() {
     return () => {
       cancelled = true
     }
-  }, [query, reloadKey])
+  }, [query, reloadKey, alias])
 
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-4">
       <nav aria-label="Breadcrumb" className="text-sm text-gray-500 mb-3">
         <Link to="/" className="hover:text-brand">Trang chủ</Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-800 font-medium">Tất cả sản phẩm</span>
+        <span className="text-gray-800 font-medium">{heading}</span>
       </nav>
-      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Tất cả sản phẩm</h1>
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{heading}</h1>
       <div className="grid gap-4 lg:grid-cols-[240px_1fr] items-start">
         <FilterSidebar
           categories={categories}
-          selectedCategoryId={query.categoryId}
-          onSelectCategory={(id) => updateQuery({ categoryId: id, page: 0 })}
+          selectedCategoryId={alias ? activeCategory?.id ?? null : query.categoryId}
+          onSelectCategory={(id) => {
+            if (!alias) {
+              updateQuery({ categoryId: id, page: 0 })
+              return
+            }
+            const target = id ? categories.find((category) => category.id === id) ?? null : null
+            if (target?.seoAlias) {
+              navigate(`/danh-muc/${target.seoAlias}`)
+            } else {
+              navigate(id ? `/san-pham?categoryId=${id}` : '/san-pham')
+            }
+          }}
           selectedBrand={query.brand}
           onSelectBrand={(brand) => updateQuery({ brand, page: 0 })}
         />
