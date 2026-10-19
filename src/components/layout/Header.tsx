@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import logo from '../../assets/logo.jpg'
 
 function Header() {
@@ -7,9 +8,9 @@ function Header() {
   return (
     <header className="bg-white py-3 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2" aria-label="Về trang chủ Trắc Địa Thiên Phú">
           <img src={logo} alt="Trắc Địa Thiên Phú" className="h-12 w-auto object-contain" />
-        </div>
+        </Link>
 
         <div className="w-full lg:w-1/2 order-3 lg:order-none relative">
           <input

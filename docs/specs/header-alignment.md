@@ -7,6 +7,7 @@ Target: top bar left/right edges line up with nav + page sections at every break
 
 - Move `px-4 lg:px-8` from outer `<header>` to inner `max-w-7xl mx-auto` div, matching the `MainNav` / page-section container pattern.
 - No visual change below 1280px viewport; above 1280px header content insets 32px per side like everything else.
+- Logo is a `Link to="/"` (dashboard), so clicking it returns to the homepage. The logo `<img>` keeps its `alt`, which also names the link, plus `aria-label="Về trang chủ Trắc Địa Thiên Phú"`.
 
 ## Non-goals
 
