@@ -14,6 +14,9 @@ Target: production-ready React homepage + shared site layout. No routing in this
   end of `DashboardPage`, inside `<main>`, so it appears on the homepage only. It is a page-level
   `max-w-7xl` section, not a site-wide band, so it is not in `SiteLayout` alongside
   `PartnerSlider` and `Footer`. The two phone numbers it shows come from its own constants.
+  Inside it, the white intro card sits on the left in the wider track
+  (`minmax(0, 1.35fr)`) and the eyebrow/title/phones copy on the right (`minmax(0, 1fr)`);
+  below 960px the grid is one column, card first.
 
 ## Non-goals
 

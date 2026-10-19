@@ -7,7 +7,7 @@ const styles = `
   margin: 0 auto;
   padding: 0 40px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   align-items: center;
   gap: 40px;
 }
@@ -79,17 +79,6 @@ export default function ContactSection() {
       <style>{styles}</style>
       <section className="max-w-7xl mx-auto px-4 lg:px-8 py-4">
         <div className="cs-inner">
-          <div className="cs-left">
-            <p className="cs-eyebrow">Bạn cần tư vấn và nhận báo giá</p>
-            <h2 className="cs-title">Hãy liên hệ với chúng tôi</h2>
-            <a className="cs-phone" href={`tel:${PHONE_1.replace(/\./g, "")}`}>
-              {PHONE_1}
-            </a>
-            <a className="cs-phone" href={`tel:${PHONE_2.replace(/\./g, "")}`}>
-              {PHONE_2}
-            </a>
-          </div>
-
           <div className="cs-card">
             <p>
               <strong>
@@ -103,6 +92,17 @@ export default function ContactSection() {
                 “Chọn Thiên Phú - Chọn sự chính xác và bền vững!”
               </strong>
             </p>
+          </div>
+
+          <div className="cs-copy">
+            <p className="cs-eyebrow">Bạn cần tư vấn và nhận báo giá</p>
+            <h2 className="cs-title">Hãy liên hệ với chúng tôi</h2>
+            <a className="cs-phone" href={`tel:${PHONE_1.replace(/\./g, "")}`}>
+              {PHONE_1}
+            </a>
+            <a className="cs-phone" href={`tel:${PHONE_2.replace(/\./g, "")}`}>
+              {PHONE_2}
+            </a>
           </div>
         </div>
       </section>
