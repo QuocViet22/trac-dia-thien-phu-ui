@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router'
 import SiteLayout from './components/layout/SiteLayout.tsx'
 import DashboardPage from './pages/dashboard/DashboardPage.tsx'
 import IntroductionPage from './pages/introduction/IntroductionPage.tsx'
@@ -9,11 +9,24 @@ import NewsDetailPage from './pages/news/NewsDetailPage.tsx'
 import SanPhamPage from './pages/product/SanPhamPage.tsx'
 import ProductDetailPage from './pages/product/ProductDetailPage.tsx'
 
+import { useEffect } from "react"
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" })
+  }, [pathname])
+
+  return null
+}
+
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
     <BrowserRouter>
+    <ScrollToTop />
       <SiteLayout sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((open) => !open)}>
         <Routes>
           <Route path="/" element={<DashboardPage sidebarOpen={sidebarOpen} />} />

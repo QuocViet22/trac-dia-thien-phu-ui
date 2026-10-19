@@ -54,6 +54,7 @@ function PartnerSlider() {
       onMouseLeave={() => setHovered(false)}
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
+      style={{ background: '#EBF3F9' }}
     >
       <h2 className="text-center text-base font-bold uppercase tracking-widest text-gray-700 mb-6">CÁC THƯƠNG HIỆU LỚN</h2>
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
