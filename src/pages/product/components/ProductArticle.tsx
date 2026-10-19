@@ -28,7 +28,7 @@ function ProductArticle({ description }: ProductArticleProps) {
         <div className="relative">
           <section
             ref={bodyRef}
-            className={`bg-white rounded-xl border border-gray-200 p-4 md:p-6 mt-4 ${expanded ? '' : 'max-h-[300px] overflow-hidden'}`}
+            className={`bg-white rounded-xl border border-gray-200 md:p-6 mt-4 ${expanded ? '' : 'max-h-[300px] overflow-hidden'}`}
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
           />
           {!expanded && overflows && (
