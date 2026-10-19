@@ -4,6 +4,7 @@ import Footer from './Footer.tsx'
 import Header from './Header.tsx'
 import MainNav from './MainNav.tsx'
 import PartnerSlider from './PartnerSlider.tsx'
+import ContactSection from './ContactSection.tsx'
 
 interface SiteLayoutProps {
   children: ReactNode
@@ -18,6 +19,7 @@ function SiteLayout({ children, sidebarOpen, onToggleSidebar }: SiteLayoutProps)
       <MainNav sidebarOpen={sidebarOpen} onToggleSidebar={onToggleSidebar} />
       <main className="flex-1">{children}</main>
       <PartnerSlider />
+      <ContactSection />
       <Footer />
       <FloatingButtons />
     </div>

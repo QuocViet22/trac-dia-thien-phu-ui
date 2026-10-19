@@ -7,11 +7,11 @@ import sokkia from '../../assets/footer_slider/Sokkia.jpg'
 
 // Order matches the source screenshot: Sokkia, Hi-Target, Precise, Garmin, CEM.
 const partners = [
-  { name: 'Sokkia', src: sokkia },
-  { name: 'Hi-Target', src: hiTarget },
-  { name: 'Precise', src: precise },
   { name: 'Garmin', src: garmin },
   { name: 'CEM', src: cem },
+  { name: 'Precise', src: precise },
+  { name: 'Hi-Target', src: hiTarget },
+  { name: 'Sokkia', src: sokkia },
 ]
 
 // 5 logos fill one row (`grid-cols-2` on mobile, 5 on desktop), so a 5-logo set is a
@@ -48,14 +48,14 @@ function PartnerSlider() {
   return (
     <section
       aria-roledescription="carousel"
-      aria-label="Đối tác"
+      aria-label="Các thương hiệu lớn"
       className="bg-white py-8"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
     >
-      <h2 className="text-center text-base font-bold uppercase tracking-widest text-gray-700 mb-6">ĐỐI TÁC</h2>
+      <h2 className="text-center text-base font-bold uppercase tracking-widest text-gray-700 mb-6">CÁC THƯƠNG HIỆU LỚN</h2>
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
         {pages.map((page) => (
           <div
@@ -84,7 +84,7 @@ function PartnerSlider() {
             <button
               key={page}
               type="button"
-              aria-label={`Đối tác ${page + 1}`}
+              aria-label={`Thương hiệu ${page + 1}`}
               aria-current={page === active ? 'true' : undefined}
               onClick={() => setCurrent(page)}
               // p-1.5 enlarges the tap target well beyond the 10px dot itself
@@ -96,7 +96,7 @@ function PartnerSlider() {
           {/* WCAG 2.2.2: auto-rotating content needs a control that works for keyboard and AT users, not just hover. */}
           <button
             type="button"
-            aria-label={stopped ? 'Chạy tiếp logo đối tác' : 'Tạm dừng logo đối tác'}
+            aria-label={stopped ? 'Chạy tiếp logo thương hiệu' : 'Tạm dừng logo thương hiệu'}
             aria-pressed={stopped}
             onClick={() => setStopped((value) => !value)}
             className="p-1.5 cursor-pointer text-gray-400 hover:text-brand focus-visible:outline-2 focus-visible:outline-brand"
