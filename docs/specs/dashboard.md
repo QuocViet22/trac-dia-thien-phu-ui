@@ -10,6 +10,10 @@ Target: production-ready React homepage + shared site layout. No routing in this
   (`contact/`, `customer/`, `introduction/`, `news/`, `product/`, `product-hiring/` are empty stubs).
 - Proper Tailwind install (remove Tailwind CDN script); keep visual fidelity 1:1.
 - Convert the inline `<script>` (hero slider + sidebar toggle) to React hooks.
+- The "Hãy liên hệ với chúng tôi" band (`src/components/layout/ContactSection.tsx`) renders at the
+  end of `DashboardPage`, inside `<main>`, so it appears on the homepage only. It is a page-level
+  `max-w-7xl` section, not a site-wide band, so it is not in `SiteLayout` alongside
+  `PartnerSlider` and `Footer`. The two phone numbers it shows come from its own constants.
 
 ## Non-goals
 

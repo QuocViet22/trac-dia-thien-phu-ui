@@ -1,3 +1,4 @@
+import ContactSection from '../../components/layout/ContactSection.tsx'
 import BestSellers, { BestSellersSkeleton } from './components/BestSellers.tsx'
 import CategorySection, { CategorySectionSkeleton } from './components/CategorySection.tsx'
 import CategorySidebar from './components/CategorySidebar.tsx'
@@ -62,6 +63,8 @@ function DashboardPage({ sidebarOpen }: DashboardPageProps) {
           <NewsSection items={home.news.data} />
         )}
       </div>
+
+      <ContactSection />
     </>
   )
 }
