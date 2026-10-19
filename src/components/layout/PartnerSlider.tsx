@@ -1,26 +1,22 @@
 import { useEffect, useState } from 'react'
-import chcnav from '../../assets/footer_slider/CHCNAV.webp'
-import foif from '../../assets/footer_slider/FOIF.webp'
-import geomax from '../../assets/footer_slider/GEOMAX.webp'
-import hiTarget from '../../assets/footer_slider/Hi-Target.webp'
-import leica from '../../assets/footer_slider/Leica.webp'
-import meridian from '../../assets/footer_slider/Meridian.webp'
-import nikon from '../../assets/footer_slider/Nikon.webp'
-import sokkia from '../../assets/footer_slider/Sokkia.webp'
+import cem from '../../assets/footer_slider/Cem.png'
+import garmin from '../../assets/footer_slider/Garmin.jpg'
+import hiTarget from '../../assets/footer_slider/Hi-Target.jpg'
+import precise from '../../assets/footer_slider/Precise.png'
+import sokkia from '../../assets/footer_slider/Sokkia.jpg'
 
+// Order matches the source screenshot: Sokkia, Hi-Target, Precise, Garmin, CEM.
 const partners = [
-  { name: 'CHCNAV', src: chcnav },
-  { name: 'FOIF', src: foif },
-  { name: 'GEOMAX', src: geomax },
-  { name: 'Hi-Target', src: hiTarget },
-  { name: 'Leica', src: leica },
-  { name: 'Meridian', src: meridian },
-  { name: 'Nikon', src: nikon },
   { name: 'Sokkia', src: sokkia },
+  { name: 'Hi-Target', src: hiTarget },
+  { name: 'Precise', src: precise },
+  { name: 'Garmin', src: garmin },
+  { name: 'CEM', src: cem },
 ]
 
-// 4 logos per page: 8 logos -> 2 evenly filled pages (`grid-cols-2` on mobile, 4 in one row on desktop).
-const CHUNK = 4
+// 5 logos fill one row (`grid-cols-2` on mobile, 5 on desktop), so a 5-logo set is a
+// static band: the dots, autoplay and pause control only render once a 6th logo appears.
+const CHUNK = 5
 const AUTOPLAY_MS = 5000
 const TOTAL_PAGES = Math.ceil(partners.length / CHUNK)
 
@@ -31,13 +27,15 @@ const pages = Array.from({ length: TOTAL_PAGES }, (_, page) => page)
 
 function PartnerSlider() {
   const [current, setCurrent] = useState(0)
-  const [paused, setPaused] = useState(false)
+  // Two sources, because hovering a dot must not clear a pause the user asked for.
+  const [hovered, setHovered] = useState(false)
+  const [stopped, setStopped] = useState(false)
 
   // Guard against `current` pointing past the end, same as HeroSlider.
   const active = current < TOTAL_PAGES ? current : 0
 
   useEffect(() => {
-    if (TOTAL_PAGES < 2 || paused) return
+    if (TOTAL_PAGES < 2 || hovered || stopped) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     // setTimeout re-armed whenever `active` changes: a dot click restarts the 5s countdown.
@@ -45,17 +43,17 @@ function PartnerSlider() {
       setCurrent((active + 1) % TOTAL_PAGES)
     }, AUTOPLAY_MS)
     return () => clearTimeout(id)
-  }, [paused, active])
+  }, [hovered, stopped, active])
 
   return (
     <section
       aria-roledescription="carousel"
       aria-label="Đối tác"
       className="bg-white py-8"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
     >
       <h2 className="text-center text-base font-bold uppercase tracking-widest text-gray-700 mb-6">ĐỐI TÁC</h2>
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
@@ -65,7 +63,8 @@ function PartnerSlider() {
             role="group"
             aria-roledescription="slide"
             aria-label={`${page + 1} / ${TOTAL_PAGES}`}
-            className={`grid grid-cols-2 md:grid-cols-4 gap-6 items-center ${page === active ? '' : 'hidden'}`}
+            // `hidden` must win over `grid`: Tailwind emits .grid before .hidden, so the order below is load-bearing.
+            className={`grid grid-cols-2 md:grid-cols-5 gap-6 items-center ${page === active ? '' : 'hidden'}`}
           >
             {partners.slice(page * CHUNK, page * CHUNK + CHUNK).map((partner) => (
               <img
@@ -80,7 +79,7 @@ function PartnerSlider() {
         ))}
       </div>
       {TOTAL_PAGES > 1 && (
-        <div className="flex justify-center mt-6">
+        <div className="flex items-center justify-center gap-1 mt-6">
           {pages.map((page) => (
             <button
               key={page}
@@ -94,6 +93,16 @@ function PartnerSlider() {
               <span className={page === active ? ACTIVE_DOT : INACTIVE_DOT} />
             </button>
           ))}
+          {/* WCAG 2.2.2: auto-rotating content needs a control that works for keyboard and AT users, not just hover. */}
+          <button
+            type="button"
+            aria-label={stopped ? 'Chạy tiếp logo đối tác' : 'Tạm dừng logo đối tác'}
+            aria-pressed={stopped}
+            onClick={() => setStopped((value) => !value)}
+            className="p-1.5 cursor-pointer text-gray-400 hover:text-brand focus-visible:outline-2 focus-visible:outline-brand"
+          >
+            <i className={`fa-solid ${stopped ? 'fa-play' : 'fa-pause'} text-xs`} aria-hidden="true"></i>
+          </button>
         </div>
       )}
     </section>

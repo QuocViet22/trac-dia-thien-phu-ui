@@ -93,3 +93,35 @@ Then `npm run dev` and check, comparing against the screenshot:
 git add src/components/layout/PartnerSlider.tsx src/components/layout/SiteLayout.tsx
 git commit -m "feat: partner logo slider above the footer"
 ```
+
+---
+
+## Post-review amendments (implemented)
+
+Applied after the whole-branch review; the spec was updated to match.
+
+1. **Logo set replaced mid-task by the user.** The 8 `.webp` files this plan named were deleted and
+   replaced by 5 files matching the screenshot: `Sokkia.jpg`, `Hi-Target.jpg`, `Precise.png`,
+   `Garmin.jpg`, `Cem.png` (order from the screenshot: Sokkia, Hi-Target, Precise, Garmin, CEM).
+   The 8 removed files are gone from the tree. Imports, `alt` names and order follow the new set.
+2. **`CHUNK` 4 → 5, `md:grid-cols-4` → `md:grid-cols-5`.** With 5 logos and 5 per row there is a
+   single page, so the band is a static row and the dots/autoplay/pause control stay dormant
+   (`TOTAL_PAGES > 1`). They activate again when a 6th logo is added, with no code change.
+3. **Pause control added (reviewer's Important finding, WCAG 2.2.2 level A).** Hover/focus pause
+   alone leaves keyboard and AT users unable to stop the rotation, so a play/pause `<button>`
+   (`aria-pressed`) now sits after the dots. Hover state (`hovered`) and the user's toggle
+   (`stopped`) are separate pieces of state so moving the mouse away cannot undo a stop.
+4. **Small deltas from this plan's literal text**, all intentional: `max-w-full` on each logo
+   (wide logos in a narrow mobile cell), `focus-visible:outline-brand` instead of `HeroSlider`'s
+   `outline-white` (a white ring is invisible on the white band), and the module-level `pages`
+   array instead of mapping inline.
+5. **Tailwind ordering comment** on the page div: `.hidden` must win over `.grid`, and Tailwind
+   emits `.grid` first, so the class order in that string is load-bearing.
+6. **Asset rationale corrected:** the removed `.webp` files were all *below* Vite's 4KB
+   `assetsInlineLimit` and were inlined as `data:` URIs (raising the limit would have been a
+   no-op). All 5 current files are above it, so they are emitted as separate assets and
+   `loading="lazy"` does real work — the main JS chunk dropped from 377 KB to 357 KB.
+7. **Accepted limits** are listed under "Known limits" in the spec: off-screen rotation start,
+   22px dot tap targets, no countdown restart when clicking the current dot, reduced-motion
+   sampled rather than subscribed, and no `aria-live` announcement. All mirror existing
+   `HeroSlider` behaviour.
