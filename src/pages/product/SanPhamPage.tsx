@@ -19,6 +19,7 @@ interface ProductQueryState {
   categoryId: string | null
   brand: string | null
   sort: string
+  name: string
 }
 
 function SanPhamPage() {
@@ -26,18 +27,26 @@ function SanPhamPage() {
   const { alias } = useParams()
   const navigate = useNavigate()
   const paramCategoryId = searchParams.get('categoryId') ?? null
+  const paramName = searchParams.get('name') ?? ''
   const [categories, setCategories] = useState<CategoryResponse[]>([])
   const [products, setProducts] = useState<ProductResponse[]>([])
   const [totalPages, setTotalPages] = useState(1)
-  const [query, setQuery] = useState<ProductQueryState>({ page: 0, categoryId: paramCategoryId, brand: null, sort: 'createdAt,desc' })
+  const [query, setQuery] = useState<ProductQueryState>({ page: 0, categoryId: paramCategoryId, brand: null, sort: 'createdAt,desc', name: paramName })
   const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
   const [prevParamCategoryId, setPrevParamCategoryId] = useState<string | null>(paramCategoryId)
+  const [prevParamName, setPrevParamName] = useState(paramName)
   const [prevAlias, setPrevAlias] = useState(alias)
   if (paramCategoryId !== prevParamCategoryId) {
     setPrevParamCategoryId(paramCategoryId)
     setQuery((current) => ({ ...current, categoryId: paramCategoryId, page: 0 }))
+    setLoading(true)
+    setFailed(false)
+  }
+  if (paramName !== prevParamName) {
+    setPrevParamName(paramName)
+    setQuery((current) => ({ ...current, name: paramName, page: 0 }))
     setLoading(true)
     setFailed(false)
   }
@@ -49,7 +58,9 @@ function SanPhamPage() {
   }
 
   const activeCategory = alias ? categories.find((category) => category.seoAlias === alias) ?? null : null
-  const heading = activeCategory?.name ?? 'Tất cả sản phẩm'
+  const heading = query.name && !alias
+    ? `Kết quả tìm kiếm cho "${query.name}"`
+    : activeCategory?.name ?? 'Tất cả sản phẩm'
 
   const updateQuery = (patch: Partial<ProductQueryState>) => {
     setQuery((current) => ({ ...current, ...patch }))
@@ -85,7 +96,7 @@ function SanPhamPage() {
     let cancelled = false
     const request = alias
       ? listProductsByCategoryAlias({ alias, page: query.page, size: PAGE_SIZE, brand: query.brand ?? undefined, sort: query.sort })
-      : listProducts({ page: query.page, size: PAGE_SIZE, categoryId: query.categoryId ?? undefined, brand: query.brand ?? undefined, sort: query.sort })
+      : listProducts({ page: query.page, size: PAGE_SIZE, categoryId: query.categoryId ?? undefined, brand: query.brand ?? undefined, sort: query.sort, name: query.name || undefined })
     request
       .then((data) => {
         if (!cancelled) {
@@ -151,7 +162,7 @@ function SanPhamPage() {
             </div>
           ) : products.length === 0 ? (
             <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-              <p className="text-gray-600">Chưa có sản phẩm trong danh mục này.</p>
+              <p className="text-gray-600">{query.name ? 'Không tìm thấy sản phẩm phù hợp.' : 'Chưa có sản phẩm trong danh mục này.'}</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">

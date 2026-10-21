@@ -68,6 +68,7 @@ export interface ProductQuery {
   size: number
   categoryId?: string
   brand?: string
+  name?: string
   sort?: string
 }
 
@@ -80,6 +81,9 @@ export function listProducts(query: ProductQuery): Promise<Page<ProductResponse>
   }
   if (query.brand) {
     params.set('brand', query.brand)
+  }
+  if (query.name) {
+    params.set('name', query.name)
   }
   if (query.sort) {
     params.set('sort', query.sort)

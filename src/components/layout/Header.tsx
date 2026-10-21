@@ -1,10 +1,8 @@
-import { useState } from 'react'
 import { Link } from 'react-router'
 import logo from '../../assets/logo.jpg'
+import ProductSearch from './ProductSearch.tsx'
 
 function Header() {
-  const [query, setQuery] = useState('')
-
   return (
     <header className="bg-white py-3 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 flex flex-wrap items-center justify-between gap-4">
@@ -12,18 +10,7 @@ function Header() {
           <img src={logo} alt="Trắc Địa Thiên Phú" className="h-12 w-auto object-contain" />
         </Link>
 
-        <div className="w-full lg:w-1/2 order-3 lg:order-none relative">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Tìm kiếm sản phẩm..."
-            className="w-full pl-4 pr-12 py-2.5 border border-gray-300 rounded-full focus:outline-none focus:border-brand text-sm shadow-sm transition-colors"
-          />
-          <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-brand">
-            <i className="fa-solid fa-search"></i>
-          </button>
-        </div>
+        <ProductSearch />
 
         <div className="flex items-center gap-6 order-2 lg:order-none">
           <div className="hidden md:flex items-center gap-2">
