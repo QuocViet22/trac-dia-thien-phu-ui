@@ -146,7 +146,7 @@ export function categoryImage(category: CategoryResponse): string {
   return images.length > 0 ? images[0].imageUrl : ''
 }
 
-export type NewsType = 'NEWS' | 'HIRING_PRODUCT'
+export type NewsType = 'NEWS' | 'HIRING_PRODUCT' | 'CUSTOMER_NEWS'
 
 export interface NewsResponse {
   id: string
@@ -154,6 +154,7 @@ export interface NewsResponse {
   author: string
   status: string
   newsType: NewsType
+  location: string | null
   seoAlias: string
   createdAt: string
   updatedAt: string
@@ -168,6 +169,7 @@ export interface NewsDetailResponse {
   author: string
   status: string
   newsType: NewsType
+  location: string | null
   seoPageTitle: string | null
   seoDescriptionTag: string | null
   seoAlias: string

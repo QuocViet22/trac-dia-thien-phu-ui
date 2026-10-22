@@ -89,7 +89,7 @@ function NewsPage({ newsType, title, emptyText, basePath }: NewsPageProps) {
               <Img src={newsImage(item)} fallback="https://placehold.co/640x360?text=No+Image" alt={item.title} loading="lazy" className="w-full h-48 object-cover rounded" />
               <div>
                 <h2 className="text-lg font-bold text-gray-900 group-hover:text-brand">{item.title}</h2>
-                <p className="text-sm text-gray-500 mt-1">{formatNewsDate(item.updatedAt)} - {item.author}</p>
+                <p className="text-sm text-gray-500 mt-1">{formatNewsDate(item.updatedAt)} - {item.author}{item.location ? ` - ${item.location}` : ''}</p>
                 {item.seoDescriptionTag && <p className="text-sm text-gray-600 mt-2 line-clamp-3">{item.seoDescriptionTag}</p>}
               </div>
             </Link>
