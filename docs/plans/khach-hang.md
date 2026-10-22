@@ -137,3 +137,64 @@ Then `npm run dev` with the API seeded with customer news:
 git add src/App.tsx src/components/layout/MainNav.tsx docs/specs/khach-hang.md docs/plans/khach-hang.md
 git commit -m "feat: add khach-hang news page and nav link"
 ```
+
+---
+
+## Phase 3 — Bespoke customer card grid (owner-supplied design)
+
+### Task 3: Integrate `CUSTOMER_NEWS` into `CustomerList`
+
+**Files:**
+- Modify: `src/pages/customer/CustomerList.tsx`
+- Modify: `src/pages/customer/CustomerList.css`
+- Modify: `src/App.tsx`
+
+**Interfaces:**
+- Consumes: `listNews`, `newsImage`, `NewsResponse` from `src/lib/api.ts`; shared `Img`.
+- Produces: a `/khach-hang` list backed by the news API; the detail route is unchanged.
+
+- [x] **Step 1: Replace the sample data with live data.**
+
+- Remove `SAMPLE` and the `customers` prop. Page state mirrors `NewsPage`
+  (`items`, `page`, `totalPages`, `loading`, `failed`, `reloadKey`) with
+  `PAGE_SIZE = 12`, and fetches
+  `listNews({ page, size: PAGE_SIZE, newsType: 'CUSTOMER_NEWS' })`,
+  cancelling stale responses.
+- Map each `NewsResponse`: banner
+  `Bàn giao máy RTK tại tỉnh {location}` (or `Bàn giao máy RTK`), round
+  photo `newsImage(item)` through `Img` (gradient placeholder when there
+  is no image), location chip hidden when blank, real `title` below the
+  banner, card links to `/khach-hang/{seoAlias}`.
+- Banner contact lines are site-wide constants
+  (`0972.819.598`, `https://igeostore.vn/`).
+
+- [x] **Step 2: Remove the province filter and add states + pager.**
+
+- Delete the filter dropdown and its CSS. Subtitle becomes
+  `Hình ảnh bàn giao sản phẩm tới khách hàng trên toàn quốc`.
+- Six skeleton cards while loading; error block
+  `Không tải được khách hàng. Vui lòng thử lại.` + `Tải lại`; empty
+  `Chưa có khách hàng nào.`
+- Pager under the grid: same `« 1 2 3 »` markup/classes as `/tin-tuc`.
+
+- [x] **Step 3: Route and styles.**
+
+- `src/App.tsx`: `/khach-hang` renders `<CustomerList />`.
+- Rename `.card*` → `.cl-card*`; drop the unused `.cl__filter`,
+  `.cl__select`, and `.cl-card__banner-img` rules.
+
+- [x] **Step 4: Verify.**
+
+- `npm run build` and `npm run lint` exit 0.
+- Headless smoke against the live API: 12 cards on page 1 and 2 on page 2
+  with correct current/disabled pager states; a card opens
+  `/khach-hang/{seoAlias}`; missing-`location` and missing-image
+  fallbacks render; empty and API-down (`Tải lại`) states render.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/pages/customer src/App.tsx docs/specs/khach-hang.md docs/plans/khach-hang.md
+git commit -m "feat: drive the customer page from customer news"
+```
+

@@ -1,56 +1,56 @@
 # Customer News Page (/khach-hang) — Design Spec
 
 Source: owner request — news of type `CUSTOMER_NEWS` (`Khách hàng`) created
-in the admin with a `location`, published on the existing "Khách hàng"
-nav destination.
-Target: production-ready React pages at `/khach-hang` and
-`/khach-hang/:slug` inside the existing `SiteLayout`, reusing the shared
-news list + detail components configured for `newsType=CUSTOMER_NEWS`.
+in the admin with a `location`, published on the "Khách hàng" nav
+destination, using a bespoke card grid design supplied by the owner in
+`src/pages/customer/`.
+Target: `/khach-hang` renders the branded customer card grid fed by the
+news API; `/khach-hang/:slug` keeps the shared news detail page.
 Data from `trac-dia-thien-phu-api`.
 
 ## Goals
 
-- Serve `/khach-hang` via `react-router`: the shared `NewsPage` with
-  `newsType="CUSTOMER_NEWS"`, H1 `Khách hàng`, empty text
-  `Chưa có thông tin khách hàng nào.`, `basePath="/khach-hang"`.
-- Serve `/khach-hang/:slug` via the shared `NewsDetailPage` with
+- Serve `/khach-hang` via `react-router` with `CustomerList`
+  (`src/pages/customer/CustomerList.tsx`).
+- Load 12 published `CUSTOMER_NEWS` items per page, newest first:
+  `GET {VITE_API_URL}/api/news?status=PUBLISHED&newsType=CUSTOMER_NEWS&page={n}&size=12&sort=updatedAt,desc`.
+- Render a 3-column card grid (2 at ≤991px, 1 at ≤575px) with a
+  `« 1 2 3 »` pager below it, using the same markup/classes as `/tin-tuc`.
+- Card mapping:
+  - Round photo ← `images[0].imageUrl` via the shared `Img` fallback; a
+    gradient placeholder when the news has no image.
+  - Banner phrase ← `Bàn giao máy RTK tại tỉnh {location}`; when
+    `location` is blank → `Bàn giao máy RTK` and the location chip is
+    hidden.
+  - Banner contact lines are site-wide constants (`0972.819.598`,
+    `https://igeostore.vn/`).
+  - Location chip ← trimmed `location`.
+  - Card title ← news `title`.
+  - Whole card links to `/khach-hang/{seoAlias}` via `Link`.
+- `/khach-hang/:slug` stays the shared `NewsDetailPage` with
   `newsType="CUSTOMER_NEWS"`, `listTitle="Khách hàng"`,
-  `listPath="/khach-hang"`.
-- List row keeps today's layout (cover left; title, `dd/MM/yyyy - author`
-  meta, `seoDescriptionTag` excerpt right) and appends the location to
-  the meta line: `{dd/MM/yyyy} - {author} - {location}`; the location
-  segment is omitted when the field is blank.
-- Detail page shows `Địa điểm: {location}` on its own line under the
-  `Đăng bởi: ... - Vào lúc ...` meta line; the line is omitted when the
-  field is blank.
-- Detail with a `newsType` mismatch (e.g. a `NEWS` item opened under
-  `/khach-hang/:slug`) renders the missing state, not the article.
-- `MainNav` "Khách hàng" item points at `/khach-hang` instead of `#`.
-- Load list from `GET {VITE_API_URL}/api/news?status=PUBLISHED&newsType=CUSTOMER_NEWS&page={n}&size=10&sort=updatedAt,desc`.
-- Load detail from `GET {VITE_API_URL}/api/news/by-alias/{seoAlias}`.
-- Loading, error + retry, empty, missing, pagination, sanitized HTML
-  body, cover placeholder, and date formatting stay exactly as the
-  existing news pages — no new behaviour.
-- `location` is rendered for any news type that carries one; only
-  customer news will ever set it, so `/tin-tuc` and `/thue-san-pham`
-  are visually unchanged.
+  `listPath="/khach-hang"`; the location line rule is unchanged.
+- States: six skeleton cards while loading; error block
+  `Không tải được khách hàng. Vui lòng thử lại.` + `Tải lại`; empty
+  `Chưa có khách hàng nào.`; no filter controls.
+- `MainNav` "Khách hàng" item points at `/khach-hang` (unchanged from the
+  previous phase).
 
 ## Non-goals
 
-- No new admin UI in this repo (the admin change is in
-  `trac-dia-thien-phu-admin`).
-- No map, customer logo wall, testimonial schema, or location filter —
-  `location` is display-only free text.
-- No separate page layout or component for customers; the shared
-  `NewsPage` / `NewsDetailPage` are reused as-is apart from the
-  location line.
+- No province/location filter or search — removed by owner decision.
+- No separate detail page or detail redesign; the shared
+  `NewsDetailPage` is reused.
+- No per-customer phone/website fields (the API has none); the banner
+  uses site-wide constants.
+- No map, customer logo wall, or testimonial schema.
 - No document `<head>` SEO wiring (`seoPageTitle` / meta tags remain
   deferred).
-- No search or filtering beyond the existing `newsType` + pagination.
+- No API change; the list endpoint's existing `newsType` filter is enough.
 
 ## API Contract (backend: `trac-dia-thien-phu-api`)
 
-- `GET /api/news?status=PUBLISHED&newsType=CUSTOMER_NEWS&page={n}&size=10&sort=updatedAt,desc`
+- `GET /api/news?status=PUBLISHED&newsType=CUSTOMER_NEWS&page={n}&size=12&sort=updatedAt,desc`
   → `ApiResponse<Page<NewsResponse>>`.
 - `GET /api/news/by-alias/{seoAlias}` → `ApiResponse<NewsDetailResponse>`;
   404 when unknown.
@@ -60,40 +60,37 @@ Data from `trac-dia-thien-phu-api`.
   (HTML string), `seoPageTitle`.
 - `location: string | null`, max 256, optional on the API; the admin
   form is the only place that requires it for `CUSTOMER_NEWS`.
-- `NewsType` gains `'CUSTOMER_NEWS'`; the existing `?newsType=` filter
-  accepts it with no backend change beyond the DTO field.
+- `NewsType` includes `'CUSTOMER_NEWS'`; no backend change needed for
+  this page.
 
 ## Architecture
 
-- `src/lib/api.ts`: extend `NewsType` with `'CUSTOMER_NEWS'`; add
-  `location: string | null` to `NewsResponse` and `NewsDetailResponse`.
-  `listNews`, `getNewsByAlias`, `newsImage`, `formatNewsDate` unchanged.
-- `src/App.tsx`: add `/khach-hang` and `/khach-hang/:slug` routes next to
-  the existing news routes, passing the props above.
-- `src/pages/news/NewsPage.tsx`: meta line becomes
-  `{date} - {author}{location ? ` - ${location}` : ''}`; everything else
-  untouched.
-- `src/pages/news/NewsDetailPage.tsx`: render
-  `{news.location && <p ...>Địa điểm: {news.location}</p>}` directly
-  below the existing author/date meta line.
-- `src/components/layout/MainNav.tsx`: "Khách hàng" `href="#"` →
-  `/khach-hang` (same anchor styling as its neighbours, minimal diff).
-- Spec file: `docs/specs/khach-hang.md` (this file); implementation plan
-  follows after approval in `docs/plans/khach-hang.md`.
-- No new dependencies, no new components, no state library.
+- `src/pages/customer/CustomerList.tsx`: page component; fetches with
+  `listNews({ page, size: 12, newsType: 'CUSTOMER_NEWS' })`, owns
+  `items/page/totalPages/loading/failed/reloadKey` (same pattern as
+  `NewsPage`), cancels stale responses, and maps each `NewsResponse` to a
+  card. No `customers` prop or sample data.
+- `src/pages/customer/CustomerList.css`: page-scoped styles
+  (`.cl`, `.cl__*`, `.cl-card*`, Mulish via Google Fonts) plus skeleton
+  and state styles.
+- `src/App.tsx`: `/khach-hang` renders `<CustomerList />`; the news
+  routes for `NEWS` and `HIRING_PRODUCT` still use `NewsPage`.
+- `src/lib/api.ts`: unchanged (`listNews`, `newsImage`, `NewsType`,
+  `location` already exist).
+- `src/components/Img.tsx`: cover fallback handling.
+- No new dependencies.
 
 ## Content
 
-- List breadcrumb `Trang chủ / Khách hàng`, H1 `Khách hàng`.
-- Row meta: `{dd/MM/yyyy} - {author} - {location}` (location segment
-  omitted when blank), title bold, excerpt `seoDescriptionTag` with
-  `line-clamp-3`.
-- Detail breadcrumb `Trang chủ / Khách hàng / {title}`, title, meta line,
-  `Địa điểm: {location}`, cover image, lead excerpt, sanitized
-  `description` HTML.
-- Empty: `Chưa có thông tin khách hàng nào.`
-- Error: `Không tải được tin tức. Vui lòng thử lại.` + retry button.
-- Missing: `Tin tức không tồn tại` + `Quay lại Khách hàng`.
+- Header: H2 `Khách hàng`; subtitle
+  `Hình ảnh bàn giao sản phẩm tới khách hàng trên toàn quốc`.
+- Card banner: `Bàn giao máy RTK tại tỉnh {location}` or
+  `Bàn giao máy RTK`; hotline `0972.819.598`; site `https://igeostore.vn/`.
+- Card body: location chip with map icon; news title.
+- Empty: `Chưa có khách hàng nào.`
+- Error: `Không tải được khách hàng. Vui lòng thử lại.` + `Tải lại`.
+- Detail: unchanged (`Đăng bởi: ... - Vào lúc ...`, `Địa điểm: {location}`,
+  sanitized `description` HTML).
 
 ## Assets
 
@@ -104,10 +101,9 @@ Data from `trac-dia-thien-phu-api`.
 
 - `npm run build` (includes `tsc -b` typecheck) passes.
 - `npm run lint` passes (exit 0).
-- `npm run dev` visual check at desktop + mobile: `MainNav` "Khách hàng"
-  lands on `/khach-hang`; the list shows only `CUSTOMER_NEWS` rows with
-  location in the meta line; a row opens `/khach-hang/{seoAlias}` with
-  the location line; a `NEWS` alias opened under `/khach-hang/:slug`
-  shows the missing state; empty/error/retry states work; `/tin-tuc` and
-  `/thue-san-pham` remain unchanged; `/`, `/gioi-thieu`, `/san-pham`,
-  `/lien-he` unchanged.
+- Headless smoke against a live API: 12 cards on page 1 and the remainder
+  on page 2, correct current/disabled pager states; card links open
+  `/khach-hang/{seoAlias}`; missing `location` shows the short banner and
+  no chip; missing image shows the gradient placeholder; empty and
+  API-down (`Tải lại`) states render; `/tin-tuc` and `/thue-san-pham`
+  remain unchanged.
