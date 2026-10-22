@@ -63,7 +63,9 @@ interface NewsSectionProps {
 const IMAGE_SHAPE = 'w-full aspect-[2/1]'
 
 function basePath(newsType: string): string {
-  return newsType === 'HIRING_PRODUCT' ? '/thue-san-pham' : '/tin-tuc'
+  if (newsType === 'HIRING_PRODUCT') return '/thue-san-pham'
+  if (newsType === 'CUSTOMER_NEWS') return '/khach-hang'
+  return '/tin-tuc'
 }
 
 function NewsSection({ items }: NewsSectionProps) {

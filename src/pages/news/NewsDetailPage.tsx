@@ -93,7 +93,7 @@ function NewsDetailPage({ newsType, listTitle, listPath }: NewsDetailPageProps) 
       </nav>
       <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-snug break-words">{news.title}</h1>
       <p className="text-xs sm:text-sm text-gray-500 mt-2 break-words">Đăng bởi: {news.author} - Vào lúc {formatNewsDate(news.updatedAt)} </p>
-      {news.location && <p className="text-xs sm:text-sm text-gray-500 mt-1 break-words">Địa điểm: {news.location}</p>}
+      {news.location?.trim() ? <p className="text-xs sm:text-sm text-gray-500 mt-1 break-words">Địa điểm: {news.location}</p> : null}
       <Img src={newsImage(news)} fallback="https://placehold.co/1024x576?text=No+Image" alt={news.title} loading="eager" className="w-full h-auto rounded-xl mt-3 sm:mt-4 object-cover aspect-video" />
       {news.seoDescriptionTag && <p className="text-[15px] sm:text-base text-gray-700 font-medium mt-3 sm:mt-4 break-words">{news.seoDescriptionTag}</p>}
       {safeHtml && (
