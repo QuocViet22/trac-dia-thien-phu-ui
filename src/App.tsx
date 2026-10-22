@@ -38,6 +38,8 @@ function App() {
           <Route path="/tin-tuc/:slug" element={<NewsDetailPage newsType="NEWS" listTitle="Tất cả tin tức" listPath="/tin-tuc" />} />
           <Route path="/thue-san-pham" element={<NewsPage newsType="HIRING_PRODUCT" title="Thuê sản phẩm" emptyText="Chưa có sản phẩm cho thuê nào." basePath="/thue-san-pham" />} />
           <Route path="/thue-san-pham/:slug" element={<NewsDetailPage newsType="HIRING_PRODUCT" listTitle="Thuê sản phẩm" listPath="/thue-san-pham" />} />
+          <Route path="/khach-hang" element={<NewsPage newsType="CUSTOMER_NEWS" title="Khách hàng" emptyText="Chưa có thông tin khách hàng nào." basePath="/khach-hang" />} />
+          <Route path="/khach-hang/:slug" element={<NewsDetailPage newsType="CUSTOMER_NEWS" listTitle="Khách hàng" listPath="/khach-hang" />} />
           <Route path="/lien-he" element={<ContactPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
