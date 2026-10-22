@@ -1,6 +1,6 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router'
-import { listCategories, categoryImage, type CategoryResponse } from '../../lib/api.ts'
+import { listCategories, listProducts, categoryImage, type CategoryResponse, type ProductResponse } from '../../lib/api.ts'
 
 interface MainNavProps {
   sidebarOpen: boolean
@@ -14,6 +14,32 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
   const showOverlay = sidebarOpen && (!isHome || scrolledDown)
   const [categories, setCategories] = useState<CategoryResponse[]>([])
   const menuRef = useRef<HTMLDivElement>(null)
+  const [flyoutId, setFlyoutId] = useState<string | null>(null)
+  const [flyoutData, setFlyoutData] = useState<Record<string, ProductResponse[] | 'failed'>>({})
+
+  const openFlyout = (id: string) => {
+    setFlyoutId(id)
+    if (flyoutData[id] !== undefined) {
+      return
+    }
+    listProducts({ page: 0, size: 10, categoryId: id, sort: 'createdAt,desc' })
+      .then((data) => {
+        setFlyoutData((current) => ({ ...current, [id]: data.content }))
+      })
+      .catch(() => {
+        setFlyoutData((current) => ({ ...current, [id]: 'failed' }))
+      })
+  }
+
+  const closeFlyout = () => {
+    setFlyoutId(null)
+  }
+
+  const [prevShowOverlay, setPrevShowOverlay] = useState(showOverlay)
+  if (prevShowOverlay !== showOverlay) {
+    setPrevShowOverlay(showOverlay)
+    setFlyoutId(null)
+  }
 
   useEffect(() => {
     const onScroll = () => {
@@ -77,10 +103,57 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
   }, [location.pathname])
   const activeLink = "px-5 py-4 block custom-orange border-b-2 border-custom-orange"
   const idleLink = "px-5 py-4 block hover:text-brand transition-colors"
+  const flyoutCategory = categories.find((cat) => cat.id === flyoutId) ?? null
+
+  const renderFlyout = (cat: CategoryResponse, className: string, id: string) => {
+    const entry = flyoutData[cat.id]
+    return (
+    <div id={id} className={className}>
+      {entry === undefined ? (
+        <div aria-label="Đang tải sản phẩm">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="px-4 py-2.5">
+              <div className="h-3 w-3/4 bg-gray-100 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      ) : entry === 'failed' ? (
+        <p className="px-4 py-2.5 text-gray-500">Không tải được sản phẩm.</p>
+      ) : entry.length === 0 ? (
+        <p className="px-4 py-2.5 text-gray-500">Chưa có sản phẩm.</p>
+      ) : (
+        <ul>
+          {entry.map((product) => (
+            <li key={product.id}>
+              <Link
+                to={product.seoAlias ? `/san-pham/${product.seoAlias}` : '/san-pham'}
+                onClick={onToggleSidebar}
+                className="block px-4 py-2 text-[13px] text-gray-700 hover:text-brand hover:bg-sky-50 transition-colors truncate"
+              >
+                {product.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+      <Link
+        to={`/san-pham?categoryId=${encodeURIComponent(cat.id)}`}
+        onClick={onToggleSidebar}
+        className="block px-4 py-2.5 border-t border-gray-100 text-[13px] font-medium text-brand hover:bg-sky-50"
+      >
+        Xem tất cả {cat.name}
+      </Link>
+    </div>
+    )
+  }
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 flex flex-col lg:flex-row">
-        <div ref={menuRef} className="relative w-full lg:w-72">
+        <div ref={menuRef} className="relative w-full lg:w-72" onPointerLeave={(event) => {
+          if (event.pointerType !== 'touch') {
+            closeFlyout()
+          }
+        }}>
           <button
             type="button"
             aria-expanded={sidebarOpen}
@@ -100,11 +173,16 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
                 {categories.map((cat, i) => {
                   const img = categoryImage(cat)
                   return (
-                  <li key={cat.id} className={i < categories.length - 1 ? 'border-b border-gray-100' : ''}>
+                  <li key={cat.id} className={`relative ${i < categories.length - 1 ? 'border-b border-gray-100' : ''}`} onPointerEnter={(event) => {
+                    if (event.pointerType !== 'touch') {
+                      openFlyout(cat.id)
+                    }
+                  }}>
+                    <div className="flex items-center" onFocus={() => openFlyout(cat.id)}>
                     <Link
                       to={`/san-pham?categoryId=${encodeURIComponent(cat.id)}`}
                       onClick={onToggleSidebar}
-                      className="flex items-center justify-between px-4 py-2.5 hover:text-brand hover:bg-sky-50 group transition-colors"
+                      className="flex-1 min-w-0 flex items-center px-4 py-2.5 hover:text-brand hover:bg-sky-50 transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         {img && (
@@ -117,24 +195,36 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
                         )}
                         <span className="truncate">{cat.name}</span>
                       </div>
-                      <i className="fa-solid fa-caret-right text-gray-300 group-hover:text-brand"></i>
                     </Link>
+                    <button
+                      type="button"
+                      aria-expanded={flyoutId === cat.id}
+                      aria-controls={`flyout-${cat.id} flyout-desktop`}
+                      aria-label={`Sản phẩm của ${cat.name}`}
+                      onClick={() => openFlyout(cat.id)}
+                      className="px-3 py-2.5 text-gray-300 hover:text-brand cursor-pointer"
+                    >
+                      <i className={`fa-solid fa-caret-right transition-transform ${flyoutId === cat.id ? 'rotate-90 lg:rotate-0' : ''}`}></i>
+                    </button>
+                    </div>
+                    {flyoutId === cat.id && renderFlyout(cat, 'lg:hidden border-t border-gray-100 bg-gray-50 pl-4', `flyout-${cat.id}`)}
                   </li>
                   )
                 })}
               </ul>
             </div>
           )}
+          {showOverlay && flyoutCategory && renderFlyout(flyoutCategory, 'hidden lg:block absolute left-full top-full w-64 z-50 bg-white border border-gray-200 shadow-lg max-h-96 overflow-y-auto text-[13px] text-gray-600 font-medium', 'flyout-desktop')}
         </div>
 
         <ul className="flex-1 flex flex-wrap lg:flex-nowrap items-center overflow-x-auto hide-scrollbar text-sm font-medium text-gray-700 ml-0 lg:ml-4">
           <li className="whitespace-nowrap"><Link to="/" className={location.pathname === "/" ? activeLink : idleLink}>Trang chủ</Link></li>
-          <li className="whitespace-nowrap"><Link to="/gioi-thieu" className={location.pathname === "/gioi-thieu" ? activeLink : idleLink}>Giới thiệu</Link></li>
-          <li className="whitespace-nowrap"><Link to="/san-pham" className={location.pathname === "/san-pham" ? activeLink : idleLink}>Sản phẩm</Link></li>
-          <li className="whitespace-nowrap"><a href="/tin-tuc" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Tin tức</a></li>
           <li className="whitespace-nowrap"><a href="/thue-san-pham" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Thuê sản phẩm</a></li>
+          <li className="whitespace-nowrap"><Link to="/gioi-thieu" className={location.pathname === "/gioi-thieu" ? activeLink : idleLink}>Giới thiệu</Link></li>
+          <li className="whitespace-nowrap"><a href="/tin-tuc" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Tin tức</a></li>
+          {/* <li className="whitespace-nowrap"><Link to="/san-pham" className={location.pathname === "/san-pham" ? activeLink : idleLink}>Sản phẩm</Link></li> */}
           <li className="whitespace-nowrap"><a href="/lien-he" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Liên hệ</a></li>
-          <li className="whitespace-nowrap"><a href="#" className="px-5 py-4 block hover:text-brand transition-colors">Khách hàng</a></li>
+          <li className="whitespace-nowrap"><Link to="/khach-hang" className={location.pathname === "/khach-hang" ? activeLink : idleLink}>Khách hàng</Link></li>
         </ul>
       </div>
     </nav>

@@ -116,3 +116,104 @@ In `MainNav.tsx`: add `scrolledDown` state via a passive `scroll` listener (`win
 
 Run: `npm run build; if ($?) { npm run lint }`
 Expected: both exit 0. Then `npm run dev` on `/` — at top, button toggles inline sidebar only (no overlay); scrolled down, button shows overlay with cover thumbnails; category click lands on `/san-pham` filtered; second click / outside / `Escape` closes.
+
+---
+
+### Task 7: Per-category product flyout in the dropdown
+
+**Files:**
+- Modify: `src/components/layout/MainNav.tsx`
+
+- [x] **Step 1: Add flyout state + cached fetch.**
+
+Import `listProducts` and `type ProductResponse` from `../../lib/api.ts` (keep the existing imports). Add:
+
+```tsx
+const [flyoutId, setFlyoutId] = useState<string | null>(null)
+const [flyoutData, setFlyoutData] = useState<Record<string, ProductResponse[] | 'failed'>>({})
+
+const openFlyout = (id: string) => {
+  setFlyoutId(id)
+  if (flyoutData[id] !== undefined) {
+    return
+  }
+  listProducts({ page: 0, size: 10, categoryId: id, sort: 'createdAt,desc' })
+    .then((data) => {
+      setFlyoutData((current) => ({ ...current, [id]: data.content }))
+    })
+    .catch(() => {
+      setFlyoutData((current) => ({ ...current, [id]: 'failed' }))
+    })
+}
+
+const closeFlyout = () => {
+  setFlyoutId(null)
+}
+
+const [prevShowOverlay, setPrevShowOverlay] = useState(showOverlay)
+if (prevShowOverlay !== showOverlay) {
+  setPrevShowOverlay(showOverlay)
+  setFlyoutId(null)
+}
+```
+
+`flyoutData` doubles as the cache and the per-category state: absent = loading, `'failed'` = request failed, array = loaded (empty array = category has no products). The render-phase reset (the same "adjust state when a prop changes" pattern `SanPhamPage` uses) clears the open panel whenever the menu opens or closes — a `useEffect` reset is rejected by the `react-hooks/set-state-in-effect` lint rule.
+
+- [x] **Step 2: Split the row into link + chevron and render the panel.**
+
+Inside the existing `.map`, on the `<li>` add `relative` plus `onPointerEnter` (skipped when `event.pointerType === 'touch'`, so a tap does not open then immediately toggle). Replace the row `Link` markup with:
+
+```tsx
+<div className="flex items-center" onFocus={() => openFlyout(cat.id)}>
+  <Link to={...existing target...} onClick={onToggleSidebar} className="flex-1 min-w-0 flex items-center justify-between px-4 py-2.5 hover:text-brand hover:bg-sky-50 group transition-colors">
+    {/* unchanged thumbnail + name block */}
+    <i className="fa-solid fa-caret-right text-gray-300 group-hover:text-brand"></i>
+  </Link>
+  <button
+    type="button"
+    aria-expanded={flyoutId === cat.id}
+    aria-controls={`flyout-${cat.id} flyout-desktop`}
+    aria-label={`Sản phẩm của ${cat.name}`}
+    onClick={() => openFlyout(cat.id)}
+    className="px-3 py-2.5 text-gray-300 hover:text-brand cursor-pointer"
+  >
+    <i className={`fa-solid fa-caret-right transition-transform ${flyoutId === cat.id ? 'rotate-90 lg:rotate-0' : ''}`}></i>
+  </button>
+</div>
+{flyoutId === cat.id && renderFlyout(cat, 'lg:hidden border-t border-gray-100 bg-gray-50 pl-4', `flyout-${cat.id}`)}
+```
+
+The chevron stays `open`-only (never toggles shut): on desktop hover has usually opened the panel already, so a toggle would close it under the pointer. Touch users close it by closing the menu (tap outside / `Escape`).
+
+- [x] **Step 3: Fill the panel states, product rows and footer.**
+
+The desktop panel cannot live inside the scrolling overlay (the overlay's `overflow-y-auto` clips it), so it is a sibling of the overlay, inside the `menuRef` container:
+
+```tsx
+{showOverlay && flyoutCategory && renderFlyout(flyoutCategory, 'hidden lg:block absolute left-full top-full w-64 z-50 bg-white border border-gray-200 shadow-lg max-h-96 overflow-y-auto text-[13px] text-gray-600 font-medium', 'flyout-desktop')}
+```
+
+with `const flyoutCategory = categories.find((cat) => cat.id === flyoutId) ?? null` and `renderFlyout(cat, className, id)` returning the panel body. The inline panel under the row is the `lg:hidden` one from Step 2; closing the flyout is driven by `onPointerLeave` on the `menuRef` container (again skipping touch pointers), which keeps the panel open while the pointer crosses from a row into it.
+
+Inside `renderFlyout`, render in order:
+
+- `flyoutData[cat.id] === undefined` (loading): 3 skeleton rows (`animate-pulse` bar, same padding as product rows).
+- `flyoutData[cat.id] === 'failed'`: `<p className="px-4 py-2.5 text-gray-500">Không tải được sản phẩm.</p>`.
+- loaded, zero products: `<p className="px-4 py-2.5 text-gray-500">Chưa có sản phẩm.</p>`.
+- loaded, products: `<ul>` of products, each `<li key={product.id}>` containing `<Link to={product.seoAlias ? `/san-pham/${product.seoAlias}` : '/san-pham'} onClick={onToggleSidebar} className="block px-4 py-2 text-[13px] text-gray-700 hover:text-brand hover:bg-sky-50 transition-colors truncate">{product.name}</Link>`.
+- Always last: `<Link to={`/san-pham?categoryId=${encodeURIComponent(cat.id)}`} onClick={onToggleSidebar} className="block px-4 py-2.5 border-t border-gray-100 text-[13px] font-medium text-brand hover:bg-sky-50">Xem tất cả {cat.name}</Link>`.
+
+- [x] **Step 4: Verify**
+
+Run: `npm run build; if ($?) { npm run lint }`
+Expected: both exit 0.
+
+Then `npm run dev`:
+- Hover a dropdown row → panel opens to the right listing up to 10 product names with `Xem tất cả {name}` at the bottom; moving into the panel keeps it open; moving to another row swaps the list.
+- Click a product → `/san-pham/{seoAlias}` opens and the menu closes; a product without an alias lands on `/san-pham`.
+- Click `Xem tất cả` → `/san-pham?categoryId={id}` filtered; menu closes.
+- Re-hover the same category → panel appears without a new request (Network tab shows one call per category).
+- Narrow viewport (below `lg`): the chevron expands the panel inline under the row, indented, no horizontal overflow.
+- Desktop right edge: the panel stays on screen.
+- Close the menu (button, outside click, `Escape`, route change) → next open shows no panel.
+- Category with no products → `Chưa có sản phẩm.`; API down → `Không tải được sản phẩm.` and the rest of the dropdown still works.
