@@ -146,7 +146,7 @@ export function categoryImage(category: CategoryResponse): string {
   return images.length > 0 ? images[0].imageUrl : ''
 }
 
-export type NewsType = 'NEWS' | 'HIRING_PRODUCT' | 'CUSTOMER_NEWS'
+export type NewsType = 'NEWS' | 'HIRING_PRODUCT' | 'CUSTOMER_NEWS' | 'REPAIR_AND_INSPECTION_NEWS'
 
 export interface NewsResponse {
   id: string

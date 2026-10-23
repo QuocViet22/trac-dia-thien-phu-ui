@@ -39,6 +39,8 @@ function App() {
           <Route path="/tin-tuc/:slug" element={<NewsDetailPage newsType="NEWS" listTitle="Tất cả tin tức" listPath="/tin-tuc" />} />
           <Route path="/thue-san-pham" element={<NewsPage newsType="HIRING_PRODUCT" title="Thuê sản phẩm" emptyText="Chưa có sản phẩm cho thuê nào." basePath="/thue-san-pham" />} />
           <Route path="/thue-san-pham/:slug" element={<NewsDetailPage newsType="HIRING_PRODUCT" listTitle="Thuê sản phẩm" listPath="/thue-san-pham" />} />
+          <Route path="/sua-chua-va-kiem-dinh" element={<NewsPage newsType="REPAIR_AND_INSPECTION_NEWS" title="Sửa chữa & Kiểm định" emptyText="Chưa có tin tức sửa chữa & kiểm định nào." basePath="/sua-chua-va-kiem-dinh" />} />
+          <Route path="/sua-chua-va-kiem-dinh/:slug" element={<NewsDetailPage newsType="REPAIR_AND_INSPECTION_NEWS" listTitle="Sửa chữa & Kiểm định" listPath="/sua-chua-va-kiem-dinh" />} />
           <Route path="/khach-hang" element={<CustomerList />} />
           <Route path="/khach-hang/:slug" element={<NewsDetailPage newsType="CUSTOMER_NEWS" listTitle="Khách hàng" listPath="/khach-hang" />} />
           <Route path="/lien-he" element={<ContactPage />} />

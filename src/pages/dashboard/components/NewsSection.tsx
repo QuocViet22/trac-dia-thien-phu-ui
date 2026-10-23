@@ -65,6 +65,7 @@ const IMAGE_SHAPE = 'w-full aspect-[2/1]'
 function basePath(newsType: string): string {
   if (newsType === 'HIRING_PRODUCT') return '/thue-san-pham'
   if (newsType === 'CUSTOMER_NEWS') return '/khach-hang'
+  if (newsType === 'REPAIR_AND_INSPECTION_NEWS') return '/sua-chua-va-kiem-dinh'
   return '/tin-tuc'
 }
 

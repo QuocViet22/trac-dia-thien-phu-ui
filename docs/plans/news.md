@@ -622,3 +622,105 @@ export default NewsDetailPage
 
 Run: `npm run build; if ($?) { npm run lint }`
 Expected: both exit 0. Then `npm run dev` with the API running: click a `/tin-tuc` row → lands on `/tin-tuc/{seoAlias}` showing title, meta, cover, lead excerpt, and formatted HTML body (headings/lists/images render); view-source check that a `<script>` in the API description does not execute; `/tin-tuc/unknown-alias` shows the missing state; API-down shows error + retry works; `/`, `/gioi-thieu`, `/san-pham` unchanged; mobile stacks cover above text.
+
+---
+
+# Phase 3 — `Sửa chữa & Kiểm định` page
+
+**Goal:** Publish `REPAIR_AND_INSPECTION_NEWS` items at `/sua-chua-va-kiem-dinh` and `/sua-chua-va-kiem-dinh/:slug` using the shared list/detail components, and make homepage featured cards open the owning detail.
+
+**Architecture:** Add one value to `NewsType`, two routes in `App.tsx`, and one branch in `NewsSection.basePath()`. `NewsPage` / `NewsDetailPage` already accept per-route props and render `location`; no layout or component changes. The owner's `MainNav` link already points at the list route.
+
+**Spec:** `docs/specs/news.md` (Phase 3 additions).
+
+## Phase 3 Global Constraints
+
+- Exact copy: H1/list title `Sửa chữa & Kiểm định`; empty text `Chưa có tin tức sửa chữa & kiểm định nào.`; back link `Quay lại Sửa chữa & Kiểm định` (rendered by `NewsDetailPage` from `listTitle`).
+- Route paths are exactly `/sua-chua-va-kiem-dinh` and `/sua-chua-va-kiem-dinh/:slug`.
+- No changes to `NewsPage.tsx`, `NewsDetailPage.tsx`, `MainNav.tsx`, or the customer page.
+- No new dependencies; no test runner in this repo.
+- `npm run build` and `npm run lint` must pass.
+
+## Phase 3 Review Focus
+
+1. `/sua-chua-va-kiem-dinh` must request `newsType=REPAIR_AND_INSPECTION_NEWS` and show only that type. → Task 7 dev check.
+2. A non-repair slug opened under the new path must show the missing state. → Task 7 dev check.
+3. Empty data must show `Chưa có tin tức sửa chữa & kiểm định nào.` → Task 7 dev check.
+4. A featured repair item on the homepage must open `/sua-chua-va-kiem-dinh/{seoAlias}`, not `/tin-tuc/...`. → Task 7 dev check.
+5. `/tin-tuc`, `/thue-san-pham`, `/khach-hang`, and the customer files must remain untouched. → Task 8 status/diff check.
+
+---
+
+### Task 7: Type, routes, and homepage mapping
+
+**Files:**
+- Modify: `src/lib/api.ts`
+- Modify: `src/App.tsx`
+- Modify: `src/pages/dashboard/components/NewsSection.tsx`
+
+**Interfaces:**
+- Consumes: `NewsPage` / `NewsDetailPage` props (`newsType`, `title`, `emptyText`, `basePath`; `newsType`, `listTitle`, `listPath`).
+- Produces: working `/sua-chua-va-kiem-dinh*` routes; nothing downstream.
+
+- [ ] **Step 1: Extend the type.**
+
+In `src/lib/api.ts`:
+```ts
+export type NewsType =
+  | 'NEWS'
+  | 'HIRING_PRODUCT'
+  | 'CUSTOMER_NEWS'
+  | 'REPAIR_AND_INSPECTION_NEWS'
+```
+
+- [ ] **Step 2: Add the routes.**
+
+In `src/App.tsx`, after `/thue-san-pham/:slug` and before `/khach-hang`, add:
+```tsx
+<Route path="/sua-chua-va-kiem-dinh" element={<NewsPage newsType="REPAIR_AND_INSPECTION_NEWS" title="Sửa chữa & Kiểm định" emptyText="Chưa có tin tức sửa chữa & kiểm định nào." basePath="/sua-chua-va-kiem-dinh" />} />
+<Route path="/sua-chua-va-kiem-dinh/:slug" element={<NewsDetailPage newsType="REPAIR_AND_INSPECTION_NEWS" listTitle="Sửa chữa & Kiểm định" listPath="/sua-chua-va-kiem-dinh" />} />
+```
+
+- [ ] **Step 3: Extend the homepage mapping.**
+
+In `NewsSection.tsx` `basePath()`:
+```ts
+if (newsType === 'REPAIR_AND_INSPECTION_NEWS') return '/sua-chua-va-kiem-dinh'
+```
+Place it after the `CUSTOMER_NEWS` branch and before the `/tin-tuc` fallback.
+
+- [ ] **Step 4: Build.**
+
+Run: `npm run build`
+Expected: exit 0.
+
+### Task 8: Verification + commit
+
+- [ ] **Step 1: Lint + build.**
+
+Run: `npm run build; if ($?) { npm run lint }`
+Expected: both exit 0.
+
+- [ ] **Step 2: Dev check with the API running.**
+
+With `npm run dev` and the API on `8080`:
+- The owner's nav link opens `/sua-chua-va-kiem-dinh`; the list shows only `REPAIR_AND_INSPECTION_NEWS` rows with cover, title, date-author, location when present, and excerpt.
+- Click a row → `/sua-chua-va-kiem-dinh/{seoAlias}`; the detail shows the location line and sanitized HTML.
+- Open a known `NEWS` alias under `/sua-chua-va-kiem-dinh/...` → missing state, not the article.
+- With no published repair news → `Chưa có tin tức sửa chữa & kiểm định nào.`
+- API down → error + retry works.
+- A homepage featured repair item → `/sua-chua-va-kiem-dinh/{seoAlias}`.
+- `/tin-tuc`, `/thue-san-pham`, `/khach-hang`, and mobile layouts unchanged.
+
+- [ ] **Step 3: Confirm only intended files changed.**
+
+Run: `git status --short`
+Expected: `src/lib/api.ts`, `src/App.tsx`, `src/pages/dashboard/components/NewsSection.tsx`, `docs/specs/news.md`, `docs/plans/news.md`. The owner's uncommitted `src/components/layout/MainNav.tsx`, `src/pages/customer/CustomerList.css`, and `src/pages/customer/CustomerList.tsx` remain unstaged and untouched.
+
+- [ ] **Step 4: Commit.**
+
+```bash
+git add src/lib/api.ts src/App.tsx src/pages/dashboard/components/NewsSection.tsx docs/specs/news.md docs/plans/news.md
+git commit -m "feat: add repair and inspection news page"
+```
+Do not stage `MainNav.tsx` or the customer files; the owner's nav link already points at the new route and can be committed separately.
