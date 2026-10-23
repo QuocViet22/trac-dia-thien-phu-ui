@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router'
-import { listCategories, listProducts, categoryImage, type CategoryResponse, type ProductResponse } from '../../lib/api.ts'
+import { listProducts, categoryImage, type CategoryResponse, type ProductResponse } from '../../lib/api.ts'
+import { useSidebarCategories } from '../../hooks/useSidebarCategories.ts'
 
 interface MainNavProps {
   sidebarOpen: boolean
@@ -12,7 +13,7 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
   const isHome = location.pathname === '/'
   const [scrolledDown, setScrolledDown] = useState(false)
   const showOverlay = sidebarOpen && (!isHome || scrolledDown)
-  const [categories, setCategories] = useState<CategoryResponse[]>([])
+  const { categories, loading: categoriesLoading } = useSidebarCategories(showOverlay)
   const menuRef = useRef<HTMLDivElement>(null)
   const [flyoutId, setFlyoutId] = useState<string | null>(null)
   const [flyoutData, setFlyoutData] = useState<Record<string, ProductResponse[] | 'failed'>>({})
@@ -51,27 +52,6 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
       window.removeEventListener('scroll', onScroll)
     }
   }, [])
-
-  useEffect(() => {
-    if (!showOverlay) {
-      return
-    }
-    let cancelled = false
-    listCategories()
-      .then((data) => {
-        if (!cancelled) {
-          setCategories(data)
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setCategories([])
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [showOverlay])
 
   useEffect(() => {
     if (!showOverlay) {
@@ -170,7 +150,9 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
           {showOverlay && (
             <div className="absolute top-full left-0 right-0 z-50 bg-white border-l border-r border-b border-gray-200 shadow-sm rounded-b-md overflow-y-auto max-h-96">
               <ul className="text-[13px] text-gray-600 font-medium">
-                {categories.map((cat, i) => {
+                {categoriesLoading ? null : categories.length === 0 ? (
+                  <li className="px-4 py-2.5 text-gray-500">Chưa có danh mục nào</li>
+                ) : categories.map((cat, i) => {
                   const img = categoryImage(cat)
                   return (
                   <li key={cat.id} className={`relative ${i < categories.length - 1 ? 'border-b border-gray-100' : ''}`} onPointerEnter={(event) => {
