@@ -120,3 +120,10 @@ Vietnamese copy unchanged except the new empty state:
 - API validation of the new type (see
   `trac-dia-thien-phu-api/docs/specs/category_sidebar_collection.md`).
 - Prefetching the sidebar list during app boot.
+
+## 9. Deployment note
+
+The empty state is intentional: an unconfigured list hides both sidebar menus. Populate at
+least one row (`/homepage` -> `Danh mục sidebar`) before releasing the storefront change,
+otherwise `TẤT CẢ SẢN PHẨM` shows `Chưa có danh mục nào` on every page and the homepage
+inline sidebar shows the same.
