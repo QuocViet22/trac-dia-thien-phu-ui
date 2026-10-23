@@ -7,7 +7,8 @@
   `GET /api/collections?collectionType=` (admin-managed `Collection` rows with `referenceId`,
   `name` snapshot, `images`) instead of hardcoded `data.ts`.
 - Reuse current UI components and styles — props change, markup stays. `CategorySidebar`
-  untouched (still API-with-static-fallback, out of scope).
+  keeps its API-with-static-fallback behavior, but its category source is now the curated
+  sidebar collection — see `docs/specs/category-sidebar-collection.md` (2026-10-23).
 
 ## 2. Data layer (`src/lib/api.ts`, additive only)
 

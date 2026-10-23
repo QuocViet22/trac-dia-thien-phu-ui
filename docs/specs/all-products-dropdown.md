@@ -49,3 +49,15 @@ Target: the TẤT CẢ SẢN PHẨM list shows live API categories with cover im
 - `npm run dev` visual check: from `/gioi-thieu` click button → overlay appears over content with cover thumbnails; click category → lands on `/san-pham` filtered; on `/` the inline sidebar shows the same API names with cover thumbnails and its rows navigate filtered; `Escape` / second click / outside click / navigation closes overlay; API-down home still shows the static list.
 - `npm run dev` visual check on `/` scrolled down: click button → overlay appears anchored under the button with cover thumbnails; click category → lands on `/san-pham` filtered; at top of `/` click button → only the inline sidebar toggles (no overlay).
 - `npm run dev` visual check of the flyout: hover a dropdown row → product panel opens beside the list with up to 10 names, `Xem tất cả {name}` at the bottom; click a product → lands on its `/san-pham/{seoAlias}` page and the menu closes; click `Xem tất cả` → lands on the category page; re-hovering the same category shows the panel instantly (cached); at a narrow viewport the chevron expands the panel inline; the panel does not run off the right edge at desktop width; a category with no products shows `Chưa có sản phẩm.`; with the API down it shows `Không tải được sản phẩm.` while the rest of the menu still works.
+
+## Update: curated category source (2026-10-23)
+
+- The dropdown rows no longer come from `listCategories()` directly. They come from the
+  admin-curated `CATEGORY_SIDEBAR_COLLECTION` list joined with `listCategories()`, in
+  `orderIndex` order, shared with the homepage inline sidebar via
+  `src/hooks/useSidebarCategories.ts`.
+- Everything else in this spec (overlay behavior, flyout, links, close rules, thumbnails)
+  is unchanged.
+- Empty configuration now renders `Chưa có danh mục nào` instead of every category; the
+  homepage inline sidebar keeps its static fallback only for request failure.
+- Full design: `docs/specs/category-sidebar-collection.md`.
