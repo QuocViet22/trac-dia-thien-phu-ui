@@ -22,7 +22,7 @@ function CategorySection({ id, categoryId, seoAlias, title, brands, products }: 
           ))}
         </div>
         <Link
-          to={seoAlias ? `/danh-muc/${seoAlias}` : `/san-pham?categoryId=${encodeURIComponent(categoryId)}`}
+          to={`/danh-muc/${seoAlias}`}
           className="ml-auto text-[12px] text-brand font-medium whitespace-nowrap"
         >
           Xem tất cả →
