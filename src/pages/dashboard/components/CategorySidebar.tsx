@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { listCategories, categoryImage, type CategoryResponse } from '../../../lib/api.ts'
+import { categoryImage } from '../../../lib/api.ts'
+import { useSidebarCategories } from '../../../hooks/useSidebarCategories.ts'
 import { categories as fallbackCategories } from '../data.ts'
 
 interface CategorySidebarProps {
@@ -8,32 +8,13 @@ interface CategorySidebarProps {
 }
 
 function CategorySidebar({ open }: CategorySidebarProps) {
-  const [apiCategories, setApiCategories] = useState<CategoryResponse[] | null>(null)
-  const [failed, setFailed] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    listCategories()
-      .then((data) => {
-        if (!cancelled) {
-          setApiCategories(data)
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setFailed(true)
-        }
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const { categories, loading, failed } = useSidebarCategories()
 
   return (
     <aside className="w-full lg:w-72 flex-shrink-0 relative z-30 lg:-mt-4">
       <div id="sidebar-menu" className={`bg-white border-l border-r border-b border-gray-200 shadow-sm rounded-b-md sidebar-scroll overflow-y-auto ${open ? 'block' : 'hidden'} lg:block`}>
         <ul className="text-[13px] text-gray-600 font-medium">
-          {apiCategories === null && !failed ? (
+          {loading ? (
             Array.from({ length: 6 }).map((_, index) => (
               <li key={index} className="px-4 py-2.5 border-b border-gray-100 animate-pulse">
                 <div className="flex items-center gap-3">
@@ -42,7 +23,7 @@ function CategorySidebar({ open }: CategorySidebarProps) {
                 </div>
               </li>
             ))
-          ) : failed || apiCategories === null ? (
+          ) : failed ? (
             fallbackCategories.map((cat, i) => (
               <li
                 key={cat.label}
@@ -54,11 +35,13 @@ function CategorySidebar({ open }: CategorySidebarProps) {
                 <i className="fa-solid fa-caret-right text-gray-300 group-hover:text-brand"></i>
               </li>
             ))
+          ) : categories.length === 0 ? (
+            <li className="px-4 py-2.5 text-gray-500">Chưa có danh mục nào</li>
           ) : (
-            apiCategories.map((cat, i) => {
+            categories.map((cat, i) => {
               const img = categoryImage(cat)
               return (
-              <li key={cat.id} className={i < apiCategories.length - 1 ? 'border-b border-gray-100' : ''}>
+              <li key={cat.id} className={i < categories.length - 1 ? 'border-b border-gray-100' : ''}>
                 <Link
                   to={cat.seoAlias ? `/danh-muc/${cat.seoAlias}` : `/san-pham?categoryId=${encodeURIComponent(cat.id)}`}
                   className="flex items-center justify-between px-4 py-2.5 hover:text-brand hover:bg-sky-50 group transition-colors"
