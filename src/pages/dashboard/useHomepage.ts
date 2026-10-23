@@ -26,6 +26,8 @@ export interface FeaturedData {
 
 export interface CategorySectionData {
   id: string
+  categoryId: string
+  seoAlias: string | null
   title: string
   brands: string[]
   products: ProductResponse[]
@@ -141,7 +143,7 @@ export function useHomepage(): HomepageData {
         try {
           const page = await listProducts({ page: 0, size: 5, categoryId: c.referenceId })
           const brands = [...new Set(page.content.map((p) => p.brand).filter((b): b is string => b !== null && b !== ''))]
-          categorySections.push({ id: c.id, title: c.name, brands, products: page.content })
+          categorySections.push({ id: c.id, categoryId: c.referenceId, seoAlias: byId.get(c.referenceId)?.seoAlias ?? null, title: c.name, brands, products: page.content })
         } catch {
           continue
         }

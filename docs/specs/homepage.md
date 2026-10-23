@@ -67,3 +67,23 @@
 - Zero hardcoded homepage content: every section renders purely from its `CollectionType`
   query with admin edits visible on storefront refresh.
 - `npm run build` and `npm run lint` pass; per-section failures stay isolated.
+
+## 7. Category section "Xem tất cả" link (2026-10-23)
+
+- The `Xem tất cả →` control in `CategorySection` is a router `<Link>` (replacing the
+  current `href="#"`) to the product listing page of that section's category:
+  `/danh-muc/<seoAlias>`, falling back to `/san-pham?categoryId=<id>` when the category has
+  no `seoAlias` (same rule as `CategorySidebar`).
+- Target category is the collection row's `referenceId`, not the collection id and not the
+  collection `name` snapshot: renaming the collection in admin changes the section title but
+  does not change the link.
+- `CategorySectionData` gains `categoryId: string` and `seoAlias: string | null`, filled in
+  `useHomepage` from the already-fetched `listCategories()` map (`byId`). No extra request.
+  When the categories call failed, `seoAlias` is `null` and the `categoryId` fallback keeps
+  the link working.
+- Rows with a null/unresolvable `referenceId` stay skipped (section not rendered), as today.
+- Out of scope: `FeaturedCategories` and `MainNav` links keep
+  `/san-pham?categoryId=<id>`; no change to `SanPhamPage`, routes, or the product fetch.
+- Verification: `npm run build` + `npm run lint`; with the API up, click the link on a
+  category with an alias (product page heading shows the category name) and on a category
+  without one (fallback URL, filtered by `categoryId`).

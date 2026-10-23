@@ -1,14 +1,17 @@
+import { Link } from 'react-router'
 import { productImage, type ProductResponse } from '../../../lib/api.ts'
 import ProductCard from './ProductCard.tsx'
 
 interface CategorySectionProps {
   id: string
+  categoryId: string
+  seoAlias: string | null
   title: string
   brands: string[]
   products: ProductResponse[]
 }
 
-function CategorySection({ id, title, brands, products }: CategorySectionProps) {
+function CategorySection({ id, categoryId, seoAlias, title, brands, products }: CategorySectionProps) {
   return (
     <section id={id}>
       <div className="flex items-center gap-3 border-b-2 border-brand pb-2 mb-4 mt-2">
@@ -18,7 +21,12 @@ function CategorySection({ id, title, brands, products }: CategorySectionProps) 
             <span key={brand}>{brand}</span>
           ))}
         </div>
-        <a href="#" className="ml-auto text-[12px] text-brand font-medium whitespace-nowrap">Xem tất cả →</a>
+        <Link
+          to={seoAlias ? `/danh-muc/${seoAlias}` : `/san-pham?categoryId=${encodeURIComponent(categoryId)}`}
+          className="ml-auto text-[12px] text-brand font-medium whitespace-nowrap"
+        >
+          Xem tất cả →
+        </Link>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {products.map((product) => (

@@ -161,3 +161,52 @@ Admin edits (reorder/add/remove in any section) visible on storefront refresh; e
 git add trac-dia-thien-phu-ui/src/pages/dashboard
 git commit -m "feat: drive homepage entity sections from collections API"
 ```
+
+### Task 5: Category section "Xem tất cả" link
+
+**Files:**
+- Modify: `trac-dia-thien-phu-ui/src/pages/dashboard/useHomepage.ts`, `trac-dia-thien-phu-ui/src/pages/dashboard/components/CategorySection.tsx`
+- Test: `npm run build`, `npm run lint` (no runner configured) + manual checklist below
+- Spec: `docs/specs/homepage.md` §7
+
+**Interfaces:**
+- Consumes: existing `byId` map in `useHomepage` (built from the single `listCategories()` call), `CategoryResponse.seoAlias`.
+- Produces: `CategorySectionData` gains `categoryId: string` and `seoAlias: string | null`; `CategorySection` renders a `<Link>` instead of `href="#"`. `DashboardPage` needs no change (`{...section}` already forwards every field).
+
+- [ ] **Step 1: Extend `CategorySectionData` and fill it in `useHomepage.ts`**
+
+Add `categoryId: string` and `seoAlias: string | null` to the `CategorySectionData` interface. In the `CATEGORY_COLLECTION` loop, keep `if (!c.referenceId) continue`, look up `const cat = byId.get(c.referenceId)`, and push `{ id: c.id, categoryId: c.referenceId, seoAlias: cat?.seoAlias ?? null, title: c.name, brands, products: page.content }`. No new request; a failed `listCategories()` leaves `seoAlias` null and the fallback URL still works.
+
+- [ ] **Step 2: Replace the placeholder anchor in `CategorySection.tsx`**
+
+Import `Link` from `react-router` (same as `CategorySidebar.tsx`) and add `categoryId`/`seoAlias` to `CategorySectionProps`. Replace `<a href="#" className="ml-auto ...">Xem tất cả →</a>` with:
+
+```tsx
+<Link
+  to={seoAlias ? `/danh-muc/${seoAlias}` : `/san-pham?categoryId=${encodeURIComponent(categoryId)}`}
+  className="ml-auto text-[12px] text-brand font-medium whitespace-nowrap"
+>
+  Xem tất cả →
+</Link>
+```
+
+- [ ] **Step 3: Run build to verify it passes**
+
+Run: `npm run build` (workdir `trac-dia-thien-phu-ui`)
+Expected: PASS (new fields are required in `CategorySectionData`, and `DashboardPage` passes them via spread, so no missing-prop error).
+
+- [ ] **Step 4: Run lint to verify it passes**
+
+Run: `npm run lint`
+Expected: PASS, 0 errors.
+
+- [ ] **Step 5: Manual checklist**
+
+With the API running: click `Xem tất cả →` on a section whose category has a `seoAlias` → lands on `/danh-muc/<alias>`, heading shows the category name, sidebar shows that category selected; on a category with a null alias → lands on `/san-pham?categoryId=<id>` with the same products; stopping the API still leaves a working `categoryId` fallback link; section title (collection name) unchanged.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add trac-dia-thien-phu-ui/src/pages/dashboard/useHomepage.ts trac-dia-thien-phu-ui/src/pages/dashboard/components/CategorySection.tsx trac-dia-thien-phu-ui/docs/specs/homepage.md trac-dia-thien-phu-ui/docs/plans/homepage.md
+git commit -m "feat: link category section Xem tat ca to its category page"
+```
