@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { useState, type FormEvent } from 'react'
 
 const inputClass = 'w-full text-base px-5 py-3 border border-gray-300 rounded-full text-gray-800 placeholder:text-gray-400 outline-none focus:border-brand bg-white'
@@ -38,7 +39,7 @@ function ContactForm() {
       <textarea placeholder="Nhập nội dung bạn muốn hỗ trợ" value={message} onChange={(event) => setMessage(event.target.value)} rows={6} className="w-full text-base px-5 py-3 border border-gray-300 rounded-3xl text-gray-800 placeholder:text-gray-400 outline-none focus:border-brand bg-white resize-y mb-4" />
       <label className="flex items-center gap-3 text-gray-500 mb-4 cursor-pointer">
         <input type="checkbox" required className="w-5 h-5 accent-[#22abff]" />
-        <span>Tôi đồng ý với <a href="#">Điều khoản và Chính sách bảo mật</a></span>
+        <span>Tôi đồng ý với <Link to="/dieu-khoan-su-dung" className="text-brand hover:underline">Điều khoản</Link> và <Link to="/chinh-sach-bao-mat" className="text-brand hover:underline">Chính sách bảo mật</Link></span>
       </label>
       <div className="text-center">
         <button type="submit" className="text-base font-bold text-white bg-brand px-10 py-3 rounded-xl hover:opacity-90">Gửi Tin Nhắn</button>

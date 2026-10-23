@@ -1,21 +1,13 @@
 import logo from '../../assets/logo.jpg'
 
 const aboutLinks = [
-  { label: 'Download phần mềm', href: '#' },
-  { label: 'Máy RTK', href: '#' },
-  { label: 'Máy toàn đạc điện tử', href: '#' },
-  { label: 'Máy thủy bình', href: '#' },
-  { label: 'Máy định vị GPS cầm tay', href: '#' },
-  { label: 'Đội ngũ chuyên gia', href: '#' },
   { label: 'Về Trắc Địa Thiên Phú', href: '/gioi-thieu' },
 ]
 
 const infoLinks = [
-  'Hướng dẫn mua hàng',
-  'Chính sách giao dịch chung',
-  'Bảo mật thông tin',
-  'Hệ thống chi nhánh',
-  'Chính sách vận chuyển',
+  { label: 'Chính sách bảo mật', href: '/chinh-sach-bao-mat' },
+  { label: 'Điều khoản sử dụng', href: '/dieu-khoan-su-dung' },
+  { label: 'Hướng dẫn mua hàng', href: '/huong-dan-mua-hang' }
 ]
 
 const addresses = [
@@ -60,7 +52,7 @@ function Footer() {
           <p className="font-bold uppercase text-gray-900 text-base mb-3">Thông tin hữu ích</p>
           <ul className="space-y-2">
             {infoLinks.map((link) => (
-              <li key={link}><a href="#" className="text-gray-600 hover:text-brand">{link}</a></li>
+              <li key={link.label}><a href={link.href} className="text-gray-600 hover:text-brand">{link.label}</a></li>
             ))}
           </ul>
         </div>

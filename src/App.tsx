@@ -4,6 +4,9 @@ import SiteLayout from './components/layout/SiteLayout.tsx'
 import DashboardPage from './pages/dashboard/DashboardPage.tsx'
 import IntroductionPage from './pages/introduction/IntroductionPage.tsx'
 import ContactPage from './pages/contact/ContactPage.tsx'
+import PrivacyPolicy from './pages/privacy_policy/PrivacyPolicy.tsx'
+import TermsOfUse from './pages/terms_of_use/TermsOfUse.tsx'
+import PurchaseGuide from './pages/purchase_guide/PurchaseGuide.tsx'
 import NewsPage from './pages/news/NewsPage.tsx'
 import NewsDetailPage from './pages/news/NewsDetailPage.tsx'
 import CustomerList from './pages/customer/CustomerList.tsx'
@@ -44,6 +47,9 @@ function App() {
           <Route path="/khach-hang" element={<CustomerList />} />
           <Route path="/khach-hang/:slug" element={<NewsDetailPage newsType="CUSTOMER_NEWS" listTitle="Khách hàng" listPath="/khach-hang" />} />
           <Route path="/lien-he" element={<ContactPage />} />
+          <Route path="/chinh-sach-bao-mat" element={<PrivacyPolicy />} />
+          <Route path="/dieu-khoan-su-dung" element={<TermsOfUse />} />
+          <Route path="/huong-dan-mua-hang" element={<PurchaseGuide />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </SiteLayout>
