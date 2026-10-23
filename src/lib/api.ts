@@ -222,6 +222,7 @@ export type CollectionType =
   | 'CATEGORY_COLLECTION'
   | 'SERVICE_BANNER_COLLECTION'
   | 'NEWS_COLLECTION'
+  | 'CATEGORY_SIDEBAR_COLLECTION'
 
 export interface CollectionResponse {
   id: string
