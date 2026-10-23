@@ -4,14 +4,13 @@ import ProductCard from './ProductCard.tsx'
 
 interface CategorySectionProps {
   id: string
-  categoryId: string
   seoAlias: string | null
   title: string
   brands: string[]
   products: ProductResponse[]
 }
 
-function CategorySection({ id, categoryId, seoAlias, title, brands, products }: CategorySectionProps) {
+function CategorySection({ id, seoAlias, title, brands, products }: CategorySectionProps) {
   return (
     <section id={id}>
       <div className="flex items-center gap-3 border-b-2 border-brand pb-2 mb-4 mt-2">
