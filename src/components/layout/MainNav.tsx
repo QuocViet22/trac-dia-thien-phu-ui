@@ -220,9 +220,9 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
         <ul className="flex-1 flex flex-wrap lg:flex-nowrap items-center overflow-x-auto hide-scrollbar text-sm font-medium text-gray-700 ml-0 lg:ml-4">
           <li className="whitespace-nowrap"><Link to="/" className={location.pathname === "/" ? activeLink : idleLink}>Trang chủ</Link></li>
           <li className="whitespace-nowrap"><a href="/thue-san-pham" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Thuê sản phẩm</a></li>
+          <li className="whitespace-nowrap"><a href="/sua-chua-va-kiem-dinh" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Sửa chữa & Kiểm định</a></li>
           <li className="whitespace-nowrap"><Link to="/gioi-thieu" className={location.pathname === "/gioi-thieu" ? activeLink : idleLink}>Giới thiệu</Link></li>
           <li className="whitespace-nowrap"><a href="/tin-tuc" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Tin tức</a></li>
-          {/* <li className="whitespace-nowrap"><Link to="/san-pham" className={location.pathname === "/san-pham" ? activeLink : idleLink}>Sản phẩm</Link></li> */}
           <li className="whitespace-nowrap"><a href="/lien-he" className="px-5 py-4 block hover:text-brand transition-colors flex items-center gap-1">Liên hệ</a></li>
           <li className="whitespace-nowrap"><Link to="/khach-hang" className={location.pathname === "/khach-hang" ? activeLink : idleLink}>Khách hàng</Link></li>
         </ul>

@@ -5,8 +5,8 @@ import { listNews, newsImage, type NewsResponse } from '../../lib/api.ts'
 import './CustomerList.css'
 
 const PAGE_SIZE = 12
-const PHONE = '0972.819.598'
-const WEBSITE = 'https://igeostore.vn/'
+const PHONE = '0983.927.945'
+const WEBSITE = 'https://tracdiathienphu.com'
 const IMAGE_FALLBACK = 'https://placehold.co/300x300?text=No+Image'
 
 /* ---------- icons ---------- */
