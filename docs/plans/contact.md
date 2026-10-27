@@ -1,248 +1,243 @@
-# Contact Page (/lien-he) — Implementation Plan
+# Contact Form Submission + Turnstile — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task (repo has no subagent tool; native inline execution). Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Serve `/lien-he` contact page ported from `src/pages/contact/contact.html` and restyled to the site theme, with a frontend-only form.
+**Goal:** Send the `/lien-he` form to `POST /api/customer-contacts` behind a Cloudflare Turnstile widget placed above `Gửi Tin Nhắn`.
 
-**Architecture:** `ContactPage.tsx` owns the layout (breadcrumb + 2-col grid + locations); `components/ContactForm.tsx` is a controlled form with submitted-state branch (no network); `components/CompanyInfo.tsx` and `components/LocationsSection.tsx` are pure presentational components with verbatim copy; `App.tsx` adds the route; `contact.html` is deleted last.
+**Architecture:** Copy the admin's proven widget (no `ready()`, async script, poll for `window.turnstile.render`, fail closed) into `src/components/`, add the sitekey plumbing and a production build guard, add the first POST to `src/lib/api.ts`, and rewrite `ContactForm` to submit, show a Vietnamese error on failure and reset the single-use token.
 
-**Tech Stack:** React 19 (`useState`), react-router 8, Tailwind v4 (`brand #22abff`), no new dependencies, no network calls.
+**Tech Stack:** React 19, Tailwind v4, Vite 8, TypeScript, no new dependencies, no test runner.
 
-**Spec:** `docs/specs/contact.md`
+**Spec:** `docs/specs/contact.md` (the original page-port tasks are complete and remain in git history)
 
 ## Global Constraints
 
-- `npm run build` (`tsc -b && vite build`) must pass; `npm run lint` must pass (exit 0).
-- No test runner — verification is build + lint + `npm run dev` visual check.
+- No test runner: verification is `npm run build` (typecheck), `npm run lint`, and a headless/dev check.
 - PowerShell 5.1: chain with `; if ($?) { ... }`, not `&&`.
-- `verbatimModuleSyntax: true` — type imports must use `import type`; `noUnusedLocals` + `noUnusedParameters` — no unused vars; `erasableSyntaxOnly: true` — no enums/namespaces/parameter properties.
-- Components ≤ ~100 lines each; Vietnamese copy verbatim from the spec/`contact.html`.
-- Zero network calls; form submit is local state only.
+- `verbatimModuleSyntax` (use `import type`), `noUnusedLocals`/`noUnusedParameters`, `erasableSyntaxOnly`.
+- Vietnamese copy exactly as the spec; site theme brand `#22abff`.
+- The Turnstile script stays `async defer`; **never** call `turnstile.ready()`.
+- Vite loads only `.env`, `.env.local`, `.env.<mode>`, `.env.<mode>.local`. `.env.example` is documentation and is never read.
+- Do not commit `.env.development.local` (local-only override).
 
 ## Review Focus
 
-- Submitting with empty required fields must be blocked by native validation, never show the thank-you state (Task 1 dev check: click submit empty, then fill and resubmit).
-- The thank-you state must replace the form (not duplicate it) after valid submit (Task 1 code branches on `submitted`; dev check).
-- Map iframe must keep `title`, `loading="lazy"` attributes (Task 2 code; dev check it loads).
-- Mobile must stack form/info/locations to one column with no horizontal overflow (Task 3 dev check at 375px width).
-- `contact.html` deletion must not break anything (Task 3: file unreferenced; build check).
+- A production build with no sitekey must fail, not ship a form that can never submit (Task 1 guard check).
+- The widget must never crash the page when the CDN is blocked or the sitekey is wrong (Task 2: polling deadline + try/catch + error callback).
+- Submitting without a token must send no request and explain why (Task 4).
+- After any failed submit the captcha must be reset, because the token is single-use (Task 4 `resetKey`).
+- The form must keep the visitor's input after a failure (Task 4 does not clear field state).
 
 ---
 
-### Task 1: Create `ContactForm` (controlled frontend-only form)
+### Task 1: Sitekey plumbing and production build guard
 
 **Files:**
-- Create: `src/pages/contact/components/ContactForm.tsx`
+- Modify: `index.html`
+- Create: `.env.development`
+- Modify: `.env.production`
+- Modify: `.env.example`
+- Modify: `vite.config.ts`
 
 **Interfaces:**
-- Consumes: nothing (local state only).
-- Produces: `ContactForm` default export — consumed by Task 3.
+- Produces: `import.meta.env.VITE_TURNSTILE_SITE_KEY` available in dev and prod builds; a build that fails without it.
 
-- [ ] **Step 1: Create `src/pages/contact/components/ContactForm.tsx` with the exact content below.**
+- [ ] **Step 1: Add the script and the env values.**
 
-```tsx
-import { useState, type FormEvent } from 'react'
+`index.html`, in `<head>` before the module script:
 
-const inputClass = 'w-full text-base px-5 py-3 border border-gray-300 rounded-full text-gray-800 placeholder:text-gray-400 outline-none focus:border-brand bg-white'
+```html
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+```
 
-function ContactForm() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [address, setAddress] = useState('')
-  const [phone, setPhone] = useState('')
-  const [message, setMessage] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+`.env.development` (new): `VITE_TURNSTILE_SITE_KEY=0x4AAAAAAFoJRbtaimQhhY-t`
+`.env.production`: add the same line next to `VITE_API_URL`.
+`.env.example`: add `VITE_TURNSTILE_SITE_KEY=` plus the existing note style: `# Template only: Vite never loads this file.`
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    // Backend contact endpoint does not exist yet — frontend-only success state.
-    setSubmitted(true)
+- [ ] **Step 2: Add the guard to `vite.config.ts`.**
+
+Keep `react()` and `tailwindcss()`; switch to the callback form and throw for a production build with no key, exactly like the admin repo:
+
+```ts
+export default defineConfig(({ mode }) => {
+  if (mode === 'production' && !loadEnv(mode, '.', '').VITE_TURNSTILE_SITE_KEY) {
+    throw new Error('VITE_TURNSTILE_SITE_KEY is required for a production build')
   }
-
-  if (submitted) {
-    return (
-      <div className="text-center py-10">
-        <p className="text-xl font-bold text-gray-900 mb-2">Cảm ơn bạn!</p>
-        <p className="text-gray-600">Nhân viên tư vấn sẽ sớm liên hệ với bạn để tư vấn. Xin cảm ơn.</p>
-      </div>
-    )
-  }
-
-  return (
-    <form onSubmit={onSubmit}>
-      <div className="grid gap-4 md:grid-cols-2 mb-4">
-        <input type="text" placeholder="Nhập họ và tên bạn" required value={name} onChange={(event) => setName(event.target.value)} className={inputClass} />
-        <input type="email" placeholder="E-mail" required value={email} onChange={(event) => setEmail(event.target.value)} className={inputClass} />
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 mb-4">
-        <input type="text" placeholder="Địa chỉ của bạn" value={address} onChange={(event) => setAddress(event.target.value)} className={inputClass} />
-        <input type="tel" placeholder="Số điện thoại tên bạn" required value={phone} onChange={(event) => setPhone(event.target.value)} className={inputClass} />
-      </div>
-      <textarea placeholder="Nhập nội dung bạn muốn hỗ trợ" value={message} onChange={(event) => setMessage(event.target.value)} rows={6} className="w-full text-base px-5 py-3 border border-gray-300 rounded-3xl text-gray-800 placeholder:text-gray-400 outline-none focus:border-brand bg-white resize-y mb-4" />
-      <label className="flex items-center gap-3 text-gray-500 mb-4 cursor-pointer">
-        <input type="checkbox" required className="w-5 h-5 accent-[#22abff]" />
-        <span>Tôi đồng ý với <a href="#">Điều khoản và Chính sách bảo mật</a></span>
-      </label>
-      <div className="text-center">
-        <button type="submit" className="text-base font-bold text-white bg-brand px-10 py-3 rounded-xl hover:opacity-90">Gửi Tin Nhắn</button>
-      </div>
-      <p className="text-gray-600 mt-6">Trường có dấu (<span className="text-red-500">*</span>) là bắt buộc.</p>
-    </form>
-  )
-}
-
-export default ContactForm
+  return { plugins: [react(), tailwindcss()] }
+})
 ```
 
-- [ ] **Step 2: Verify typecheck passes.**
+- [ ] **Step 3: Verify both directions.**
 
-Run: `npm run build`
-Expected: exit 0 (nothing imports the new component yet; proves it compiles).
+```powershell
+node --input-type=module -e "import { loadEnv } from 'vite'; for (const m of ['development','production']) console.log(m, loadEnv(m, process.cwd(), '').VITE_TURNSTILE_SITE_KEY)"
+# expect the key for both modes
+$bak = '.env.production.bak'; Move-Item '.env.production' $bak
+try { npx vite build *> $env:TEMP\ui-guard.log; $code = $LASTEXITCODE } finally { Move-Item $bak '.env.production' -Force }
+# expect $code non-zero and 'VITE_TURNSTILE_SITE_KEY is required' in the log
+npm run build
+# expect exit 0
+```
+
+- [ ] **Step 4: Commit.**
+
+```bash
+git add index.html vite.config.ts .env.development .env.production .env.example
+git commit -m "chore: load the Turnstile sitekey in dev and prod, guard production builds"
+```
 
 ---
 
-### Task 2: Create `CompanyInfo` + `LocationsSection` (verbatim presentational)
+### Task 2: `TurnstileWidget` component
 
 **Files:**
-- Create: `src/pages/contact/components/CompanyInfo.tsx`
-- Create: `src/pages/contact/components/LocationsSection.tsx`
+- Create: `src/components/TurnstileWidget.tsx`
 
 **Interfaces:**
-- Consumes: nothing.
-- Produces: `CompanyInfo`, `LocationsSection` default exports — consumed by Task 3.
+- Consumes: `import.meta.env.VITE_TURNSTILE_SITE_KEY`.
+- Produces: `TurnstileWidget({ action, onToken, resetKey }: { action: 'contact'; onToken: (token: string | null) => void; resetKey: number })`.
 
-- [ ] **Step 1: Create `src/pages/contact/components/CompanyInfo.tsx` with the exact content below.**
+- [ ] **Step 1: Copy the admin implementation and adapt it.**
 
-```tsx
-function CompanyInfo() {
-  return (
-    <div>
-      <h2 className="text-xl font-bold text-gray-900 text-center mb-4">Thông tin chung</h2>
-      <div className="space-y-4 text-gray-800">
-        <p><b>Tên Công ty:</b> CÔNG TY TNHH IGEO SYSTEM</p>
-        <p><b>Tên Quốc tế:</b> IGEO SYSTEM COMPANY LIMITED</p>
-        <p><b>Tên viết tắt:</b> IGEO SYSTEM CO.,LDT</p>
-        <p><b>Giấy chứng nhận đăng ký Doanh nghiệp:</b> Số 2803136812 do Cục Thuế Tỉnh Thanh Hoá cấp lần đầu ngày 2021-10-06.</p>
-        <p><b>Vốn điều lệ:</b> 2.000.000.000 đồng (Hai tỷ đồng).</p>
-      </div>
-    </div>
-  )
-}
+Source: `trac-dia-thien-phu-admin/src/features/auth/TurnstileWidget.tsx` at commit `6dc0a0f`. Copy it verbatim except:
 
-export default CompanyInfo
-```
+- Replace the outer `className="login-turnstile"` with `className="flex justify-center mb-4"` (both the success and failure branches).
+- Keep: the `declare global` block, `siteKey()`, the 10 s polling for `typeof window.turnstile?.render === 'function'`, the try/catch around `render`, the dev-only `console.error` of the Cloudflare error code, `widgetRef.current = null` in `error-callback`, `remove()` only in the cleanup, the hidden-container-plus-sibling-message failure state, and the exact failure copy `Không tải được xác thực bảo mật. Vui lòng tải lại trang.`
+- No `ready()` call anywhere.
 
-- [ ] **Step 2: Create `src/pages/contact/components/LocationsSection.tsx` with the exact content below.**
-
-```tsx
-const offices = [
-  {
-    name: 'Văn phòng Thanh Hóa',
-    address: 'Lô 28, Nơ 17, đường Lê Dụ Tông, phường Đông Vệ. TP. Thanh Hóa',
-    phone: '0929.939.789',
-    email: 'congtyigeo@gmail.com',
-  },
-  {
-    name: 'Văn Phòng Hà Nội',
-    address: 'Số 12A -D8, Khu D, KĐT Geleximco, Đ.Lê Trọng Tấn, Q.Hà Đông, TP Hà Nội, Việt Nam',
-    phone: '0929.939.789',
-    email: 'congtyigeo@gmail.com',
-  },
-]
-
-function LocationsSection() {
-  return (
-    <section className="grid gap-6 lg:grid-cols-[2fr_1fr] items-start mt-10">
-      <div className="h-[400px] lg:h-[560px] overflow-hidden rounded-xl bg-gray-100">
-        <iframe
-          src="https://www.google.com/maps?q=Thanh+Hóa,+Việt+Nam&output=embed"
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="Bản đồ iGeo System"
-          className="w-full h-full border-0"
-        />
-      </div>
-      <div>
-        <h2 className="text-xl font-bold text-brand mb-4">Hệ thống cơ sở của iGeo System</h2>
-        {offices.map((office) => (
-          <div key={office.name} className="bg-white rounded-xl border border-gray-200 p-5 mb-4">
-            <h3 className="text-gray-900 mb-1">{office.name}</h3>
-            <div className="pl-5 text-gray-700 space-y-1">
-              <div>{office.address}</div>
-              <div>{office.phone}</div>
-              <div>{office.email}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-export default LocationsSection
-```
-
-- [ ] **Step 3: Verify typecheck passes.**
-
-Run: `npm run build`
-Expected: exit 0 (nothing imports the new components yet; proves they compile).
-
----
-
-### Task 3: Create `ContactPage` + route + delete `contact.html` and verify
-
-**Files:**
-- Create: `src/pages/contact/ContactPage.tsx`
-- Modify: `src/App.tsx`
-- Delete: `src/pages/contact/contact.html`
-
-**Interfaces:**
-- Consumes: `ContactForm`, `CompanyInfo`, `LocationsSection` (Tasks 1–2).
-- Produces: working `/lien-he` page. Nothing downstream.
-
-- [ ] **Step 1: Create `src/pages/contact/ContactPage.tsx` with the exact content below.**
-
-```tsx
-import { Link } from 'react-router'
-import ContactForm from './components/ContactForm.tsx'
-import CompanyInfo from './components/CompanyInfo.tsx'
-import LocationsSection from './components/LocationsSection.tsx'
-
-function ContactPage() {
-  return (
-    <div className="max-w-7xl mx-auto px-4 lg:px-8 py-4">
-      <nav aria-label="Breadcrumb" className="text-sm text-gray-500 mb-3">
-        <Link to="/" className="hover:text-brand">Trang chủ</Link>
-        <span className="mx-2">/</span>
-        <span className="text-gray-800 font-medium">Liên hệ</span>
-      </nav>
-      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Liên hệ</h1>
-      <div className="grid gap-6 lg:grid-cols-[2fr_1fr] items-start">
-        <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-8">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center uppercase">Thông tin liên hệ</h2>
-          <div className="text-center text-gray-600 mt-1 mb-6">
-            <p>Nhân viên tư vấn sẽ sớm liên hệ với bạn để tư vấn.</p>
-            <p>Xin cảm ơn.</p>
-          </div>
-          <ContactForm />
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-8">
-          <CompanyInfo />
-        </div>
-      </div>
-      <LocationsSection />
-    </div>
-  )
-}
-
-export default ContactPage
-```
-
-- [ ] **Step 2: Wire the `/lien-he` route in `src/App.tsx`.** Add the import `import ContactPage from './pages/contact/ContactPage.tsx'` alongside the other page imports, and add `<Route path="/lien-he" element={<ContactPage />} />` alongside the other routes.
-
-- [ ] **Step 3: Delete `src/pages/contact/contact.html`.** Content is now fully ported; the file is unreferenced.
-
-- [ ] **Step 4: Verify.**
+- [ ] **Step 2: Verify build + lint.**
 
 Run: `npm run build; if ($?) { npm run lint }`
-Expected: both exit 0. Then `npm run dev`: `/lien-he` shows form card left, info card right, locations below in site theme; valid submit shows thank-you state instead of the form; empty submit blocked by native validation; map loads; mobile stacks cleanly at 375px; `/`, `/gioi-thieu`, `/san-pham`, `/tin-tuc` unchanged.
+Expected: both exit 0.
+
+- [ ] **Step 3: Commit.**
+
+```bash
+git add src/components/TurnstileWidget.tsx
+git commit -m "feat: add the Turnstile widget to the public site"
+```
+
+---
+
+### Task 3: `createCustomerContact` in `src/lib/api.ts`
+
+**Files:**
+- Modify: `src/lib/api.ts`
+
+**Interfaces:**
+- Consumes: `API_BASE`, `ApiError` (already exported).
+- Produces: `CustomerContactPayload` and `createCustomerContact(payload: CustomerContactPayload): Promise<void>`.
+
+- [ ] **Step 1: Add the payload type and POST helper.**
+
+```ts
+export interface CustomerContactPayload {
+  name: string
+  email: string
+  address: string | null
+  phone: string
+  message: string | null
+  turnstileToken: string
+}
+
+export async function createCustomerContact(payload: CustomerContactPayload): Promise<void> {
+  // POST `${API_BASE}/api/customer-contacts`; on !ok read { message } and throw ApiError(status, message)
+}
+```
+
+- [ ] **Step 2: Verify build.**
+
+Run: `npm run build`
+Expected: exit 0.
+
+- [ ] **Step 3: Commit.**
+
+```bash
+git add src/lib/api.ts
+git commit -m "feat: add the contact submission API call"
+```
+
+---
+
+### Task 4: Submit from `ContactForm`
+
+**Files:**
+- Modify: `src/pages/contact/components/ContactForm.tsx`
+
+**Interfaces:**
+- Consumes: `TurnstileWidget` (Task 2), `createCustomerContact` (Task 3).
+- Produces: a form that POSTs and only shows the thank-you state on success.
+
+- [ ] **Step 1: Add submission state and the widget.**
+
+Add `token: string | null`, `submitting: boolean`, `error: string`, `resetKey: number` to the existing field state. Render inside the existing centered block, above the button:
+
+```tsx
+<div className="text-center">
+  <TurnstileWidget action="contact" onToken={setToken} resetKey={resetKey} />
+  <button type="submit" disabled={submitting} className="...">Gửi Tin Nhắn</button>
+</div>
+```
+
+- [ ] **Step 2: Replace the submit handler.**
+
+Rules, in order: `event.preventDefault()`; if `!token` set `error` to `Vui lòng hoàn tất xác thực bảo mật.` and return without a request; set `submitting`, clear `error`; `await createCustomerContact({ name: name.trim(), email: email.trim(), address: address.trim() || null, phone: phone.trim(), message: message.trim() || null, turnstileToken: token })`; on success `setSubmitted(true)`; on failure set `error` to `Không gửi được tin nhắn. Vui lòng thử lại.`, log the error with `console.error` only when `import.meta.env.DEV`, set `token` to `null` and `setResetKey((k) => k + 1)`; always clear `submitting`.
+
+Render `error` above the widget as `<p role="alert" className="text-center text-red-500 mb-2">{error}</p>`.
+
+- [ ] **Step 3: Verify build + lint.**
+
+Run: `npm run build; if ($?) { npm run lint }`
+Expected: both exit 0.
+
+- [ ] **Step 4: Commit.**
+
+```bash
+git add src/pages/contact/components/ContactForm.tsx
+git commit -m "feat: submit the contact form with a Turnstile token"
+```
+
+---
+
+### Task 5: End-to-end verification
+
+**Files:**
+- Create (temporary, uncommitted): `.env.development.local`
+- Modify: `docs/specs/contact.md` (only if behaviour changed)
+
+**Interfaces:**
+- Consumes: the API smoke run from `trac-dia-thien-phu-api/docs/plans/customer_contact.md` Task 4 (port 8081, test profile, Turnstile test secret).
+
+- [ ] **Step 1: Point the dev server at the smoke API with the always-pass sitekey.**
+
+`.env.development.local`:
+
+```
+VITE_API_URL=http://localhost:8081
+VITE_TURNSTILE_SITE_KEY=1x00000000000000000000AA
+```
+
+This file is local-only; delete it after the check. It exists because the real sitekey does not allow `localhost` (110200) until Hostname Management is updated.
+
+- [ ] **Step 2: Check the happy path.**
+
+Run `npm run dev`, open `/lien-he`, fill the form, solve/pass the widget, submit. Expected: the thank-you state replaces the form, and the API has a new row (the smoke API's `GET` needs a JWT; check the row with `select name, phone from customer_contact_info order by created_at desc limit 1` on the test DB).
+
+- [ ] **Step 3: Check the failure path.**
+
+Stop the smoke API (or point `VITE_API_URL` at a dead port), submit again with a fresh token. Expected: `Không gửi được tin nhắn. Vui lòng thử lại.`, inputs preserved, and the widget re-renders with a new token (reset). Restart the API and confirm the next submit succeeds.
+
+- [ ] **Step 4: Check the token guard and the headless load.**
+
+Submitting with the widget still loading must show `Vui lòng hoàn tất xác thực bảo mật.` and send no request (Network tab). Then load `/lien-he` headless and confirm the widget container mounts, there is no uncaught exception, and no React error boundary.
+
+- [ ] **Step 5: Remove `.env.development.local`.**
+
+- [ ] **Step 6: Update the spec if behaviour changed** (final step; compare with `docs/specs/contact.md`).
+
+- [ ] **Step 7: Commit.**
+
+```bash
+git add docs/specs/contact.md
+git commit -m "docs: update the contact spec after implementation"
+```

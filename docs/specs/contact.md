@@ -80,7 +80,8 @@ Target: production-ready React page at `/lien-he` inside the existing `SiteLayou
   `Cannot find Widget`.
 - Local dev needs `localhost` allowlisted in the sitekey's Hostname Management,
   otherwise `error-callback` reports `110200` and the widget lands on that same
-  message.
+  message. The production host `tracdiathienphu.viethq.tech` must be allowlisted
+  too (the API's CORS already allows it).
 
 ## Content
 
