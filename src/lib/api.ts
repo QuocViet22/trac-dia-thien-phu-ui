@@ -236,3 +236,33 @@ export interface CollectionResponse {
 export function listCollections(type: CollectionType): Promise<CollectionResponse[]> {
   return fetchData<CollectionResponse[]>(`/api/collections?collectionType=${type}`)
 }
+
+export interface CustomerContactPayload {
+  name: string
+  email: string
+  address: string | null
+  phone: string
+  message: string | null
+  turnstileToken: string
+}
+
+export async function createCustomerContact(payload: CustomerContactPayload): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/customer-contacts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (response.ok) {
+    return
+  }
+  let message = `Request failed: ${response.status}`
+  try {
+    const body = (await response.json()) as Partial<ApiResponse<unknown>>
+    if (body.message) {
+      message = body.message
+    }
+  } catch {
+    // Non-JSON error body: keep the status-based message.
+  }
+  throw new ApiError(response.status, message)
+}
