@@ -7,7 +7,7 @@ function Header() {
     <header className="bg-white py-3 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 flex flex-wrap items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-2" aria-label="Về trang chủ Trắc Địa Thiên Phú">
-          <img src={logo} alt="Trắc Địa Thiên Phú" className="h-12 w-auto object-contain" />
+          <img src={logo} alt="Trắc Địa Thiên Phú" className="h-16 w-auto object-contain" />
         </Link>
 
         <ProductSearch />

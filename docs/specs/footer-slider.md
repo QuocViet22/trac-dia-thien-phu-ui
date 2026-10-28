@@ -21,13 +21,15 @@ Target: a site-wide partner band rendered above the footer on every page.
   matching the existing `Footer.tsx` logo usage — bundled assets cannot 404, so `Img`'s remote
   fallback is not needed. Logos are **not** clickable (no dead `#` anchors, and not every partner
   is a product brand in the API).
-- Paging: `CHUNK = 5` logos per page, `grid grid-cols-2 md:grid-cols-5` inside
-  `max-w-7xl mx-auto px-4 lg:px-8` → one full row of 5 on desktop, 2 per row on mobile. Pages
-  advance over the sliced array, so a page is never padded with holes.
-- With 5 logos there is a single page, so the band is effectively static: the dots, the autoplay
-  timer and the pause control only render when a further logo makes `TOTAL_PAGES > 1`. Paging,
-  autoplay (5s, `setTimeout` re-armed when the active page changes so a dot click restarts the
-  countdown) and reduced-motion handling are already in place for that case.
+- Paging: page size follows the breakpoint — 2 logos (one row) below 768px, 5 logos in one
+  row from 768px up — inside `max-w-7xl mx-auto px-4 lg:px-8`, with the grid at
+  `grid grid-cols-2 md:grid-cols-5`, so a page always fills whole rows. A
+  `matchMedia('(min-width: 768px)')` listener in the component re-slices pages on resize.
+  Pages advance over the sliced array, so a page is never padded with holes (the last page is
+  short when the logo count is odd, e.g. 1 of 2 logos).
+- Dots and autoplay only render when there is more than one page for the current breakpoint
+  (e.g. 7 logos = 2 desktop pages, 2 mobile pages). Autoplay is a 5s `setTimeout` re-armed when
+  the active page changes, so a dot click restarts the countdown; reduced-motion stays on page 1.
 - Pause control: a small play/pause `<button>` sits after the dots
   (`aria-label="Tạm dừng logo đối tác"` / `"Chạy tiếp logo đối tác"`, `aria-pressed`) so keyboard
   and assistive-technology users can stop the rotation (WCAG 2.2.2, level A); hovering or
@@ -54,9 +56,10 @@ Target: a site-wide partner band rendered above the footer on every page.
 - `npm run build` passes; `npm run lint` passes. Each logo is emitted as its own asset file
   (all 5 exceed Vite's 4KB inline limit), so `loading="lazy"` is meaningful.
 - `npm run dev` — band sits above the footer on home, `/san-pham`, `/tin-tuc`, `/lien-he`,
-  `/gioi-thieu`; desktop shows the 5 logos in one row and mobile 2 per row with no horizontal
-  scrollbar; no dots are rendered while there are only 5 logos; hovering pauses the band when
-  paging is active; with reduced motion enabled it stays on page 1.
+  `/gioi-thieu`; desktop shows 5 logos in one row and mobile 2 logos in one row (7 logos = 4
+  pages, the last holding a single logo) with no horizontal scrollbar; resizing across 768px
+  re-slices pages without a blank slide; hovering pauses the band; with reduced motion enabled
+  it stays on page 1.
 - A 6th logo file plus its entry in `partners` must show dots, a pause button and 5s rotation
   without further code changes.
 

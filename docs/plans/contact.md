@@ -1,243 +1,207 @@
-# Contact Form Submission + Turnstile — Implementation Plan
+# Contact page (/lien-he) Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Send the `/lien-he` form to `POST /api/customer-contacts` behind a Cloudflare Turnstile widget placed above `Gửi Tin Nhắn`.
+**Goal:** Update the contact form to enforce proper validation - make "Nội dung" mandatory, validate phone as numbers only, and enable "Gửi Tin Nhắn" button only when all mandatory fields are filled and captcha is completed.
 
-**Architecture:** Copy the admin's proven widget (no `ready()`, async script, poll for `window.turnstile.render`, fail closed) into `src/components/`, add the sitekey plumbing and a production build guard, add the first POST to `src/lib/api.ts`, and rewrite `ContactForm` to submit, show a Vietnamese error on failure and reset the single-use token.
+**Architecture:** Modify ContactForm component to track form validity state. Add phone number validation (digits only). Track all required field values, email validity, phone validity, captcha token, and agree checkbox. Compute isFormValid and disable button accordingly. Make message field required.
 
-**Tech Stack:** React 19, Tailwind v4, Vite 8, TypeScript, no new dependencies, no test runner.
+**Tech Stack:** React 19, TypeScript, React Router
 
-**Spec:** `docs/specs/contact.md` (the original page-port tasks are complete and remain in git history)
+**Spec:** docs/specs/contact.md
 
 ## Global Constraints
-
-- No test runner: verification is `npm run build` (typecheck), `npm run lint`, and a headless/dev check.
-- PowerShell 5.1: chain with `; if ($?) { ... }`, not `&&`.
-- `verbatimModuleSyntax` (use `import type`), `noUnusedLocals`/`noUnusedParameters`, `erasableSyntaxOnly`.
-- Vietnamese copy exactly as the spec; site theme brand `#22abff`.
-- The Turnstile script stays `async defer`; **never** call `turnstile.ready()`.
-- Vite loads only `.env`, `.env.local`, `.env.<mode>`, `.env.<mode>.local`. `.env.example` is documentation and is never read.
-- Do not commit `.env.development.local` (local-only override).
-
-## Review Focus
-
-- A production build with no sitekey must fail, not ship a form that can never submit (Task 1 guard check).
-- The widget must never crash the page when the CDN is blocked or the sitekey is wrong (Task 2: polling deadline + try/catch + error callback).
-- Submitting without a token must send no request and explain why (Task 4).
-- After any failed submit the captcha must be reset, because the token is single-use (Task 4 `resetKey`).
-- The form must keep the visitor's input after a failure (Task 4 does not clear field state).
+- Follow existing patterns in the codebase
+- Use TypeScript with verbatimModuleSyntax (type imports must use import type)
+- No unused locals/parameters
+- Keep changes minimal and focused
 
 ---
 
-### Task 1: Sitekey plumbing and production build guard
-
-**Files:**
-- Modify: `index.html`
-- Create: `.env.development`
-- Modify: `.env.production`
-- Modify: `.env.example`
-- Modify: `vite.config.ts`
-
-**Interfaces:**
-- Produces: `import.meta.env.VITE_TURNSTILE_SITE_KEY` available in dev and prod builds; a build that fails without it.
-
-- [x] **Step 1: Add the script and the env values.**
-
-`index.html`, in `<head>` before the module script:
-
-```html
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-```
-
-`.env.development` (new): `VITE_TURNSTILE_SITE_KEY=0x4AAAAAAFoJRbtaimQhhY-t`
-`.env.production`: add the same line next to `VITE_API_URL`.
-`.env.example`: add `VITE_TURNSTILE_SITE_KEY=` plus the existing note style: `# Template only: Vite never loads this file.`
-
-- [x] **Step 2: Add the guard to `vite.config.ts`.**
-
-Keep `react()` and `tailwindcss()`; switch to the callback form and throw for a production build with no key, exactly like the admin repo:
-
-```ts
-export default defineConfig(({ mode }) => {
-  if (mode === 'production' && !loadEnv(mode, '.', '').VITE_TURNSTILE_SITE_KEY) {
-    throw new Error('VITE_TURNSTILE_SITE_KEY is required for a production build')
-  }
-  return { plugins: [react(), tailwindcss()] }
-})
-```
-
-- [x] **Step 3: Verify both directions.**
-
-```powershell
-node --input-type=module -e "import { loadEnv } from 'vite'; for (const m of ['development','production']) console.log(m, loadEnv(m, process.cwd(), '').VITE_TURNSTILE_SITE_KEY)"
-# expect the key for both modes
-$bak = '.env.production.bak'; Move-Item '.env.production' $bak
-try { npx vite build *> $env:TEMP\ui-guard.log; $code = $LASTEXITCODE } finally { Move-Item $bak '.env.production' -Force }
-# expect $code non-zero and 'VITE_TURNSTILE_SITE_KEY is required' in the log
-npm run build
-# expect exit 0
-```
-
-- [x] **Step 4: Commit.**
-
-```bash
-git add index.html vite.config.ts .env.development .env.production .env.example
-git commit -m "chore: load the Turnstile sitekey in dev and prod, guard production builds"
-```
-
----
-
-### Task 2: `TurnstileWidget` component
-
-**Files:**
-- Create: `src/components/TurnstileWidget.tsx`
-
-**Interfaces:**
-- Consumes: `import.meta.env.VITE_TURNSTILE_SITE_KEY`.
-- Produces: `TurnstileWidget({ action, onToken, resetKey }: { action: 'contact'; onToken: (token: string | null) => void; resetKey: number })`.
-
-- [x] **Step 1: Copy the admin implementation and adapt it.**
-
-Source: `trac-dia-thien-phu-admin/src/features/auth/TurnstileWidget.tsx` at commit `6dc0a0f`. Copy it verbatim except:
-
-- Replace the outer `className="login-turnstile"` with `className="flex justify-center mb-4"` (both the success and failure branches).
-- Keep: the `declare global` block, `siteKey()`, the 10 s polling for `typeof window.turnstile?.render === 'function'`, the try/catch around `render`, the dev-only `console.error` of the Cloudflare error code, `widgetRef.current = null` in `error-callback`, `remove()` only in the cleanup, the hidden-container-plus-sibling-message failure state, and the exact failure copy `Không tải được xác thực bảo mật. Vui lòng tải lại trang.`
-- No `ready()` call anywhere.
-
-- [x] **Step 2: Verify build + lint.**
-
-Run: `npm run build; if ($?) { npm run lint }`
-Expected: both exit 0.
-
-- [x] **Step 3: Commit.**
-
-```bash
-git add src/components/TurnstileWidget.tsx
-git commit -m "feat: add the Turnstile widget to the public site"
-```
-
----
-
-### Task 3: `createCustomerContact` in `src/lib/api.ts`
-
-**Files:**
-- Modify: `src/lib/api.ts`
-
-**Interfaces:**
-- Consumes: `API_BASE`, `ApiError` (already exported).
-- Produces: `CustomerContactPayload` and `createCustomerContact(payload: CustomerContactPayload): Promise<void>`.
-
-- [x] **Step 1: Add the payload type and POST helper.**
-
-```ts
-export interface CustomerContactPayload {
-  name: string
-  email: string
-  address: string | null
-  phone: string
-  message: string | null
-  turnstileToken: string
-}
-
-export async function createCustomerContact(payload: CustomerContactPayload): Promise<void> {
-  // POST `${API_BASE}/api/customer-contacts`; on !ok read { message } and throw ApiError(status, message)
-}
-```
-
-- [x] **Step 2: Verify build.**
-
-Run: `npm run build`
-Expected: exit 0.
-
-- [x] **Step 3: Commit.**
-
-```bash
-git add src/lib/api.ts
-git commit -m "feat: add the contact submission API call"
-```
-
----
-
-### Task 4: Submit from `ContactForm`
+### Task 1: Update ContactForm for validation and button state
 
 **Files:**
 - Modify: `src/pages/contact/components/ContactForm.tsx`
 
-**Interfaces:**
-- Consumes: `TurnstileWidget` (Task 2), `createCustomerContact` (Task 3).
-- Produces: a form that POSTs and only shows the thank-you state on success.
+**Changes needed:**
+1. Add state for agree checkbox
+2. Add validation for phone (digits only)
+3. Add validation for email format (basic)
+4. Compute isFormValid based on all conditions
+5. Make message field required
+6. Disable button when form is not valid
+7. Prevent non-numeric input in phone field
 
-- [x] **Step 1: Add submission state and the widget.**
+**Implementation:**
 
-Add `token: string | null`, `submitting: boolean`, `error: string`, `resetKey: number` to the existing field state. Render inside the existing centered block, above the button:
+- [ ] **Step 1: Add agree checkbox state and phone validation helper**
 
+Update imports and add state:
 ```tsx
-<div className="text-center">
-  <TurnstileWidget action="contact" onToken={setToken} resetKey={resetKey} />
-  <button type="submit" disabled={submitting} className="...">Gửi Tin Nhắn</button>
-</div>
+import { Link } from 'react-router'
+import { useState, type FormEvent } from 'react'
+import TurnstileWidget from '../../../components/TurnstileWidget'
+import { createCustomerContact } from '../../../lib/api'
+
+const inputClass = 'w-full text-base px-5 py-3 border border-gray-300 rounded-full text-gray-800 placeholder:text-gray-400 outline-none focus:border-brand bg-white'
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+}
+
+function isValidPhone(phone: string): boolean {
+  const trimmed = phone.trim()
+  return trimmed.length > 0 && /^\d+$/.test(trimmed)
+}
+
+function ContactForm() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
+  const [phone, setPhone] = useState('')
+  const [message, setMessage] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [token, setToken] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+  const [resetKey, setResetKey] = useState(0)
+  const [agreed, setAgreed] = useState(false)
+  ...
+}
 ```
 
-- [x] **Step 2: Replace the submit handler.**
+- [ ] **Step 2: Compute form validity**
 
-Rules, in order: `event.preventDefault()`; if `!token` set `error` to `Vui lòng hoàn tất xác thực bảo mật.` and return without a request; set `submitting`, clear `error`; `await createCustomerContact({ name: name.trim(), email: email.trim(), address: address.trim() || null, phone: phone.trim(), message: message.trim() || null, turnstileToken: token })`; on success `setSubmitted(true)`; on failure set `error` to `Không gửi được tin nhắn. Vui lòng thử lại.`, log the error with `console.error` only when `import.meta.env.DEV`, set `token` to `null` and `setResetKey((k) => k + 1)`; always clear `submitting`.
+Add computed validity:
+```tsx
+const isFormValid =
+  name.trim() !== '' &&
+  isValidEmail(email) &&
+  isValidPhone(phone) &&
+  message.trim() !== '' &&
+  agreed &&
+  token !== null
+```
 
-Render `error` above the widget as `<p role="alert" className="text-center text-red-500 mb-2">{error}</p>`.
+- [ ] **Step 3: Update phone input to only accept numbers**
 
-- [x] **Step 3: Verify build + lint.**
+```tsx
+<input
+  type="tel"
+  placeholder="Số điện thoại"
+  required
+  value={phone}
+  onChange={(event) => {
+    const value = event.target.value.replace(/\D/g, '')
+    setPhone(value)
+  }}
+  className={inputClass}
+/>
+```
 
-Run: `npm run build; if ($?) { npm run lint }`
-Expected: both exit 0.
+- [ ] **Step 4: Make message required and update placeholder**
 
-- [x] **Step 4: Commit.**
+```tsx
+<textarea
+  placeholder="Nhập nội dung bạn muốn hỗ trợ *"
+  required
+  value={message}
+  onChange={(event) => setMessage(event.target.value)}
+  rows={6}
+  className="w-full text-base px-5 py-3 border border-gray-300 rounded-3xl text-gray-800 placeholder:text-gray-400 outline-none focus:border-brand bg-white resize-y mb-4"
+/>
+```
+
+- [ ] **Step 5: Update agree checkbox to be controlled**
+
+```tsx
+<label className="flex items-center gap-3 text-gray-500 mb-4 cursor-pointer">
+  <input
+    type="checkbox"
+    required
+    checked={agreed}
+    onChange={(event) => setAgreed(event.target.checked)}
+    className="w-5 h-5 accent-[#22abff]"
+  />
+  <span>Tôi đồng ý với <Link to="/dieu-khoan-su-dung" className="text-brand hover:underline">Điều khoản</Link> và <Link to="/chinh-sach-bao-mat" className="text-brand hover:underline">Chính sách bảo mật</Link></span>
+</label>
+```
+
+- [ ] **Step 6: Update submit button to be disabled based on form validity**
+
+```tsx
+<button
+  type="submit"
+  disabled={submitting || !isFormValid}
+  className="text-base font-bold text-white bg-brand px-10 py-3 rounded-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  Gửi Tin Nhắn
+</button>
+```
+
+- [ ] **Step 7: Update onSubmit to rely on validation (or keep defensive check)**
+
+The button being disabled should prevent submission, but keep the token check as defensive:
+```tsx
+const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  event.preventDefault()
+  if (!isFormValid || !token) {
+    setError('Vui lòng điền đầy đủ thông tin và hoàn tất xác thực bảo mật.')
+    return
+  }
+  setSubmitting(true)
+  setError('')
+  try {
+    await createCustomerContact({
+      name: name.trim(),
+      email: email.trim(),
+      address: address.trim() || null,
+      phone: phone.trim(),
+      message: message.trim(),
+      turnstileToken: token,
+    })
+    setSubmitted(true)
+  } catch (err) {
+    if (import.meta.env.DEV) console.error(err)
+    setError('Không gửi được tin nhắn. Vui lòng thử lại.')
+    setToken(null)
+    setResetKey((k) => k + 1)
+  } finally {
+    setSubmitting(false)
+  }
+}
+```
+
+- [ ] **Step 8: Test the build**
+
+Run: `npm run build` (from trac-dia-thien-phu-ui directory)
+Expected: Build succeeds with no TypeScript errors
+
+- [ ] **Step 9: Commit**
 
 ```bash
 git add src/pages/contact/components/ContactForm.tsx
-git commit -m "feat: submit the contact form with a Turnstile token"
+git commit -m "feat: improve contact form validation and button state"
 ```
 
 ---
 
-### Task 5: End-to-end verification
+### Task 2: Update spec to mark as implemented (if needed)
 
 **Files:**
-- Create (temporary, uncommitted): `.env.development.local`
-- Modify: `docs/specs/contact.md` (only if behaviour changed)
+- Modify: `docs/specs/contact.md` (add implementation note)
 
-**Interfaces:**
-- Consumes: the API smoke run from `trac-dia-thien-phu-api/docs/plans/customer_contact.md` Task 4 (port 8081, test profile, Turnstile test secret).
+- [ ] **Step 1: Add implementation status**
 
-- [x] **Step 1: Point the dev server at the smoke API with the always-pass sitekey.**
-
-`.env.development.local`:
-
-```
-VITE_API_URL=http://localhost:8081
-VITE_TURNSTILE_SITE_KEY=1x00000000000000000000AA
+Append to spec:
+```markdown
+## Implementation Status
+Implemented in ContactForm.tsx - button disabled until all mandatory fields filled, captcha completed, and terms agreed. Phone accepts only digits. Message is mandatory.
 ```
 
-This file is local-only; delete it after the check. It exists because the real sitekey does not allow `localhost` (110200) until Hostname Management is updated.
-
-- [x] **Step 2: Check the happy path.**
-
-Run `npm run dev`, open `/lien-he`, fill the form, solve/pass the widget, submit. Expected: the thank-you state replaces the form, and the API has a new row (the smoke API's `GET` needs a JWT; check the row with `select name, phone from customer_contact_info order by created_at desc limit 1` on the test DB).
-
-- [x] **Step 3: Check the failure path.**
-
-Stop the smoke API (or point `VITE_API_URL` at a dead port), submit again with a fresh token. Expected: `Không gửi được tin nhắn. Vui lòng thử lại.`, inputs preserved, and the widget re-renders with a new token (reset). Restart the API and confirm the next submit succeeds.
-
-- [x] **Step 4: Check the token guard and the headless load.**
-
-Submitting with the widget still loading must show `Vui lòng hoàn tất xác thực bảo mật.` and send no request (Network tab). Then load `/lien-he` headless and confirm the widget container mounts, there is no uncaught exception, and no React error boundary.
-
-- [x] **Step 5: Remove `.env.development.local`.**
-
-- [x] **Step 6: Update the spec if behaviour changed** (final step; compare with `docs/specs/contact.md`).
-
-- [x] **Step 7: Commit.**
+- [ ] **Step 2: Commit**
 
 ```bash
 git add docs/specs/contact.md
-git commit -m "docs: update the contact spec after implementation"
+git commit -m "docs: update contact spec with implementation status"
 ```
