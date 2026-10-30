@@ -1,5 +1,7 @@
 # Product Detail Page (/san-pham/:slug) API Integration — Implementation Plan
 
+> **Historical record.** Implemented as written for the gallery, info panel, article and loading/error branches. The `Sản phẩm gợi ý` related grid described below (`getRelated`, the `related` state, its fetch block and the grid section) has since been removed from `ProductDetailPage.tsx`; `docs/specs/product-detail.md` is the current source of truth.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task (repo has no subagent tool; native inline execution). Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Load `/san-pham/:slug` from `GET /api/products/by-alias/{alias}` with gallery, article, related grid, and loading/error states.

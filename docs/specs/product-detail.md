@@ -1,6 +1,6 @@
 # Product Detail Page (/san-pham/:slug) — Design Spec
 
-Source: https://tracdia247.vn/may-toan-dac-sokkia-im-60 (breadcrumb, gallery + info, full article, related grid).
+Source: https://tracdia247.vn/may-toan-dac-sokkia-im-60 (breadcrumb, gallery + info, full article).
 Target: production-ready React detail page at `/san-pham/:slug` inside the existing `SiteLayout`, data from the `trac-dia-thien-phu-api` backend, following the current theme (brand `#22abff`, Inter, `ProductCard` style).
 
 ## Goals
@@ -10,7 +10,7 @@ Target: production-ready React detail page at `/san-pham/:slug` inside the exist
 - Detail data from new backend endpoint `GET /api/products/by-alias/{alias}` (exact match on unique `seoAlias`); unknown slug renders a `Sản phẩm không tồn tại` notice with a link back to `/san-pham` (API 404 maps to this branch).
 - Breadcrumb (`Trang chủ / Tất cả sản phẩm / {name}`) + gallery/info grid: gallery (main image + thumbnail row, `useState` selected index; images from `ProductResponse.images` sorted by `sortOrder`), info (H1 name, `shortDescription` HTML block rendered via `dangerouslySetInnerHTML` when present, sanitized first with `sanitizeHtml`). No quantity stepper, no `MUA NGAY` button (deferred — see Non-goals).
 - Article: renders API `description` HTML via `dangerouslySetInnerHTML` when present, sanitized first with `sanitizeHtml` (`src/lib/sanitize.ts`, `dompurify`); long content collapses to ~300px with a fade + `Xem thêm` button (`Thu gọn` to collapse back); short content shows fully with no button; renders an empty section when absent (generic fallback template deferred).
-- `Sản phẩm gợi ý` grid: same-`categoryId` products (via `GET /api/products?categoryId=`) first, up to 8, reusing `ProductCard`.
+- `Sản phẩm gợi ý` related grid: removed (product-detail.md previously listed it as a goal). Same-`categoryId` suggestions are not rendered; the page ends with the article.
 - Loading state: detail skeleton. Error state (non-404): error block with retry.
 - Follow existing patterns: Tailwind, shared `Img` wrapper with `placehold.co` fallback, components under ~100 lines, typed data.
 
@@ -24,14 +24,14 @@ Target: production-ready React detail page at `/san-pham/:slug` inside the exist
 ## API Contract (backend: `trac-dia-thien-phu-api`)
 
 - **New:** `GET /api/products/by-alias/{alias}` → `ApiResponse<ProductResponse>`; exact match on `Product.seoAlias` (unique column); 404 when no match. Implemented via `ProductRepository.findBySeoAlias` + service passthrough + controller mapping with the existing `toResponse` (includes `images` sorted by `sortOrder`).
-- Reused: `GET /api/products?categoryId=&size=8` for related products.
+- Reused: `GET /api/products?categoryId=` is no longer needed by the detail page (related grid removed); `GET /api/products?page=&size=100` remains the legacy slug fallback.
 - Backend must backfill `seoAlias` for existing rows (slugified names) so old products resolve.
 
 ## Architecture
 
 - `App.tsx` route unchanged (`/san-pham/:slug` between `/san-pham` and `*`).
 - `src/utils/slug.ts`: `toSlug` kept for fallback matching and legacy card links.
-- `src/pages/san-pham/`: `ProductDetailPage.tsx` (fetch by alias via `src/lib/api.ts`, breadcrumb, gallery/info grid, article, related grid, not-found branch, loading/error branches), `detail.ts` (article fallback template + related-ranking helpers over API types), `components/ProductGallery.tsx` (unchanged, takes `images: string[]`).
+- `src/pages/product/`: `ProductDetailPage.tsx` (fetch by alias via `src/lib/api.ts`, breadcrumb, gallery/info grid, article, not-found branch, loading/error branches), `detail.ts` (`resolveProduct` alias lookup with legacy slug fallback + `getGalleryImages` over API types), `components/ProductGallery.tsx` (unchanged, takes `images: string[]`).
 - `src/lib/api.ts` (shared with listing spec): adds `getProductByAlias(alias)` and `listProducts(params)` helpers.
 - Spec file: `docs/specs/product-detail.md` (this file); implementation plan follows after approval.
 

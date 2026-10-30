@@ -2,13 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import {
   listCategories,
-  productImage,
   type CategoryResponse,
   type ProductResponse,
 } from '../../lib/api.ts'
 import { sanitizeHtml } from '../../lib/sanitize.ts'
-import ProductCard from '../dashboard/components/ProductCard.tsx'
-import { getGalleryImages, getRelated, resolveProduct } from './detail.ts'
+import { getGalleryImages, resolveProduct } from './detail.ts'
 import ProductArticle from './components/ProductArticle.tsx'
 import ProductGallery from './components/ProductGallery.tsx'
 
@@ -23,7 +21,6 @@ interface Snapshot {
 function ProductDetailPage() {
   const { slug = '' } = useParams()
   const [snapshot, setSnapshot] = useState<Snapshot>({ key: '', status: 'loading', product: null })
-  const [related, setRelated] = useState<ProductResponse[]>([])
   const [categoryName, setCategoryName] = useState<string | null>(null)
   const [reloadKey, setReloadKey] = useState(0)
 
@@ -44,17 +41,6 @@ function ProductDetailPage() {
           return
         }
         setSnapshot({ key, status: 'ready', product: found })
-        getRelated(found, 8)
-          .then((items) => {
-            if (!cancelled) {
-              setRelated(items)
-            }
-          })
-          .catch(() => {
-            if (!cancelled) {
-              setRelated([])
-            }
-          })
         if (found.categoryId) {
           const categoryId = found.categoryId
           listCategories()
@@ -140,14 +126,6 @@ function ProductDetailPage() {
       <div className="mt-4 sm:mt-6 w-full min-w-0 max-w-full overflow-x-hidden break-words [&_*]:!max-w-full [&_*]:!min-w-0 [&_*]:box-border [&_img]:!h-auto [&_video]:!h-auto [&_iframe]:!w-full [&_table]:!block [&_table]:!w-full [&_table]:overflow-x-auto [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap">
         <ProductArticle key={product.id} name={product.name} description={product.description} categoryName={categoryName} />
       </div>
-      <section className="mt-5 sm:mt-6">
-        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Sản phẩm gợi ý</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 [&>*]:min-w-0">
-          {related.map((item) => (
-            <ProductCard key={item.id} name={item.name} image={productImage(item)} seoAlias={item.seoAlias ?? undefined} />
-          ))}
-        </div>
-      </section>
     </div>
   )
 }
