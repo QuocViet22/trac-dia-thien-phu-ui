@@ -1,6 +1,6 @@
 # Product Listing Page (/san-pham) — Design Spec
 
-Source: https://tracdiathienphu.com/collections/all (breadcrumb, filter sidebar, sort toolbar, product grid, pagination, brand carousel).
+Source: https://tracdia247.vn/collections/all (breadcrumb, filter sidebar, sort toolbar, product grid, pagination, brand carousel).
 Target: production-ready React page at `/san-pham` inside the existing `SiteLayout`, served with `react-router`, data from the `trac-dia-thien-phu-api` backend.
 
 ## Goals

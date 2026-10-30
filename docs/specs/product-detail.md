@@ -1,6 +1,6 @@
 # Product Detail Page (/san-pham/:slug) — Design Spec
 
-Source: https://tracdiathienphu.com/may-toan-dac-sokkia-im-60 (breadcrumb, gallery + info, full article, related grid).
+Source: https://tracdia247.vn/may-toan-dac-sokkia-im-60 (breadcrumb, gallery + info, full article, related grid).
 Target: production-ready React detail page at `/san-pham/:slug` inside the existing `SiteLayout`, data from the `trac-dia-thien-phu-api` backend, following the current theme (brand `#22abff`, Inter, `ProductCard` style).
 
 ## Goals

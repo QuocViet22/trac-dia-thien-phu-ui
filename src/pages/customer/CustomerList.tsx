@@ -6,7 +6,7 @@ import './CustomerList.css'
 
 const PAGE_SIZE = 12
 const PHONE = '0983.927.945'
-const WEBSITE = 'https://tracdiathienphu.com'
+const WEBSITE = 'https://tracdia247.vn'
 const IMAGE_FALLBACK = 'https://placehold.co/300x300?text=No+Image'
 
 /* ---------- icons ---------- */

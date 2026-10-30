@@ -1,6 +1,6 @@
 # Purchase Guide Page (/huong-dan-mua-hang) — Design Spec
 
-Source: `https://tracdiathienphu.com/huong-dan` (live page titled "Hướng dẫn": a 5-step buying guide).
+Source: `https://tracdia247.vn/huong-dan` (live page titled "Hướng dẫn": a 5-step buying guide).
 Target: production-ready React page at `/huong-dan-mua-hang` inside the existing `SiteLayout`, reusing the shared static-article layout.
 
 ## Goals

@@ -1,6 +1,6 @@
 # Privacy Policy Page (/chinh-sach-bao-mat) — Design Spec
 
-Source: `https://tracdiathienphu.com/chinh-sach` (live page titled "Chính sách", body is the privacy-policy copy).
+Source: `https://tracdia247.vn/chinh-sach` (live page titled "Chính sách", body is the privacy-policy copy).
 Target: production-ready React page at `/chinh-sach-bao-mat` inside the existing `SiteLayout`.
 
 ## Goals

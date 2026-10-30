@@ -1,6 +1,6 @@
 ﻿# Introduction Page - Design Spec
 
-Source: https://tracdiathienphu.com/gioi-thieu (static Vietnamese Gioi thieu article, 7 content sections, 3 inline photos).
+Source: https://tracdia247.vn/gioi-thieu (static Vietnamese Gioi thieu article, 7 content sections, 3 inline photos).
 Target: production-ready React page at /gioi-thieu inside the existing SiteLayout, served with react-router.
 
 ## Goals

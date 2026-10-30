@@ -1,6 +1,6 @@
 # Terms of Use Page (/dieu-khoan-su-dung) — Design Spec
 
-Source: `https://tracdiathienphu.com/dieu-khoan` (live page titled "Điều khoản").
+Source: `https://tracdia247.vn/dieu-khoan` (live page titled "Điều khoản").
 Target: production-ready React page at `/dieu-khoan-su-dung` inside the existing `SiteLayout`, sharing layout code with the existing privacy page.
 
 ## Goals

@@ -231,7 +231,7 @@ export const hotline = '0983.927.945 - 0707.927.945'
 
 export const techSupport = '0915.178.945 - 0382.460.511'
 
-export const website = 'https://tracdiathienphu.com'
+export const website = 'https://tracdia247.vn'
 
 export const conclusionParagraphs: string[] = [
   'Với sứ mệnh mang đến những giải pháp trắc địa hiện đại và chính xác, Công ty TNHH Thiết Bị Trắc Địa Thiên Phú luôn sẵn sàng đồng hành cùng khách hàng trong mọi dự án. Chúng tôi không chỉ cung cấp sản phẩm chất lượng mà còn mang đến dịch vụ hậu mãi chuyên nghiệp, giúp khách hàng đạt được hiệu quả cao nhất trong công việc.',
