@@ -1,19 +1,63 @@
 # AGENTS.md — trac-dia-thien-phu-ui
 
-Vite 8 + React 19 + TypeScript template (still stock template: `App.tsx` is demo content, `src/components/` is empty). No test runner, no CI.
+React 19 SPA for Trắc Địa Thiên Phú (surveying equipment shop): Vite 8 + TypeScript, `react-router` 8, Tailwind CSS v4, backed by a Spring REST API. No test runner, no CI.
 
 ## Commands (verified)
 
 - `npm run dev` — Vite dev server with HMR
 - `npm run build` — `tsc -b && vite build`; this IS the typecheck, there is no separate typecheck script
+- `npm run build:prod` — same command; a production build throws if `VITE_TURNSTILE_SITE_KEY` is unset (`vite.config.ts`)
 - `npm run lint` — `eslint .` (exit 0 on clean tree)
 - `npm run preview` — serve `dist/` after build
 
 No tests configured — do not invent a test command. No formatter script.
 
-## Entrypoints
+## Project structure
 
-`index.html` → `src/main.tsx` → `src/App.tsx`. Put new components in `src/components/`, static imports in `src/assets/`, unprocessed static files in `public/`.
+```
+index.html               Vite entry: /src/main.tsx, favicon, Turnstile script, Font Awesome + Inter CDN
+src/main.tsx             React root (StrictMode)
+src/App.tsx              BrowserRouter, ScrollToTop, every route
+src/components/layout/   Shared chrome: Header, MainNav, PartnerSlider, Footer, FloatingButtons, SiteLayout
+src/components/          ContentArticle, Img (falls back on error), TurnstileWidget
+src/pages/<feature>/     One folder per page; page-local parts in <feature>/components/
+src/lib/api.ts           Typed API client, DTOs, ApiError, API_BASE
+src/lib/sanitize.ts      sanitizeHtml() for backend HTML
+src/hooks/               Shared hooks (useSidebarCategories)
+src/assets/              Imported images (logo, introduction, footer_slider, floating_icon)
+src/index.css            Tailwind import, @theme tokens, custom scrollbar
+public/                  Served as-is (favicon.jpg, icons.svg)
+docs/specs/, docs/plans/ Feature specs and implementation plans
+```
+
+Every route lives in `src/App.tsx`; there is no per-feature router.
+
+| Path | Page |
+| --- | --- |
+| `/` | `pages/dashboard/DashboardPage` |
+| `/gioi-thieu` | `pages/introduction/IntroductionPage` |
+| `/san-pham`, `/danh-muc/:alias` | `pages/product/SanPhamPage` |
+| `/san-pham/:slug` | `pages/product/ProductDetailPage` |
+| `/tin-tuc`, `/thue-san-pham`, `/sua-chua-va-kiem-dinh` | `pages/news/NewsPage`, selected by `newsType` |
+| the same paths + `/:slug` | `pages/news/NewsDetailPage` |
+| `/khach-hang` | `pages/customer/CustomerList` |
+| `/khach-hang/:slug` | `NewsDetailPage` with `newsType="CUSTOMER_NEWS"` |
+| `/lien-he` | `pages/contact/ContactPage` |
+| `/chinh-sach-bao-mat` | `pages/privacy_policy/PrivacyPolicy` |
+| `/dieu-khoan-su-dung` | `pages/terms_of_use/TermsOfUse` |
+| `/huong-dan-mua-hang` | `pages/purchase_guide/PurchaseGuide` |
+| `*` | redirect to `/` |
+
+Conventions: route slugs are Vietnamese; multi-word page folders are `snake_case`; imports keep explicit `.tsx`/`.ts` extensions; page components are default exports.
+
+## Data and environment
+
+- `VITE_API_URL` and `VITE_TURNSTILE_SITE_KEY` live in `.env.development` / `.env.production`; `.env.example` is a template Vite never loads.
+- `src/lib/api.ts` reads `VITE_API_URL` into `API_BASE`; its fallback is malformed (`http:/:8080`), so always set the variable.
+- Responses are wrapped as `{ success, message, data }`; lists are Spring `Page<T>`; failures throw `ApiError` with the HTTP status.
+- Product and news images come from `images[]` sorted by `sortOrder` (`productImage`, `productImages`, `newsImage`); render through `Img` to get the error fallback.
+- Backend HTML (news/product descriptions) must go through `sanitizeHtml()`; iframes are limited to YouTube/YouTube-nocookie over HTTPS.
+- The contact form needs the Turnstile widget and posts `turnstileToken` to `/api/customer-contacts`.
 
 ## TypeScript gotchas (enforced, will fail build)
 
