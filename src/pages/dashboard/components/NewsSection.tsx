@@ -93,7 +93,7 @@ function NewsSection({ items }: NewsSectionProps) {
                 <Img src={src} fallback={fallback} alt={item.title} loading="lazy" className="relative w-full h-full object-contain" />
               </div>
               <div className="p-3 md:p-4">
-                <p className="text-xs text-gray-400">{formatNewsDate(item.updatedAt)}</p>
+                <p className="text-xs text-gray-400 font-medium">{formatNewsDate(item.updatedAt)}</p>
                 <p className="text-sm md:text-base font-medium line-clamp-2 mt-1">{item.title}</p>
               </div>
             </Link>

@@ -6,7 +6,6 @@
   --cl-text: #212529;
   --cl-border: #ced4da;
 
-  font-family: "Mulish", system-ui, sans-serif;
   color: var(--cl-text);
   padding: 8px 16px 64px;
   max-width: 1240px;
@@ -19,7 +18,7 @@
 
 .cl__title {
   margin: 0;
-  font-size: 40px;
+  font-size: 2.5rem;
   font-weight: 500;
   line-height: 1.2;
   color: var(--cl-blue);
@@ -27,7 +26,7 @@
 
 .cl__subtitle {
   margin: 20px 0 0;
-  font-size: 17px;
+  font-size: 1.0625rem;
 }
 
 /* ---------- grid ---------- */
@@ -175,7 +174,7 @@
 
 .cl-card__banner-title {
   margin: 0 0 18px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 700;
   line-height: 1.25;
   color: var(--cl-orange);
@@ -186,7 +185,7 @@
   align-items: center;
   gap: 6px;
   margin: 6px 0 0 18px;
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: #666;
 }
 
@@ -208,7 +207,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--cl-orange);
 }
 
@@ -219,7 +218,7 @@
 
 .cl-card__name {
   margin: 8px 0 0;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 500;
   line-height: 1.35;
 }
@@ -235,7 +234,7 @@
 
 @media (max-width: 575px) {
   .cl__title {
-    font-size: 32px;
+    font-size: 2rem;
   }
   .cl__grid {
     grid-template-columns: minmax(0, 1fr);

@@ -11,13 +11,13 @@ function FeaturedCategories({ items }: FeaturedCategoriesProps) {
 
   return (
     <section id="featured-cats">
-      <h2 className="text-center text-xl md:text-2xl font-bold text-gray-800">Danh mục nổi bật</h2>
-      <p className="text-center text-sm text-gray-500 mb-4">Các dòng sản phẩm thiết bị đo đạc nổi bật Trắc Địa Thiên Phú cung cấp.</p>
+      <p className="text-center font-bold text-gray-800" style={{ fontSize: '35px' }}>Danh mục nổi bật</p>
+      <p className="text-center text-gray-500 font-medium mb-4" style={{ fontSize: '20px' }}>Các dòng sản phẩm thiết bị đo đạc nổi bật Trắc Địa Thiên Phú cung cấp.</p>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {items.map((cat) => (
           <Link key={cat.id} to={`/san-pham?categoryId=${encodeURIComponent(cat.id)}`} className="bg-white rounded-xl border border-gray-200 hover:border-brand p-3 text-center transition-colors">
             <Img src={cat.imageUrl} fallback="https://placehold.co/276x276?text=No+Image" alt={cat.name} loading="lazy" className="w-full h-32 object-contain mx-auto" />
-            <p className="mt-2 text-[13px] font-medium">{cat.name}</p>
+            <p className="mt-2 text-[18px] font-medium">{cat.name}</p>
           </Link>
         ))}
       </div>

@@ -4,8 +4,13 @@
   --color-brand: #22abff;
 }
 
+/* Percent, not px, so a user's larger browser default is still honoured */
+html {
+  font-size: 106.25%;
+}
+
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Mulish', system-ui, sans-serif;
 }
 
 .custom-orange {

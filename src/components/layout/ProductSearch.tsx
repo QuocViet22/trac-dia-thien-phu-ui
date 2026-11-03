@@ -189,7 +189,7 @@ function ProductSearch() {
                     />
                     <span className="min-w-0">
                       <span className="block font-medium line-clamp-2">{product.name}</span>
-                      {product.brand && <span className="block text-[11px] uppercase text-gray-500">{product.brand}</span>}
+                      {product.brand && <span className="block text-[0.6875rem] uppercase text-gray-500">{product.brand}</span>}
                     </span>
                   </Link>
                 </li>

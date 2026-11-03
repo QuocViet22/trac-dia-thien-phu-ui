@@ -23,7 +23,7 @@ function ContentArticle({ title, intro, outro, sections }: ContentArticleProps) 
         <span className="text-gray-800 font-medium">{title}</span>
       </nav>
       <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{title}</h1>
-      <article className="bg-white rounded-xl border border-gray-200 p-4 md:p-8 text-[15px] sm:text-base leading-relaxed text-gray-800">
+      <article className="bg-white rounded-xl border border-gray-200 p-4 md:p-8 text-[0.9375rem] sm:text-base leading-relaxed text-gray-800">
         {intro && intro.length > 0 && (
           <div className="space-y-4">
             {intro.map((paragraph) => (

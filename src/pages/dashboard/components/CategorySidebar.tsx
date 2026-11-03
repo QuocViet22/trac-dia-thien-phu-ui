@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { Link } from 'react-router'
 import { categoryImage } from '../../../lib/api.ts'
 import { useSidebarCategories } from '../../../hooks/useSidebarCategories.ts'
+import { useCategoryFlyout } from '../../../hooks/useCategoryFlyout.ts'
+import CategoryFlyout from '../../../components/layout/CategoryFlyout.tsx'
 import { categories as fallbackCategories } from '../data.ts'
 
 interface CategorySidebarProps {
@@ -9,11 +12,24 @@ interface CategorySidebarProps {
 
 function CategorySidebar({ open }: CategorySidebarProps) {
   const { categories, loading, failed } = useSidebarCategories()
+  const { flyoutId, flyoutData, openFlyout, closeFlyout } = useCategoryFlyout()
+  // Panel top, in px from the aside, so it lines up with the hovered row.
+  const [flyoutTop, setFlyoutTop] = useState(0)
+
+  const openRow = (categoryId: string, row: HTMLElement) => {
+    setFlyoutTop(row.offsetTop)
+    openFlyout(categoryId)
+  }
+
+  const flyoutCategory = categories.find((cat) => cat.id === flyoutId) ?? null
 
   return (
-    <aside className="w-full lg:w-72 flex-shrink-0 relative z-30 lg:-mt-4">
+    <aside
+      className="w-full lg:w-72 flex-shrink-0 relative z-30 lg:-mt-4"
+      onPointerLeave={closeFlyout}
+    >
       <div id="sidebar-menu" className={`bg-white border-l border-r border-b border-gray-200 shadow-sm rounded-b-md sidebar-scroll overflow-y-auto ${open ? 'block' : 'hidden'} lg:block`}>
-        <ul className="text-[13px] text-gray-600 font-medium">
+        <ul className="text-base text-gray-600 font-medium">
           {loading ? (
             Array.from({ length: 6 }).map((_, index) => (
               <li key={index} className="px-4 py-2.5 border-b border-gray-100 animate-pulse">
@@ -41,9 +57,18 @@ function CategorySidebar({ open }: CategorySidebarProps) {
             categories.map((cat, i) => {
               const img = categoryImage(cat)
               return (
-              <li key={cat.id} className={i < categories.length - 1 ? 'border-b border-gray-100' : ''}>
+              <li
+                key={cat.id}
+                className={i < categories.length - 1 ? 'border-b border-gray-100' : ''}
+                onPointerEnter={(event) => {
+                  if (event.pointerType !== 'touch') {
+                    openRow(cat.id, event.currentTarget)
+                  }
+                }}
+              >
                 <Link
                   to={cat.seoAlias ? `/danh-muc/${cat.seoAlias}` : `/san-pham?categoryId=${encodeURIComponent(cat.id)}`}
+                  onFocus={(event) => openRow(cat.id, event.currentTarget)}
                   className="flex items-center justify-between px-4 py-2.5 hover:text-brand hover:bg-sky-50 group transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
@@ -65,6 +90,17 @@ function CategorySidebar({ open }: CategorySidebarProps) {
           )}
         </ul>
       </div>
+      {/* Outside #sidebar-menu: that div clips overflow, so the panel would be cut off. */}
+      {flyoutCategory && (
+        <div className="hidden lg:block absolute left-full z-40" style={{ top: flyoutTop }}>
+          <CategoryFlyout
+            cat={flyoutCategory}
+            entry={flyoutData[flyoutCategory.id]}
+            id="sidebar-flyout"
+            className="w-64 bg-white border border-gray-200 shadow-lg max-h-96 overflow-y-auto text-[0.8125rem] text-gray-600 font-medium"
+          />
+        </div>
+      )}
     </aside>
   )
 }

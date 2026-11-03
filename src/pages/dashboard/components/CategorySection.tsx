@@ -15,14 +15,14 @@ function CategorySection({ id, seoAlias, title, brands, products }: CategorySect
     <section id={id}>
       <div className="flex items-center gap-3 border-b-2 border-brand pb-2 mb-4 mt-2">
         <h2 className="text-lg md:text-xl font-bold text-gray-800 whitespace-nowrap">{title}</h2>
-        <div className="hidden md:flex gap-3 text-[12px] text-gray-500 overflow-x-auto">
+        <div className="hidden md:flex gap-3 text-[0.75rem] text-gray-500 font-medium overflow-x-auto">
           {brands.map((brand) => (
             <span key={brand}>{brand}</span>
           ))}
         </div>
         <Link
           to={`/danh-muc/${seoAlias}`}
-          className="ml-auto text-[12px] text-brand font-medium whitespace-nowrap"
+          className="ml-auto text-[0.75rem] text-brand font-medium whitespace-nowrap"
         >
           Xem tất cả →
         </Link>

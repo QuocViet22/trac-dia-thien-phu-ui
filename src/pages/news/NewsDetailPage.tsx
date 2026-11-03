@@ -95,10 +95,10 @@ function NewsDetailPage({ newsType, listTitle, listPath }: NewsDetailPageProps) 
       <p className="text-xs sm:text-sm text-gray-500 mt-2 break-words">Đăng bởi: {news.author} - Vào lúc {formatNewsDate(news.updatedAt)} </p>
       {news.location?.trim() ? <p className="text-xs sm:text-sm text-gray-500 mt-1 break-words">Địa điểm: {news.location}</p> : null}
       <Img src={newsImage(news)} fallback="https://placehold.co/1024x576?text=No+Image" alt={news.title} loading="eager" className="w-full h-auto rounded-xl mt-3 sm:mt-4 object-cover aspect-video" />
-      {news.seoDescriptionTag && <p className="text-[15px] sm:text-base text-gray-700 font-medium mt-3 sm:mt-4 break-words">{news.seoDescriptionTag}</p>}
+      {news.seoDescriptionTag && <p className="text-[0.9375rem] sm:text-base text-gray-700 font-medium mt-3 sm:mt-4 break-words">{news.seoDescriptionTag}</p>}
       {safeHtml && (
         <div
-          className="text-[15px] sm:text-base leading-relaxed text-gray-800 mt-3 sm:mt-4 space-y-3 w-full min-w-0 max-w-full overflow-x-hidden break-words [&_*]:!max-w-full [&_*]:!min-w-0 [&_*]:box-border [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_img]:rounded-xl [&_img]:!h-auto [&_video]:!h-auto [&_iframe]:!w-full [&_iframe]:aspect-video [&_iframe]:!h-auto [&_table]:!block [&_table]:!w-full [&_table]:overflow-x-auto [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_a]:break-words"
+          className="text-[0.9375rem] sm:text-base leading-relaxed text-gray-800 mt-3 sm:mt-4 space-y-3 w-full min-w-0 max-w-full overflow-x-hidden break-words [&_*]:!max-w-full [&_*]:!min-w-0 [&_*]:box-border [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_img]:rounded-xl [&_img]:!h-auto [&_video]:!h-auto [&_iframe]:!w-full [&_iframe]:aspect-video [&_iframe]:!h-auto [&_table]:!block [&_table]:!w-full [&_table]:overflow-x-auto [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_a]:break-words"
           dangerouslySetInnerHTML={{ __html: safeHtml }}
         />
       )}
