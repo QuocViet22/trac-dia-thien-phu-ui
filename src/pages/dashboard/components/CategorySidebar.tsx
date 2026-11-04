@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { categoryImage } from '../../../lib/api.ts'
 import { useSidebarCategories } from '../../../hooks/useSidebarCategories.ts'
-import { useCategoryFlyout } from '../../../hooks/useCategoryFlyout.ts'
 import CategoryFlyout from '../../../components/layout/CategoryFlyout.tsx'
 import { categories as fallbackCategories } from '../data.ts'
 
@@ -11,22 +10,25 @@ interface CategorySidebarProps {
 }
 
 function CategorySidebar({ open }: CategorySidebarProps) {
-  const { categories, loading, failed } = useSidebarCategories()
-  const { flyoutId, flyoutData, openFlyout, closeFlyout } = useCategoryFlyout()
+  const { categories, allCategories, loading, failed } = useSidebarCategories()
+  const [flyoutId, setFlyoutId] = useState<string | null>(null)
   // Panel top, in px from the aside, so it lines up with the hovered row.
   const [flyoutTop, setFlyoutTop] = useState(0)
 
   const openRow = (categoryId: string, row: HTMLElement) => {
     setFlyoutTop(row.offsetTop)
-    openFlyout(categoryId)
+    setFlyoutId(categoryId)
   }
 
   const flyoutCategory = categories.find((cat) => cat.id === flyoutId) ?? null
+  const flyoutChildren = flyoutCategory
+    ? allCategories.filter((cat) => cat.parentCategoryId === flyoutCategory.id)
+    : []
 
   return (
     <aside
       className="w-full lg:w-72 flex-shrink-0 relative z-30 lg:-mt-4"
-      onPointerLeave={closeFlyout}
+      onPointerLeave={() => setFlyoutId(null)}
     >
       <div id="sidebar-menu" className={`bg-white border-l border-r border-b border-gray-200 shadow-sm rounded-b-md sidebar-scroll overflow-y-auto ${open ? 'block' : 'hidden'} lg:block`}>
         <ul className="text-base text-gray-600 font-medium">
@@ -95,7 +97,7 @@ function CategorySidebar({ open }: CategorySidebarProps) {
         <div className="hidden lg:block absolute left-full z-40" style={{ top: flyoutTop }}>
           <CategoryFlyout
             cat={flyoutCategory}
-            entry={flyoutData[flyoutCategory.id]}
+            subcategories={flyoutChildren}
             id="sidebar-flyout"
             className="w-64 bg-white border border-gray-200 shadow-lg max-h-96 overflow-y-auto text-[0.8125rem] text-gray-600 font-medium"
           />

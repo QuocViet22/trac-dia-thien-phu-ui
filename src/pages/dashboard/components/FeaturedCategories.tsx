@@ -15,7 +15,7 @@ function FeaturedCategories({ items }: FeaturedCategoriesProps) {
       <p className="text-center text-gray-500 font-medium mb-4" style={{ fontSize: '20px' }}>Các dòng sản phẩm thiết bị đo đạc nổi bật Trắc Địa Thiên Phú cung cấp.</p>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {items.map((cat) => (
-          <Link key={cat.id} to={`/san-pham?categoryId=${encodeURIComponent(cat.id)}`} className="bg-white rounded-xl border border-gray-200 hover:border-brand p-3 text-center transition-colors">
+          <Link key={cat.id} to={`/danh-muc/${cat.seoAlias}`} className="bg-white rounded-xl border border-gray-200 hover:border-brand p-3 text-center transition-colors">
             <Img src={cat.imageUrl} fallback="https://placehold.co/276x276?text=No+Image" alt={cat.name} loading="lazy" className="w-full h-32 object-contain mx-auto" />
             <p className="mt-2 text-[18px] font-medium">{cat.name}</p>
           </Link>

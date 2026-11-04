@@ -28,14 +28,14 @@ coming from the live `CategoryResponse`.
 
 ## 2. Non-goals
 
-- No nested/sub-category tree (`parentCategoryId` ignored, flat list as today).
+- No nested/sub-category tree in the menu rows themselves (still one flat row per
+  collection entry). Both the homepage inline sidebar and the `MainNav` dropdown show that
+  row's child categories in a hover panel.
 - No custom links, banners, images or per-row visibility flags; `Collection.images` is not
   used by the sidebar.
-- No change to the flyout (products per category, first 10, cached per session) or to
-  `Xem tất cả {name}`.
-- No change to the two components' link rules: `MainNav` keeps
-  `/san-pham?categoryId=<id>`, `CategorySidebar` keeps
-  `/danh-muc/<seoAlias>` with the `categoryId` fallback.
+- `MainNav`'s dropdown reuses the same child-category panel; see
+  `docs/specs/all-products-dropdown.md`.
+- Link rules: both menus use `/danh-muc/<seoAlias>` with the `categoryId` fallback.
 - No new dependencies, no test runner.
 
 ## 3. Data layer
@@ -46,6 +46,8 @@ coming from the live `CategoryResponse`.
   The existing categories call is reused rather than adding an endpoint; this mirrors
   `useHomepage.ts`.
 - Joins on `referenceId -> CategoryResponse` with a `Map` built from the categories result.
+- Also returns `allCategories`, the full `listCategories()` result, so callers can resolve
+  child rows without a second request.
 - Sorts collections by `orderIndex`, skips entries with a null or unresolved `referenceId`,
   and drops repeated `referenceId` values (first wins).
 - `failed = true` when either request rejects, with `categories = []`.
@@ -69,8 +71,8 @@ coming from the live `CategoryResponse`.
   - otherwise the curated rows, markup unchanged.
 - A failed request renders the same empty state; the nav keeps its convention of no error
   block.
-- `flyoutCategory`, `openFlyout`, `renderFlyout` and `flyoutData` continue to key off
-  `CategoryResponse.id` and need no changes.
+- `flyoutId` keys off `CategoryResponse.id`; the panel body resolves children from
+  `allCategories`. `openFlyout`/`flyoutData` were removed with the product flyout.
 
 `CategorySidebar.tsx`:
 
@@ -80,6 +82,12 @@ coming from the live `CategoryResponse`.
   2. `failed` -> existing hard-coded `data.ts` fallback list (homepage only);
   3. settled and empty -> `Chưa có danh mục nào`;
   4. otherwise the curated rows with cover thumbnails, markup unchanged.
+- Hovering or focusing a row opens a panel listing the categories whose
+  `parentCategoryId` equals that row's id (taken from `allCategories`), each linking
+  with the same `/danh-muc/<seoAlias>` (or `categoryId`) rule, followed by
+  `Xem tất cả {name}`. The footer now uses that same rule (previously always
+  `?categoryId=`). A row with no children shows only the footer link. The panel keeps
+  its own `flyoutId` state and makes no product request.
 - The static fallback therefore covers request failure, not an intentionally empty
   configuration.
 
@@ -87,9 +95,8 @@ coming from the live `CategoryResponse`.
 
 Vietnamese copy unchanged except the new empty state:
 
-- `TẤT CẢ SẢN PHẨM` button, row labels (`CategoryResponse.name`), flyout states
-  (`Đang tải sản phẩm` skeletons, `Không tải được sản phẩm.`, `Chưa có sản phẩm.`,
-  `Xem tất cả {name}`).
+- `TẤT CẢ SẢN PHẨM` button, row labels (`CategoryResponse.name`), child panel rows and
+  `Xem tất cả {name}`.
 - New: `Chưa có danh mục nào` in both menus when the curated list is empty.
 
 ## 6. Requests and caching
@@ -97,7 +104,8 @@ Vietnamese copy unchanged except the new empty state:
 - Non-home routes: no sidebar request until the overlay opens (`enabled` gate).
 - Homepage: one categories call plus one collections call on mount, replacing the single
   categories call; both are cached server-side per type.
-- Flyout product requests are unchanged and still cached per category for the session.
+- `MainNav` and the homepage sidebar both read the already-loaded category list for their
+  child panels and make no product request.
 
 ## 7. Verification
 
@@ -108,7 +116,9 @@ Vietnamese copy unchanged except the new empty state:
     or API order;
   - renaming a category updates both labels after reload;
   - reordering in admin changes the menu order after reload;
-  - flyout still lists up to 10 products and `Xem tất cả` still filters correctly;
+  - homepage sidebar and `MainNav` dropdown: hovering a parent row lists its child
+    categories and `Xem tất cả` opens the parent; a childless row shows only the footer;
+  - `MainNav` desktop menu shows every row without an inner scrollbar;
   - deleting a curated category leaves the remaining rows intact with no placeholder;
   - duplicate `referenceId` rows render once;
   - API down -> overlay shows the empty state, homepage inline sidebar shows the static

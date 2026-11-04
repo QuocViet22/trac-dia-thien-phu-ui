@@ -2,7 +2,6 @@
 import { Link, useLocation } from 'react-router'
 import { categoryImage } from '../../lib/api.ts'
 import { useSidebarCategories } from '../../hooks/useSidebarCategories.ts'
-import { useCategoryFlyout } from '../../hooks/useCategoryFlyout.ts'
 import CategoryFlyout from './CategoryFlyout.tsx'
 
 interface MainNavProps {
@@ -15,15 +14,15 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
   const isHome = location.pathname === '/'
   const [scrolledDown, setScrolledDown] = useState(false)
   const showOverlay = sidebarOpen && (!isHome || scrolledDown)
-  const { categories, loading: categoriesLoading } = useSidebarCategories(showOverlay)
+  const { categories, allCategories, loading: categoriesLoading } = useSidebarCategories(showOverlay)
   const menuRef = useRef<HTMLDivElement>(null)
   const [mobileLinksOpen, setMobileLinksOpen] = useState(false)
-  const { flyoutId, flyoutData, openFlyout, closeFlyout } = useCategoryFlyout()
+  const [flyoutId, setFlyoutId] = useState<string | null>(null)
 
   const [prevShowOverlay, setPrevShowOverlay] = useState(showOverlay)
   if (prevShowOverlay !== showOverlay) {
     setPrevShowOverlay(showOverlay)
-    closeFlyout()
+    setFlyoutId(null)
   }
 
   useEffect(() => {
@@ -83,6 +82,8 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
     { to: '/khach-hang', label: 'Khách hàng', spa: true },
   ]
   const flyoutCategory = categories.find((cat) => cat.id === flyoutId) ?? null
+  const subcategoriesOf = (categoryId: string) =>
+    allCategories.filter((cat) => cat.parentCategoryId === categoryId)
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
@@ -90,7 +91,7 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
         <div className="flex items-center gap-2 py-2 lg:py-0 lg:contents">
         <div ref={menuRef} className="relative flex-1 min-w-0 lg:flex-none lg:w-72" onPointerLeave={(event) => {
           if (event.pointerType !== 'touch') {
-            closeFlyout()
+            setFlyoutId(null)
           }
         }}>
           <button
@@ -107,7 +108,7 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
             <i className="fa-solid fa-caret-down"></i>
           </button>
           {showOverlay && (
-            <div className="absolute top-full left-0 right-0 z-50 bg-white border-l border-r border-b border-gray-200 shadow-sm rounded-b-md overflow-y-auto max-h-96">
+            <div className="absolute top-full left-0 right-0 z-50 bg-white border-l border-r border-b border-gray-200 shadow-sm rounded-b-md overflow-y-auto max-h-96 lg:max-h-none lg:overflow-visible">
               <ul className="text-base text-gray-600 font-medium">
                 {categoriesLoading ? null : categories.length === 0 ? (
                   <li className="px-4 py-2.5 text-gray-500">Chưa có danh mục nào</li>
@@ -116,12 +117,12 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
                   return (
                   <li key={cat.id} className={`relative ${i < categories.length - 1 ? 'border-b border-gray-100' : ''}`} onPointerEnter={(event) => {
                     if (event.pointerType !== 'touch') {
-                      openFlyout(cat.id)
+                      setFlyoutId(cat.id)
                     }
                   }}>
-                    <div className="flex items-center" onFocus={() => openFlyout(cat.id)}>
+                    <div className="flex items-center" onFocus={() => setFlyoutId(cat.id)}>
                     <Link
-                      to={`/san-pham?categoryId=${encodeURIComponent(cat.id)}`}
+                      to={cat.seoAlias ? `/danh-muc/${cat.seoAlias}` : `/san-pham?categoryId=${encodeURIComponent(cat.id)}`}
                       onClick={onToggleSidebar}
                       className="flex-1 min-w-0 flex items-center px-4 py-2.5 hover:text-brand hover:bg-sky-50 transition-colors"
                     >
@@ -144,8 +145,8 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
                       type="button"
                       aria-expanded={flyoutId === cat.id}
                       aria-controls={`flyout-${cat.id} flyout-desktop`}
-                      aria-label={`Sản phẩm của ${cat.name}`}
-                      onClick={() => openFlyout(cat.id)}
+                      aria-label={`Danh mục con của ${cat.name}`}
+                      onClick={() => setFlyoutId((current) => current === cat.id ? null : cat.id)}
                       className="px-3 py-2.5 text-gray-300 hover:text-brand cursor-pointer"
                     >
                       <i className={`fa-solid fa-caret-right transition-transform ${flyoutId === cat.id ? 'rotate-90 lg:rotate-0' : ''}`}></i>
@@ -154,7 +155,7 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
                     {flyoutId === cat.id && (
                       <CategoryFlyout
                         cat={cat}
-                        entry={flyoutData[cat.id]}
+                        subcategories={subcategoriesOf(cat.id)}
                         id={`flyout-${cat.id}`}
                         className="lg:hidden border-t border-gray-100 bg-gray-50 pl-4"
                         onNavigate={onToggleSidebar}
@@ -169,7 +170,7 @@ function MainNav({ sidebarOpen, onToggleSidebar }: MainNavProps) {
           {showOverlay && flyoutCategory && (
             <CategoryFlyout
               cat={flyoutCategory}
-              entry={flyoutData[flyoutCategory.id]}
+              subcategories={subcategoriesOf(flyoutCategory.id)}
               id="flyout-desktop"
               className="hidden lg:block absolute left-full top-full w-64 z-50 bg-white border border-gray-200 shadow-lg max-h-96 overflow-y-auto text-[0.8125rem] text-gray-600 font-medium"
               onNavigate={onToggleSidebar}

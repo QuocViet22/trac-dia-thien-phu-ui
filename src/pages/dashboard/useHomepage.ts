@@ -22,6 +22,7 @@ export interface FeaturedData {
   id: string
   name: string
   imageUrl: string
+  seoAlias: string | null
 }
 
 export interface CategorySectionData {
@@ -134,7 +135,7 @@ export function useHomepage(): HomepageData {
             cat = undefined
           }
         }
-        if (cat) featured.push({ id: cat.id, name: cat.name, imageUrl: firstImageUrl(cat.images) })
+        if (cat) featured.push({ id: cat.id, name: cat.name, imageUrl: firstImageUrl(cat.images), seoAlias: cat.seoAlias })
       }
 
       const categorySections: CategorySectionData[] = []

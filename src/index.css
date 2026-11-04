@@ -34,3 +34,48 @@ body {
   background-color: #cbd5e1;
   border-radius: 4px;
 }
+
+.rich-content h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+.rich-content h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 1.5rem 0 .5rem;
+}
+
+.rich-content p {
+  margin: .75rem 0;
+  line-height: 1.7;
+}
+
+.rich-content ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin: .75rem 0;
+}
+
+.rich-content hr {
+  margin: 1rem 0;
+  border-color: #e5e7eb;
+}
+
+.rich-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.rich-content th,
+.rich-content td {
+  border: 1px solid #d1d5db;
+  padding: .5rem .75rem;
+  text-align: left;
+}
+
+.rich-content th {
+  background: #f3f4f6;
+}

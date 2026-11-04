@@ -8,6 +8,7 @@ import {
 
 export interface SidebarCategoriesState {
   categories: CategoryResponse[]
+  allCategories: CategoryResponse[]
   loading: boolean
   failed: boolean
 }
@@ -37,6 +38,7 @@ function joinSidebar(
 export function useSidebarCategories(enabled = true): SidebarCategoriesState {
   const [state, setState] = useState<SidebarCategoriesState>({
     categories: [],
+    allCategories: [],
     loading: true,
     failed: false,
   })
@@ -54,6 +56,7 @@ export function useSidebarCategories(enabled = true): SidebarCategoriesState {
         if (!cancelled) {
           setState({
             categories: joinSidebar(collections, categories),
+            allCategories: categories,
             loading: false,
             failed: false,
           })
@@ -61,7 +64,7 @@ export function useSidebarCategories(enabled = true): SidebarCategoriesState {
       })
       .catch(() => {
         if (!cancelled) {
-          setState({ categories: [], loading: false, failed: true })
+          setState({ categories: [], allCategories: [], loading: false, failed: true })
         }
       })
     return () => {
