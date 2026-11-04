@@ -6,7 +6,7 @@
 
 **Goal (Phase 2, this update):** Filter both sections by the new backend `newsType` (`NEWS` = Tin tức, `HIRING_PRODUCT` = Thuê sản phẩm): `/tin-tuc*` shows only `NEWS`, new `/thue-san-pham*` shows only `HIRING_PRODUCT`, sharing one list + one detail component configured per route.
 
-**Architecture:** Extend `src/lib/api.ts` with news DTOs + `listNews`/`getNewsByAlias`/`newsImage`/`formatNewsDate`; `NewsPage.tsx` fetches `status=PUBLISHED` paginated list with skeleton/error/empty + pagination copied from `SanPhamPage`; `NewsDetailPage.tsx` fetches by `seoAlias`, sanitizes `description` with `dompurify`, renders via `dangerouslySetInnerHTML`; `App.tsx` adds the two routes.
+**Architecture:** Extend `src/lib/api.ts` with news DTOs + `listNews`/`getNewsByAlias`/`newsImage`/`formatNewsDate`; `NewsPage.tsx` fetches `status=PUBLISHED` paginated list with skeleton/error/empty + pagination copied from `ProductPage`; `NewsDetailPage.tsx` fetches by `seoAlias`, sanitizes `description` with `dompurify`, renders via `dangerouslySetInnerHTML`; `App.tsx` adds the two routes.
 
 **Tech Stack:** React 19 (`useEffect`/`useState`), react-router 8, Tailwind v4, `fetch` + `URLSearchParams`, shared `Img` wrapper, `dompurify` + `@types/dompurify`.
 

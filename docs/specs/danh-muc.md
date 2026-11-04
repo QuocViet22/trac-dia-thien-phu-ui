@@ -7,7 +7,7 @@ Target: render the existing product listing at `/danh-muc/{seoAlias}`, driven by
 
 ## Goals
 
-- `/danh-muc/:alias` renders the existing `SanPhamPage` — no new page component — so
+- `/danh-muc/:alias` renders the existing `ProductPage` — no new page component — so
   `CategorySidebar` starts working with no change to its links.
 - Products come from
   `GET {VITE_API_URL}/api/products/by-category-alias/{alias}?page=&size=&brand=&sort=`
@@ -48,8 +48,8 @@ Target: render the existing product listing at `/danh-muc/{seoAlias}`, driven by
 
 - `src/lib/api.ts`: add `listProductsByCategoryAlias({ alias, page, size, brand, sort })`,
   reusing the existing `ProductQuery` / `fetchData` helpers.
-- `src/App.tsx`: add `<Route path="/danh-muc/:alias" element={<SanPhamPage />} />` beside `/san-pham`.
-- `src/pages/product/SanPhamPage.tsx`: read `useParams().alias`; when set, fetch through the
+- `src/App.tsx`: add `<Route path="/danh-muc/:alias" element={<ProductPage />} />` beside `/san-pham`.
+- `src/pages/product/ProductPage.tsx`: read `useParams().alias`; when set, fetch through the
   alias helper and use `useNavigate` for category selection. Page/brand/sort state, the
   pagination block and all rendering stay as they are.
 - `src/pages/dashboard/components/CategorySidebar.tsx`: alias-present ternary in the `Link` target.

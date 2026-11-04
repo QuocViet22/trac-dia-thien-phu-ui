@@ -2,7 +2,7 @@
 
 **Goal:** Clicking TẤT CẢ SẢN PHẨM shows live API categories with cover images on every page — floating dropdown off-home and on Trang chủ when scrolled down, inline sidebar on Trang chủ at top; picking a category lands on `/san-pham` pre-filtered.
 
-**Architecture:** Overlay owned by `MainNav.tsx` (route-aware, API-fed, reuses sidebar row markup); `SanPhamPage.tsx` seeds its filter from URL search params; `CategorySidebar.tsx` (Trang chủ) renders the same live API list inline; thumbnails come from one `categoryImage()` helper in `src/lib/api.ts` (first image by `sortOrder`, `''` when empty). No new components, no new deps.
+**Architecture:** Overlay owned by `MainNav.tsx` (route-aware, API-fed, reuses sidebar row markup); `ProductPage.tsx` seeds its filter from URL search params; `CategorySidebar.tsx` (Trang chủ) renders the same live API list inline; thumbnails come from one `categoryImage()` helper in `src/lib/api.ts` (first image by `sortOrder`, `''` when empty). No new components, no new deps.
 
 **Tech Stack:** React 19, react-router (`Link`, `useLocation`, `useSearchParams`), Tailwind, existing `listCategories()` in `src/lib/api.ts`.
 
@@ -32,14 +32,14 @@ In `MainNav.tsx`: add `useState<CategoryResponse[]>` + `useEffect` calling `list
 Run: `npm run build; if ($?) { npm run lint }`
 Expected: both exit 0. Then `npm run dev` — from `/gioi-thieu`, click TẤT CẢ SẢN PHẨM → overlay appears; second click / outside click / `Escape` / navigation closes; on `/` inline sidebar still works.
 
-### Task 2: Seed SanPhamPage filter from URL
+### Task 2: Seed ProductPage filter from URL
 
 **Files:**
-- Modify: `src/pages/product/SanPhamPage.tsx`
+- Modify: `src/pages/product/ProductPage.tsx`
 
 - [ ] **Step 1: Read `categoryId` search param into initial query state.**
 
-In `SanPhamPage.tsx`: import `useSearchParams`, read `searchParams.get('categoryId')` for the `useState` initializer (`categoryId: searchParams.get('categoryId') ?? null`). Keep the rest of the fetch/filter/sort/pagination logic untouched.
+In `ProductPage.tsx`: import `useSearchParams`, read `searchParams.get('categoryId')` for the `useState` initializer (`categoryId: searchParams.get('categoryId') ?? null`). Keep the rest of the fetch/filter/sort/pagination logic untouched.
 
 - [ ] **Step 2: Verify**
 
@@ -157,7 +157,7 @@ if (prevShowOverlay !== showOverlay) {
 }
 ```
 
-`flyoutData` doubles as the cache and the per-category state: absent = loading, `'failed'` = request failed, array = loaded (empty array = category has no products). The render-phase reset (the same "adjust state when a prop changes" pattern `SanPhamPage` uses) clears the open panel whenever the menu opens or closes — a `useEffect` reset is rejected by the `react-hooks/set-state-in-effect` lint rule.
+`flyoutData` doubles as the cache and the per-category state: absent = loading, `'failed'` = request failed, array = loaded (empty array = category has no products). The render-phase reset (the same "adjust state when a prop changes" pattern `ProductPage` uses) clears the open panel whenever the menu opens or closes — a `useEffect` reset is rejected by the `react-hooks/set-state-in-effect` lint rule.
 
 - [x] **Step 2: Split the row into link + chevron and render the panel.**
 

@@ -22,7 +22,7 @@ interface ProductQueryState {
   name: string
 }
 
-function SanPhamPage() {
+function ProductPage() {
   const [searchParams] = useSearchParams()
   const { alias } = useParams()
   const navigate = useNavigate()
@@ -38,6 +38,8 @@ function SanPhamPage() {
   const [prevParamCategoryId, setPrevParamCategoryId] = useState<string | null>(paramCategoryId)
   const [prevParamName, setPrevParamName] = useState(paramName)
   const [prevAlias, setPrevAlias] = useState(alias)
+  const [filterOpen, setFilterOpen] = useState(false)
+
   if (paramCategoryId !== prevParamCategoryId) {
     setPrevParamCategoryId(paramCategoryId)
     setQuery((current) => ({ ...current, categoryId: paramCategoryId, page: 0 }))
@@ -125,24 +127,50 @@ function SanPhamPage() {
       </nav>
       <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{heading}</h1>
       <div className="grid gap-4 lg:grid-cols-[240px_1fr] items-start">
-        <FilterSidebar
-          categories={categories}
-          selectedCategoryId={alias ? activeCategory?.id ?? null : query.categoryId}
-          onSelectCategory={(id) => {
-            if (!alias) {
-              updateQuery({ categoryId: id, page: 0 })
-              return
-            }
-            const target = id ? categories.find((category) => category.id === id) ?? null : null
-            if (target?.seoAlias) {
-              navigate(`/danh-muc/${target.seoAlias}`)
-            } else {
-              navigate(id ? `/san-pham?categoryId=${id}` : '/san-pham')
-            }
-          }}
-          selectedBrand={query.brand}
-          onSelectBrand={(brand) => updateQuery({ brand, page: 0 })}
-        />
+        <div>
+          <button
+            type="button"
+            onClick={() => setFilterOpen((open) => !open)}
+            aria-expanded={filterOpen}
+            aria-controls="filter-sidebar"
+            className="lg:hidden w-full flex items-center justify-between bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-bold text-gray-900"
+          >
+            Bộ lọc
+            <svg
+              className={`w-4 h-4 transition-transform ${filterOpen ? 'rotate-180' : ''}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" />
+            </svg>
+          </button>
+
+          <div id="filter-sidebar" className={`${filterOpen ? 'block mt-3' : 'hidden'} lg:block`}>
+            <FilterSidebar
+              categories={categories}
+              selectedCategoryId={alias ? activeCategory?.id ?? null : query.categoryId}
+              onSelectCategory={(id) => {
+                setFilterOpen(false)
+                if (!alias) {
+                  updateQuery({ categoryId: id, page: 0 })
+                  return
+                }
+                const target = id ? categories.find((category) => category.id === id) ?? null : null
+                if (target?.seoAlias) {
+                  navigate(`/danh-muc/${target.seoAlias}`)
+                } else {
+                  navigate(id ? `/san-pham?categoryId=${id}` : '/san-pham')
+                }
+              }}
+              selectedBrand={query.brand}
+              onSelectBrand={(brand) => {
+                setFilterOpen(false)
+                updateQuery({ brand, page: 0 })
+              }}
+            />
+          </div>
+        </div>
         <div className="flex flex-col gap-4">
           <Toolbar sort={query.sort} onSelectSort={(value) => updateQuery({ sort: value, page: 0 })} />
           {loading ? (
@@ -193,4 +221,4 @@ function SanPhamPage() {
   )
 }
 
-export default SanPhamPage
+export default ProductPage

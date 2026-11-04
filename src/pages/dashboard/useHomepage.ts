@@ -6,6 +6,7 @@ import {
   listCategories,
   listCollections,
   listProducts,
+  listProductsByCategoryAlias,
   type CategoryResponse,
   type CollectionResponse,
   type NewsResponse,
@@ -142,7 +143,8 @@ export function useHomepage(): HomepageData {
       for (const c of grouped['CATEGORY_COLLECTION'] ?? []) {
         if (!c.referenceId) continue
         try {
-          const page = await listProducts({ page: 0, size: 5, categoryId: c.referenceId })
+          let cat = c.referenceId ? byId.get(c.referenceId) : undefined
+          const page = await listProductsByCategoryAlias({ alias: cat?.seoAlias!, page: 0, size: 5, brand: undefined, sort: "createdAt,desc" })
           const brands = [...new Set(page.content.map((p) => p.brand).filter((b): b is string => b !== null && b !== ''))]
           categorySections.push({ id: c.id, categoryId: c.referenceId, seoAlias: byId.get(c.referenceId)?.seoAlias ?? null, title: c.name, brands, products: page.content })
         } catch {

@@ -33,7 +33,7 @@ GET {VITE_API_URL}/api/products?name={keyword}&page=0&size=6&sort=name,asc
 - **Results:** max 6 rows; thumbnail via the shared `Img` wrapper (fallback image), name (`line-clamp-2`), brand when present.
 - **Empty:** `Không tìm thấy sản phẩm phù hợp.`
 - **Error:** `Không tìm được sản phẩm. Vui lòng thử lại.` — the input stays usable.
-- **Stale responses:** a response for an older keyword is discarded (effect cleanup flag, same pattern as `SanPhamPage`).
+- **Stale responses:** a response for an older keyword is discarded (effect cleanup flag, same pattern as `ProductPage`).
 - **Close:** Escape, pointer-down outside the search container, or a route change. Selecting a suggestion closes it.
 - **Keyboard:** ArrowDown/ArrowUp move the active option (wrapping), Enter opens the active option, or goes to `/san-pham?name=` when none is active, Escape closes. Active option scrolls into view.
 - **Pointer:** `onMouseDown` on a row is prevented so the input keeps focus until the click navigates.
@@ -51,7 +51,7 @@ GET {VITE_API_URL}/api/products?name={keyword}&page=0&size=6&sort=name,asc
 - `src/lib/api.ts` — `ProductQuery` gains `name?: string`; `listProducts()` sets the `name` param when present. No other API helper changes.
 - `src/components/layout/ProductSearch.tsx` (new) — owns query state, debounce/fetch effect, open/active state, close handlers, dropdown markup, form submit. Header stays small.
 - `src/components/layout/Header.tsx` — replace the current input + icon block with `<ProductSearch />`; the surrounding layout classes stay unchanged.
-- `src/pages/product/SanPhamPage.tsx` — read `name` from `useSearchParams` into query state (same pattern as `paramCategoryId`), pass it to `listProducts`, reset to page 0 when it changes, derive the heading and empty text from it.
+- `src/pages/product/ProductPage.tsx` — read `name` from `useSearchParams` into query state (same pattern as `paramCategoryId`), pass it to `listProducts`, reset to page 0 when it changes, derive the heading and empty text from it.
 - `docs/plans/product-search.md` — implementation plan, written after this spec is approved.
 - API repo: `controller/ProductController.java`, `service/ProductService.java`, `service/impl/ProductServiceImpl.java`, `repository/ProductRepository.java`, plus tests.
 

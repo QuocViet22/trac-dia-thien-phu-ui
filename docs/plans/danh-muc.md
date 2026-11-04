@@ -4,7 +4,7 @@
 
 **Goal:** Make the dashboard `CategorySidebar` links work: `/danh-muc/{seoAlias}` renders the existing product listing for that category, using the new `GET /api/products/by-category-alias/{seoAlias}` endpoint.
 
-**Architecture:** Reuse `SanPhamPage` at a second route. It already holds page/brand/sort state, pagination, loading/error/empty states and the filter sidebar; the only new logic is choosing the request (alias vs `categoryId`) and letting a category click navigate instead of setting state. No new page component, no new UI dependency.
+**Architecture:** Reuse `ProductPage` at a second route. It already holds page/brand/sort state, pagination, loading/error/empty states and the filter sidebar; the only new logic is choosing the request (alias vs `categoryId`) and letting a category click navigate instead of setting state. No new page component, no new UI dependency.
 
 **Tech Stack:** Vite 8 + React 19 + TypeScript, `react-router`, Tailwind. Typecheck is part of `npm run build` (`tsc -b`); there is no test runner in this repo (per `AGENTS.md` — do not invent one).
 
@@ -75,7 +75,7 @@ export function listProductsByCategoryAlias(query: CategoryAliasProductQuery): P
 Directly after the `/san-pham` route line:
 
 ```tsx
-          <Route path="/danh-muc/:alias" element={<SanPhamPage />} />
+          <Route path="/danh-muc/:alias" element={<ProductPage />} />
 ```
 
 - [ ] **Step 3: Add the sidebar link fallback in `src/pages/dashboard/components/CategorySidebar.tsx`**
@@ -100,10 +100,10 @@ git add src/lib/api.ts src/App.tsx src/pages/dashboard/components/CategorySideba
 git commit -m "feat: route /danh-muc/:alias and category-alias product request"
 ```
 
-### Task 2: Alias mode in `SanPhamPage`
+### Task 2: Alias mode in `ProductPage`
 
 **Files:**
-- Modify: `src/pages/product/SanPhamPage.tsx`
+- Modify: `src/pages/product/ProductPage.tsx`
 - Test: none (no runner) — `npm run build` + `npm run lint`, browser check in Task 3.
 
 **Interfaces:**
@@ -118,7 +118,7 @@ Change the imports:
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 ```
 
-Add `listProductsByCategoryAlias` to the existing `../../lib/api.ts` import list. Then, as the first two lines inside `SanPhamPage`:
+Add `listProductsByCategoryAlias` to the existing `../../lib/api.ts` import list. Then, as the first two lines inside `ProductPage`:
 
 ```tsx
   const { alias } = useParams()
@@ -197,7 +197,7 @@ Expected: both pass. Then with the API running (Task 3 covers the full list) che
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/pages/product/SanPhamPage.tsx
+git add src/pages/product/ProductPage.tsx
 git commit -m "feat: render category products from the alias route"
 ```
 
@@ -224,7 +224,7 @@ For each item, expected result:
 - [ ] **Step 3: Confirm the worktree contains only intended changes**
 
 Run: `git status --short`
-Expected: only the three files from Task 1 and `SanPhamPage.tsx` from Task 2, plus this plan and `docs/specs/danh-muc.md`. `dist/` must not appear.
+Expected: only the three files from Task 1 and `ProductPage.tsx` from Task 2, plus this plan and `docs/specs/danh-muc.md`. `dist/` must not appear.
 
 ## Self-Review
 

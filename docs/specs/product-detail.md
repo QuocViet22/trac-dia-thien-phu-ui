@@ -5,7 +5,7 @@ Target: production-ready React detail page at `/san-pham/:slug` inside the exist
 
 ## Goals
 
-- Serve `/san-pham/:slug` via `react-router`: `/san-pham` renders `SanPhamPage`, `/san-pham/:slug` renders `ProductDetailPage`, both inside `SiteLayout`; the `*` fallback stays last and untouched.
+- Serve `/san-pham/:slug` via `react-router`: `/san-pham` renders `ProductPage`, `/san-pham/:slug` renders `ProductDetailPage`, both inside `SiteLayout`; the `*` fallback stays last and untouched.
 - `:slug` is the product's `seoAlias`. Legacy/mock names still resolve via the shared `toSlug()` helper (NFD normalize, strip diacritics, `đ→d`, lowercase, non-alphanumerics → `-`) as a fallback match.
 - Detail data from new backend endpoint `GET /api/products/by-alias/{alias}` (exact match on unique `seoAlias`); unknown slug renders a `Sản phẩm không tồn tại` notice with a link back to `/san-pham` (API 404 maps to this branch).
 - Breadcrumb (`Trang chủ / Tất cả sản phẩm / {name}`) + gallery/info grid: gallery (main image + thumbnail row, `useState` selected index; images from `ProductResponse.images` sorted by `sortOrder`), info (H1 name, `shortDescription` HTML block rendered via `dangerouslySetInnerHTML` when present, sanitized first with `sanitizeHtml`). No quantity stepper, no `MUA NGAY` button (deferred — see Non-goals).

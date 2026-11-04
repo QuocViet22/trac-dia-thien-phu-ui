@@ -31,32 +31,33 @@ function FilterSidebar({ categories, selectedCategoryId, onSelectCategory, selec
       {visibleBrands.length === 0 ? (
         <p className="text-sm text-gray-500 mb-4">Không tìm thấy thương hiệu</p>
       ) : (
-      <ul className="space-y-1.5 mb-4 max-h-[420px] overflow-y-auto overscroll-contain pr-1">
-        {visibleBrands.map((brand) => (
-          <li key={brand}>
-            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-              <input
-                type="radio"
-                name="brand-filter"
-                checked={selectedBrand === brand}
-                onChange={() => onSelectBrand(brand)}
-                onClick={() => { if (selectedBrand === brand) onSelectBrand(null) }}
-                className="accent-[#22abff]"
-              />
-              {brand}
-            </label>
-          </li>
-        ))}
-      </ul>
+        <ul className="space-y-1.5 mb-4 max-h-[300px] overflow-y-auto overscroll-contain pr-1">
+          {visibleBrands.map((brand) => (
+            <li key={brand}>
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                <input
+                  type="radio"
+                  name="brand-filter"
+                  checked={selectedBrand === brand}
+                  onChange={() => onSelectBrand(brand)}
+                  onClick={() => { if (selectedBrand === brand) onSelectBrand(null) }}
+                  className="accent-[#22abff]"
+                />
+                {brand}
+              </label>
+            </li>
+          ))}
+        </ul>
       )}
       <p className="font-bold text-sm text-gray-900 mb-2">Danh mục</p>
-      <ul className="space-y-1.5">
+      <ul className="space-y-1.5 mb-4 max-h-[450px] overflow-y-auto overscroll-contain pr-1">
         {categories.map((category) => (
           <li key={category.id}>
             <button
               type="button"
               onClick={() => onSelectCategory(category.id === selectedCategoryId ? null : category.id)}
-              className={`text-sm hover:text-brand ${category.id === selectedCategoryId ? 'text-brand font-bold' : 'text-gray-600'}`}
+              className={`block w-full text-left text-sm hover:text-brand ${category.id === selectedCategoryId ? 'text-brand font-bold' : 'text-gray-600'
+                }`}
             >
               {category.name}
             </button>

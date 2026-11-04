@@ -10,7 +10,7 @@ import PurchaseGuide from './pages/purchase_guide/PurchaseGuide.tsx'
 import NewsPage from './pages/news/NewsPage.tsx'
 import NewsDetailPage from './pages/news/NewsDetailPage.tsx'
 import CustomerList from './pages/customer/CustomerList.tsx'
-import SanPhamPage from './pages/product/SanPhamPage.tsx'
+import ProductPage from './pages/product/ProductPage.tsx'
 import ProductDetailPage from './pages/product/ProductDetailPage.tsx'
 
 import { useEffect } from "react"
@@ -35,8 +35,8 @@ function App() {
         <Routes>
           <Route path="/" element={<DashboardPage sidebarOpen={sidebarOpen} />} />
           <Route path="/gioi-thieu" element={<IntroductionPage />} />
-          <Route path="/san-pham" element={<SanPhamPage />} />
-          <Route path="/danh-muc/:alias" element={<SanPhamPage />} />
+          <Route path="/san-pham" element={<ProductPage />} />
+          <Route path="/danh-muc/:alias" element={<ProductPage />} />
           <Route path="/san-pham/:slug" element={<ProductDetailPage />} />
           <Route path="/tin-tuc" element={<NewsPage newsType="NEWS" title="Tất cả tin tức" emptyText="Chưa có tin tức nào." basePath="/tin-tuc" />} />
           <Route path="/tin-tuc/:slug" element={<NewsDetailPage newsType="NEWS" listTitle="Tất cả tin tức" listPath="/tin-tuc" />} />

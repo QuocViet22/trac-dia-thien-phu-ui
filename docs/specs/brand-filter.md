@@ -47,7 +47,7 @@ Related backend spec: `trac-dia-thien-phu-api/docs/specs/product_controller.md`.
 - `src/lib/api.ts`: `ProductResponse` gains `brand: string | null`;
   `ProductQuery` gains optional `brand?: string`; `listProducts` sets
   the `brand` param only when a non-null value is provided.
-- `SanPhamPage.tsx`: page query state gains `brand: string | null`
+- `ProductPage.tsx`: page query state gains `brand: string | null`
   (initial `null`); the existing fetch effect already keys on the whole
   query object, so no new plumbing. Brand change resets `page` to 0.
 - `FilterSidebar.tsx`: brand checkboxes become
@@ -64,7 +64,7 @@ Related backend spec: `trac-dia-thien-phu-api/docs/specs/product_controller.md`.
 
 ## Data Flow
 
-1. User clicks a brand radio → `SanPhamPage` sets
+1. User clicks a brand radio → `ProductPage` sets
    `{ brand, page: 0 }` → `listProducts` requests
    `/api/products?brand={...}&page=0&size=12&...`.
 2. Grid shows the loading skeletons, then the filtered page;

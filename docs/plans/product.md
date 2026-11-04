@@ -4,7 +4,7 @@
 
 **Goal:** Load the `/san-pham` product grid from `GET /api/products` with working pagination, category filter, and sort.
 
-**Architecture:** New `src/lib/api.ts` owns the HTTP layer (env base URL, `ApiResponse` unwrap, typed DTOs, image/slug helpers); `SanPhamPage` fetches on `[page, categoryId, sort]` state with skeleton/error/empty branches; `FilterSidebar`/`Toolbar` become controlled components; `ProductCard` takes optional `brand`/`badge` (hidden when absent) and links by `seoAlias`.
+**Architecture:** New `src/lib/api.ts` owns the HTTP layer (env base URL, `ApiResponse` unwrap, typed DTOs, image/slug helpers); `ProductPage` fetches on `[page, categoryId, sort]` state with skeleton/error/empty branches; `FilterSidebar`/`Toolbar` become controlled components; `ProductCard` takes optional `brand`/`badge` (hidden when absent) and links by `seoAlias`.
 
 **Tech Stack:** React 19 (`useEffect`/`useState`), react-router 8, Tailwind v4 (`brand #22abff`), `fetch` + `URLSearchParams`, shared `Img` wrapper.
 
@@ -317,16 +317,16 @@ Expected: exit 0 (nothing renders the new props yet; proves they compile).
 
 ---
 
-### Task 4: Rewrite `SanPhamPage` (fetch, states, pagination) and verify
+### Task 4: Rewrite `ProductPage` (fetch, states, pagination) and verify
 
 **Files:**
-- Modify: `src/pages/san-pham/SanPhamPage.tsx`
+- Modify: `src/pages/san-pham/ProductPage.tsx`
 
 **Interfaces:**
 - Consumes: `listCategories`, `listProducts`, `productImage`, `productSlug` + types (Task 1); `FilterSidebar`, `Toolbar` props (Task 3); `ProductCard` (Task 2).
 - Produces: working `/san-pham` page. Nothing downstream except the detail plan's card links.
 
-- [ ] **Step 1: Replace `SanPhamPage.tsx` with the exact content below.**
+- [ ] **Step 1: Replace `ProductPage.tsx` with the exact content below.**
 
 ```tsx
 import { useEffect, useState } from 'react'
@@ -345,7 +345,7 @@ import Toolbar from './components/Toolbar.tsx'
 
 const PAGE_SIZE = 12
 
-function SanPhamPage() {
+function ProductPage() {
   const [categories, setCategories] = useState<CategoryResponse[]>([])
   const [products, setProducts] = useState<ProductResponse[]>([])
   const [totalPages, setTotalPages] = useState(1)
@@ -439,7 +439,7 @@ function SanPhamPage() {
   )
 }
 
-export default SanPhamPage
+export default ProductPage
 ```
 
 - [ ] **Step 2: Verify.**

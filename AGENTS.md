@@ -36,7 +36,7 @@ Every route lives in `src/App.tsx`; there is no per-feature router.
 | --- | --- |
 | `/` | `pages/dashboard/DashboardPage` |
 | `/gioi-thieu` | `pages/introduction/IntroductionPage` |
-| `/san-pham`, `/danh-muc/:alias` | `pages/product/SanPhamPage` |
+| `/san-pham`, `/danh-muc/:alias` | `pages/product/ProductPage` |
 | `/san-pham/:slug` | `pages/product/ProductDetailPage` |
 | `/tin-tuc`, `/thue-san-pham`, `/sua-chua-va-kiem-dinh` | `pages/news/NewsPage`, selected by `newsType` |
 | the same paths + `/:slug` | `pages/news/NewsDetailPage` |

@@ -174,7 +174,7 @@
 
 **Files:**
 - Modify: `src/lib/api.ts` (`ProductResponse` + `ProductQuery` + `listProducts`)
-- Modify: `src/pages/san-pham/SanPhamPage.tsx` (query state + fetch call + sidebar props)
+- Modify: `src/pages/san-pham/ProductPage.tsx` (query state + fetch call + sidebar props)
 - Modify: `src/pages/san-pham/components/FilterSidebar.tsx` (radio group + clear behavior)
 
 **Interfaces:**
@@ -189,7 +189,7 @@
   }
 ```
 
-- [ ] **Step 2: Track brand in page state.** In `SanPhamPage.tsx`, extend `ProductQueryState` with `brand: string | null`, change the initial state to `{ page: 0, categoryId: null, brand: null, sort: 'createdAt,desc' }`, and add `brand: query.brand ?? undefined` to the `listProducts` call alongside `categoryId`. No effect changes needed — the fetch effect already keys on the whole `query` object.
+- [ ] **Step 2: Track brand in page state.** In `ProductPage.tsx`, extend `ProductQueryState` with `brand: string | null`, change the initial state to `{ page: 0, categoryId: null, brand: null, sort: 'createdAt,desc' }`, and add `brand: query.brand ?? undefined` to the `listProducts` call alongside `categoryId`. No effect changes needed — the fetch effect already keys on the whole `query` object.
 
 - [ ] **Step 3: Replace checkboxes with radios.** In `FilterSidebar.tsx`, replace the props interface and the brand `<ul>` block with the exact code below (scroll-box classes unchanged; `Bỏ hết` now clears both filters).
 
@@ -227,7 +227,7 @@ interface FilterSidebarProps {
       </ul>
 ```
 
-- [ ] **Step 4: Wire the sidebar.** In `SanPhamPage.tsx`, replace the `<FilterSidebar ... />` element with the exact code below.
+- [ ] **Step 4: Wire the sidebar.** In `ProductPage.tsx`, replace the `<FilterSidebar ... />` element with the exact code below.
 
 ```tsx
         <FilterSidebar

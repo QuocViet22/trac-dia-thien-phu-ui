@@ -29,7 +29,7 @@
 ## 3. Orchestration (`useHomepage` + `DashboardPage`)
 
 - New `src/pages/dashboard/useHomepage.ts`: on mount, `Promise.all` the 7
-  `listCollections(type)` calls (cancelled-flag pattern from `SanPhamPage`), then resolve
+  `listCollections(type)` calls (cancelled-flag pattern from `ProductPage`), then resolve
   in parallel: best-sellers via `getProduct` per `referenceId` (order preserved, 404 skips
   the item); featured/categories by matching `referenceId`s against one `listCategories()`;
   news via `getNews` per id (404 skips); CategorySection auto-fill via
@@ -83,7 +83,7 @@
   the link working.
 - Rows with a null/unresolvable `referenceId` stay skipped (section not rendered), as today.
 - Out of scope: `FeaturedCategories` and `MainNav` links keep
-  `/san-pham?categoryId=<id>`; no change to `SanPhamPage`, routes, or the product fetch.
+  `/san-pham?categoryId=<id>`; no change to `ProductPage`, routes, or the product fetch.
 - Verification: `npm run build` + `npm run lint`; with the API up, click the link on a
   category with an alias (product page heading shows the category name) and on a category
   without one (fallback URL, filtered by `categoryId`).

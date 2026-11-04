@@ -5,7 +5,7 @@ Target: production-ready React page at `/san-pham` inside the existing `SiteLayo
 
 ## Goals
 
-- Serve `/san-pham` via `react-router`: `/` renders `DashboardPage`, `/gioi-thieu` renders `IntroductionPage`, `/san-pham` renders `SanPhamPage`, all inside `SiteLayout`.
+- Serve `/san-pham` via `react-router`: `/` renders `DashboardPage`, `/gioi-thieu` renders `IntroductionPage`, `/san-pham` renders `ProductPage`, all inside `SiteLayout`.
 - Replicate the reference layout with Vietnamese copy: breadcrumb (`Trang chủ / Tất cả sản phẩm`), H1 `Tất cả sản phẩm`, left filter sidebar, sort toolbar, product grid, pagination bar.
 - Load grid data from `GET {VITE_API_URL}/api/products` (paginated) instead of mock `data.ts`. Page size 12.
 - Wire real pagination (`page`, `totalPages` from the API `Page` payload), category filter (`?categoryId=` with options from `GET /api/categories`), and sort (`?sort=`) through the existing toolbar/sidebar/pagination visuals.
@@ -34,9 +34,9 @@ Target: production-ready React page at `/san-pham` inside the existing `SiteLayo
 
 ## Architecture
 
-- `App.tsx` routes unchanged (`/san-pham` → `SanPhamPage`).
+- `App.tsx` routes unchanged (`/san-pham` → `ProductPage`).
 - New `src/lib/api.ts`: `API_BASE` (from `import.meta.env.VITE_API_URL` with localhost default), typed `ApiResponse<T>` / `Page<T>` / `ProductResponse` / `CategoryResponse`, `fetchJson` helper that unwraps `ApiResponse` and throws on `!success` or non-2xx.
-- `src/pages/san-pham/`: `SanPhamPage.tsx` fetches list via `useEffect` on `[page, categoryId, sort]` state; `FilterSidebar.tsx` takes category options + selected + callback props; `Toolbar.tsx` takes sort value + callback props; pagination bar renders `totalPages` buttons.
+- `src/pages/san-pham/`: `ProductPage.tsx` fetches list via `useEffect` on `[page, categoryId, sort]` state; `FilterSidebar.tsx` takes category options + selected + callback props; `Toolbar.tsx` takes sort value + callback props; pagination bar renders `totalPages` buttons.
 - `src/pages/dashboard/components/ProductCard.tsx`: `brand` and `badge` props optional; brand/badge lines render only when present; `Link` target switches from `toSlug(name)` to `/san-pham/{seoAlias ?? toSlug(name)}`.
 - Mock `src/pages/san-pham/data.ts` stays as types/static labels reference (brands/priceRanges/sortOptions labels) but is no longer the grid data source.
 - Spec files: `docs/specs/product.md` (this file), `docs/specs/product-detail.md`; implementation plan follows after approval.

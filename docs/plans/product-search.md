@@ -4,7 +4,7 @@
 
 **Goal:** Wire the header search box to a debounced product-name autocomplete, and make `/san-pham?name=<keyword>` a working filtered listing — backed by the new optional `name` param on `GET /api/products`.
 
-**Architecture:** One optional filter on the existing endpoint (API plan: `trac-dia-thien-phu-api/docs/plans/product_controller.md`, name-search addendum). UI adds `name` to the existing `ProductQuery`, a self-contained `ProductSearch` combobox component, and a `name` URL param in `SanPhamPage`. No new route, dependency, or API helper.
+**Architecture:** One optional filter on the existing endpoint (API plan: `trac-dia-thien-phu-api/docs/plans/product_controller.md`, name-search addendum). UI adds `name` to the existing `ProductQuery`, a self-contained `ProductSearch` combobox component, and a `name` URL param in `ProductPage`. No new route, dependency, or API helper.
 
 **Tech Stack:** React 19, react-router 8 (`Link`, `useNavigate`, `useLocation`, `useSearchParams`), Tailwind v4, existing `listProducts()` / `productImage()` / `Img`.
 
@@ -34,7 +34,7 @@
 
 **Files:**
 - Modify: `src/lib/api.ts` (`ProductQuery`, `listProducts`)
-- Modify: `src/pages/product/SanPhamPage.tsx` (query state, fetch, heading, empty text)
+- Modify: `src/pages/product/ProductPage.tsx` (query state, fetch, heading, empty text)
 
 **Interfaces:**
 - Consumes: backend `?name=` from the API plan; existing `Page<ProductResponse>` shape.
@@ -52,7 +52,7 @@ In `src/lib/api.ts`, add `name?: string` to `ProductQuery` after `brand?: string
 
 - [ ] **Step 2: Carry `name` in the listing page state.**
 
-In `SanPhamPage.tsx`:
+In `ProductPage.tsx`:
 
 1. Read the param next to `paramCategoryId`:
 
@@ -358,7 +358,7 @@ Run `npm run build; if ($?) { npm run lint }`. Expected: both exit 0. With the A
 
 **2. Step scan:** every step names one artifact and one checkable result. Code is included where the spec does not determine the exact shape (combobox handlers) or where copy is fixed. No TBD.
 
-**3. Type consistency:** `ProductQuery.name?: string` ↔ `listProducts` param ↔ `SanPhamPage` `query.name: string` (`|| undefined` at the call). `ProductResponse` fields used (`id`, `name`, `brand`, `seoAlias`, `images`) all exist in `src/lib/api.ts`.
+**3. Type consistency:** `ProductQuery.name?: string` ↔ `listProducts` param ↔ `ProductPage` `query.name: string` (`|| undefined` at the call). `ProductResponse` fields used (`id`, `name`, `brand`, `seoAlias`, `images`) all exist in `src/lib/api.ts`.
 
 **4. Review Focus:** five lines map to Task 2's `cancelled` flag, Task 2's `submit`, Task 1's `|| undefined` + backend blank rule, Task 1's `paramName` sync, Task 3's layout check.
 
