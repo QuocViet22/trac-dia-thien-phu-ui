@@ -5,7 +5,6 @@ import {
   getProduct,
   listCategories,
   listCollections,
-  listProducts,
   listProductsByCategoryAlias,
   type CategoryResponse,
   type CollectionResponse,
